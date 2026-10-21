@@ -6,5 +6,5 @@ User-agent: Yandex
 Allow: /
 Clean-param: ysclid&utm_source&utm_medium&utm_campaign&utm_content&utm_term&from&to&type
 
-Sitemap: https://mybike-nhatrang.ru/sitemap.xml
-Host: https://mybike-nhatrang.ru
+Sitemap: https://t0niske.github.io/mybike-nhatrang/sitemap.xml
+Host: https://t0niske.github.io/mybike-nhatrang

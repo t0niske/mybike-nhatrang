@@ -21,6 +21,8 @@ for my $f (qw(site bikes categories pages)) {
 
 my $OUT   = "$Bin/docs";
 my $B     = $ENV{BASE} // $SITE{base};
+$SITE{url} = $ENV{SITE_URL} if $ENV{SITE_URL};
+my $PREVIEW = $ENV{PREVIEW};   # 1 = тестовая копия: noindex на всех страницах
 my $TODAY = strftime('%Y-%m-%d', localtime);
 my $VER   = time;
 my @SITEMAP;
@@ -285,7 +287,7 @@ sub page {
   push @ld, crumbs_ld(@{ $a{crumbs} }) if $a{crumbs};
   my $ld = $JSON->encode({ '@context'=>'https://schema.org', '@graph'=>\@ld });
   $ld =~ s{</}{<\\/}g;
-  my $robots = $a{noindex} ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1';
+  my $robots = ($a{noindex} || $PREVIEW) ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1';
   my $og = abs_url('/assets/img/og.png');
   my $title = esc($a{title}); my $desc = esc($a{desc});
   my $bodyclass = $a{bodyclass} // q{};

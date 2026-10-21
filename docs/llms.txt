@@ -15,37 +15,37 @@
 - Оплата как удобно: Рубли переводом на карту РФ, донги, доллары, USDT. Оплата при получении байка.
 
 ## Подборки
-- [Аренда байка без прав в Нячанге](https://mybike-nhatrang.ru/arenda-bajka-bez-prav/): Нет прав категории A? Это не проблема. Во Вьетнаме на скутеры до 50 см³ и электроскутеры со скоростью до 50 км/ч права не нужны. Привезём байк к отелю бесплатно — без депозита и без залога паспорта.
-- [Байк 50cc в Нячанге](https://mybike-nhatrang.ru/bajk-50cc/): Мопеды объёмом 50 см³ — самый простой способ передвигаться по Нячангу: права не нужны, расход меньше 2 литров на сотню, а парковка — у любого кафе.
-- [Аренда электроскутера в Нячанге](https://mybike-nhatrang.ru/arenda-elektroskutera/): Тихо, без запаха бензина и без заправок. Электроскутеры VinFast проезжают до 205 км на одном заряде, а заряжаются от обычной розетки в отеле.
-- [Скутеры 110–125cc в Нячанге](https://mybike-nhatrang.ru/skutery-110-125cc/): Самый популярный класс у туристов: достаточно мощности для поездок вдвоём, экономичный расход и цена от 100 000 ₫ в день.
-- [Байки 150–160cc в Нячанге: PCX, NVX, ADV](https://mybike-nhatrang.ru/bajki-150-160cc/): Самые универсальные скутеры: комфортно вдвоём, уверенно на трассе до Камрани и Далата, ABS в стандарте. Хит проката — Honda PCX 160.
-- [Макси-скутеры 300cc+ в Нячанге](https://mybike-nhatrang.ru/maksi-skutery-300cc/): Для путешествий по Вьетнаму с комфортом мотоцикла и простотой автомата: 28–29 л.с., ветровое стекло и багажник на два шлема.
-- [Аренда мотоцикла в Нячанге](https://mybike-nhatrang.ru/arenda-motocikla/): Настоящие мотоциклы с механикой для тех, кто хочет почувствовать серпантины Вьетнама: туристический Honda CB500X и спортивный Kawasaki Ninja 400.
-- [Аренда скутера в Нячанге](https://mybike-nhatrang.ru/arenda-skutera/): Все скутеры парка на одной странице: от мопедов без прав до макси-скутеров 350 кубов. Цены открыты, доставка бесплатная, депозита нет.
-- [Дешёвая аренда байка в Нячанге](https://mybike-nhatrang.ru/arenda-bajka-deshevo/): Самые доступные байки парка — до 200 000 ₫ в день. Дёшево не значит плохо: все байки 2023–2025 годов и проходят ТО после каждого клиента.
-- [Аренда байка на месяц в Нячанге](https://mybike-nhatrang.ru/arenda-bajka-na-mesyac/): Живёте в Нячанге месяц и дольше? Помесячная аренда в 1,5–2 раза дешевле посуточной, а ТО, замена масла и ремонт — за наш счёт.
+- [Аренда байка без прав в Нячанге](https://t0niske.github.io/mybike-nhatrang/arenda-bajka-bez-prav/): Нет прав категории A? Это не проблема. Во Вьетнаме на скутеры до 50 см³ и электроскутеры со скоростью до 50 км/ч права не нужны. Привезём байк к отелю бесплатно — без депозита и без залога паспорта.
+- [Байк 50cc в Нячанге](https://t0niske.github.io/mybike-nhatrang/bajk-50cc/): Мопеды объёмом 50 см³ — самый простой способ передвигаться по Нячангу: права не нужны, расход меньше 2 литров на сотню, а парковка — у любого кафе.
+- [Аренда электроскутера в Нячанге](https://t0niske.github.io/mybike-nhatrang/arenda-elektroskutera/): Тихо, без запаха бензина и без заправок. Электроскутеры VinFast проезжают до 205 км на одном заряде, а заряжаются от обычной розетки в отеле.
+- [Скутеры 110–125cc в Нячанге](https://t0niske.github.io/mybike-nhatrang/skutery-110-125cc/): Самый популярный класс у туристов: достаточно мощности для поездок вдвоём, экономичный расход и цена от 100 000 ₫ в день.
+- [Байки 150–160cc в Нячанге: PCX, NVX, ADV](https://t0niske.github.io/mybike-nhatrang/bajki-150-160cc/): Самые универсальные скутеры: комфортно вдвоём, уверенно на трассе до Камрани и Далата, ABS в стандарте. Хит проката — Honda PCX 160.
+- [Макси-скутеры 300cc+ в Нячанге](https://t0niske.github.io/mybike-nhatrang/maksi-skutery-300cc/): Для путешествий по Вьетнаму с комфортом мотоцикла и простотой автомата: 28–29 л.с., ветровое стекло и багажник на два шлема.
+- [Аренда мотоцикла в Нячанге](https://t0niske.github.io/mybike-nhatrang/arenda-motocikla/): Настоящие мотоциклы с механикой для тех, кто хочет почувствовать серпантины Вьетнама: туристический Honda CB500X и спортивный Kawasaki Ninja 400.
+- [Аренда скутера в Нячанге](https://t0niske.github.io/mybike-nhatrang/arenda-skutera/): Все скутеры парка на одной странице: от мопедов без прав до макси-скутеров 350 кубов. Цены открыты, доставка бесплатная, депозита нет.
+- [Дешёвая аренда байка в Нячанге](https://t0niske.github.io/mybike-nhatrang/arenda-bajka-deshevo/): Самые доступные байки парка — до 200 000 ₫ в день. Дёшево не значит плохо: все байки 2023–2025 годов и проходят ТО после каждого клиента.
+- [Аренда байка на месяц в Нячанге](https://t0niske.github.io/mybike-nhatrang/arenda-bajka-na-mesyac/): Живёте в Нячанге месяц и дольше? Помесячная аренда в 1,5–2 раза дешевле посуточной, а ТО, замена масла и ремонт — за наш счёт.
 
 ## Байки и цены (₫, вьетнамские донги)
-- [Honda Wave Alpha 110](https://mybike-nhatrang.ru/arenda/honda-wave-alpha-110/): 110 см³, Права A1 / A. 120 000 ₫/день (1–6 дн.), 100 000 ₫/день (7–29 дн.), 1 800 000 ₫/30 дней.
-- [SYM Elegant 50](https://mybike-nhatrang.ru/arenda/sym-elegant-50/): 50 см³, Без прав. 140 000 ₫/день (1–6 дн.), 110 000 ₫/день (7–29 дн.), 2 000 000 ₫/30 дней.
-- [Honda Super Cub 50](https://mybike-nhatrang.ru/arenda/honda-super-cub-50/): 49 см³, Без прав. 150 000 ₫/день (1–6 дн.), 120 000 ₫/день (7–29 дн.), 2 300 000 ₫/30 дней.
-- [VinFast Evo200 Lite](https://mybike-nhatrang.ru/arenda/vinfast-evo200-lite/): Электро, Без прав. 160 000 ₫/день (1–6 дн.), 130 000 ₫/день (7–29 дн.), 2 400 000 ₫/30 дней.
-- [Honda Vision 110](https://mybike-nhatrang.ru/arenda/honda-vision-110/): 110 см³, Права A1 / A. 160 000 ₫/день (1–6 дн.), 130 000 ₫/день (7–29 дн.), 2 400 000 ₫/30 дней.
-- [Kymco Like 50](https://mybike-nhatrang.ru/arenda/kymco-like-50/): 49 см³, Без прав. 170 000 ₫/день (1–6 дн.), 140 000 ₫/день (7–29 дн.), 2 600 000 ₫/30 дней.
-- [Honda Lead 125](https://mybike-nhatrang.ru/arenda/honda-lead-125/): 125 см³, Права A1 / A. 180 000 ₫/день (1–6 дн.), 150 000 ₫/день (7–29 дн.), 2 800 000 ₫/30 дней.
-- [Yamaha Grande 125 Hybrid](https://mybike-nhatrang.ru/arenda/yamaha-grande-125/): 125 см³, Права A1 / A. 190 000 ₫/день (1–6 дн.), 150 000 ₫/день (7–29 дн.), 2 800 000 ₫/30 дней.
-- [Honda Air Blade 125](https://mybike-nhatrang.ru/arenda/honda-air-blade-125/): 125 см³, Права A1 / A. 200 000 ₫/день (1–6 дн.), 160 000 ₫/день (7–29 дн.), 3 000 000 ₫/30 дней.
-- [VinFast Feliz S](https://mybike-nhatrang.ru/arenda/vinfast-feliz-s/): Электро, Права A1 / A. 220 000 ₫/день (1–6 дн.), 180 000 ₫/день (7–29 дн.), 3 300 000 ₫/30 дней.
-- [Yamaha NVX 155](https://mybike-nhatrang.ru/arenda/yamaha-nvx-155/): 155 см³, Права A. 250 000 ₫/день (1–6 дн.), 200 000 ₫/день (7–29 дн.), 3 600 000 ₫/30 дней.
-- [Yamaha NMAX 155](https://mybike-nhatrang.ru/arenda/yamaha-nmax-155/): 155 см³, Права A. 260 000 ₫/день (1–6 дн.), 210 000 ₫/день (7–29 дн.), 3 800 000 ₫/30 дней.
-- [Honda PCX 160](https://mybike-nhatrang.ru/arenda/honda-pcx-160/): 157 см³, Права A. 270 000 ₫/день (1–6 дн.), 220 000 ₫/день (7–29 дн.), 3 900 000 ₫/30 дней.
-- [Honda ADV 160](https://mybike-nhatrang.ru/arenda/honda-adv-160/): 157 см³, Права A. 380 000 ₫/день (1–6 дн.), 320 000 ₫/день (7–29 дн.), 5 500 000 ₫/30 дней.
-- [Honda SH 160i](https://mybike-nhatrang.ru/arenda/honda-sh-160/): 157 см³, Права A. 400 000 ₫/день (1–6 дн.), 330 000 ₫/день (7–29 дн.), 6 000 000 ₫/30 дней.
-- [Yamaha XMAX 300](https://mybike-nhatrang.ru/arenda/yamaha-xmax-300/): 292 см³, Права A. 750 000 ₫/день (1–6 дн.), 650 000 ₫/день (7–29 дн.), 12 000 000 ₫/30 дней.
-- [Honda Forza 350](https://mybike-nhatrang.ru/arenda/honda-forza-350/): 330 см³, Права A. 800 000 ₫/день (1–6 дн.), 700 000 ₫/день (7–29 дн.), 13 000 000 ₫/30 дней.
-- [Honda CB500X](https://mybike-nhatrang.ru/arenda/honda-cb500x/): 471 см³, Права A. 1 200 000 ₫/день (1–6 дн.), 1 000 000 ₫/день (7–29 дн.), 22 000 000 ₫/30 дней.
-- [Kawasaki Ninja 400](https://mybike-nhatrang.ru/arenda/kawasaki-ninja-400/): 399 см³, Права A. 1 300 000 ₫/день (1–6 дн.), 1 100 000 ₫/день (7–29 дн.), 24 000 000 ₫/30 дней.
+- [Honda Wave Alpha 110](https://t0niske.github.io/mybike-nhatrang/arenda/honda-wave-alpha-110/): 110 см³, Права A1 / A. 120 000 ₫/день (1–6 дн.), 100 000 ₫/день (7–29 дн.), 1 800 000 ₫/30 дней.
+- [SYM Elegant 50](https://t0niske.github.io/mybike-nhatrang/arenda/sym-elegant-50/): 50 см³, Без прав. 140 000 ₫/день (1–6 дн.), 110 000 ₫/день (7–29 дн.), 2 000 000 ₫/30 дней.
+- [Honda Super Cub 50](https://t0niske.github.io/mybike-nhatrang/arenda/honda-super-cub-50/): 49 см³, Без прав. 150 000 ₫/день (1–6 дн.), 120 000 ₫/день (7–29 дн.), 2 300 000 ₫/30 дней.
+- [VinFast Evo200 Lite](https://t0niske.github.io/mybike-nhatrang/arenda/vinfast-evo200-lite/): Электро, Без прав. 160 000 ₫/день (1–6 дн.), 130 000 ₫/день (7–29 дн.), 2 400 000 ₫/30 дней.
+- [Honda Vision 110](https://t0niske.github.io/mybike-nhatrang/arenda/honda-vision-110/): 110 см³, Права A1 / A. 160 000 ₫/день (1–6 дн.), 130 000 ₫/день (7–29 дн.), 2 400 000 ₫/30 дней.
+- [Kymco Like 50](https://t0niske.github.io/mybike-nhatrang/arenda/kymco-like-50/): 49 см³, Без прав. 170 000 ₫/день (1–6 дн.), 140 000 ₫/день (7–29 дн.), 2 600 000 ₫/30 дней.
+- [Honda Lead 125](https://t0niske.github.io/mybike-nhatrang/arenda/honda-lead-125/): 125 см³, Права A1 / A. 180 000 ₫/день (1–6 дн.), 150 000 ₫/день (7–29 дн.), 2 800 000 ₫/30 дней.
+- [Yamaha Grande 125 Hybrid](https://t0niske.github.io/mybike-nhatrang/arenda/yamaha-grande-125/): 125 см³, Права A1 / A. 190 000 ₫/день (1–6 дн.), 150 000 ₫/день (7–29 дн.), 2 800 000 ₫/30 дней.
+- [Honda Air Blade 125](https://t0niske.github.io/mybike-nhatrang/arenda/honda-air-blade-125/): 125 см³, Права A1 / A. 200 000 ₫/день (1–6 дн.), 160 000 ₫/день (7–29 дн.), 3 000 000 ₫/30 дней.
+- [VinFast Feliz S](https://t0niske.github.io/mybike-nhatrang/arenda/vinfast-feliz-s/): Электро, Права A1 / A. 220 000 ₫/день (1–6 дн.), 180 000 ₫/день (7–29 дн.), 3 300 000 ₫/30 дней.
+- [Yamaha NVX 155](https://t0niske.github.io/mybike-nhatrang/arenda/yamaha-nvx-155/): 155 см³, Права A. 250 000 ₫/день (1–6 дн.), 200 000 ₫/день (7–29 дн.), 3 600 000 ₫/30 дней.
+- [Yamaha NMAX 155](https://t0niske.github.io/mybike-nhatrang/arenda/yamaha-nmax-155/): 155 см³, Права A. 260 000 ₫/день (1–6 дн.), 210 000 ₫/день (7–29 дн.), 3 800 000 ₫/30 дней.
+- [Honda PCX 160](https://t0niske.github.io/mybike-nhatrang/arenda/honda-pcx-160/): 157 см³, Права A. 270 000 ₫/день (1–6 дн.), 220 000 ₫/день (7–29 дн.), 3 900 000 ₫/30 дней.
+- [Honda ADV 160](https://t0niske.github.io/mybike-nhatrang/arenda/honda-adv-160/): 157 см³, Права A. 380 000 ₫/день (1–6 дн.), 320 000 ₫/день (7–29 дн.), 5 500 000 ₫/30 дней.
+- [Honda SH 160i](https://t0niske.github.io/mybike-nhatrang/arenda/honda-sh-160/): 157 см³, Права A. 400 000 ₫/день (1–6 дн.), 330 000 ₫/день (7–29 дн.), 6 000 000 ₫/30 дней.
+- [Yamaha XMAX 300](https://t0niske.github.io/mybike-nhatrang/arenda/yamaha-xmax-300/): 292 см³, Права A. 750 000 ₫/день (1–6 дн.), 650 000 ₫/день (7–29 дн.), 12 000 000 ₫/30 дней.
+- [Honda Forza 350](https://t0niske.github.io/mybike-nhatrang/arenda/honda-forza-350/): 330 см³, Права A. 800 000 ₫/день (1–6 дн.), 700 000 ₫/день (7–29 дн.), 13 000 000 ₫/30 дней.
+- [Honda CB500X](https://t0niske.github.io/mybike-nhatrang/arenda/honda-cb500x/): 471 см³, Права A. 1 200 000 ₫/день (1–6 дн.), 1 000 000 ₫/день (7–29 дн.), 22 000 000 ₫/30 дней.
+- [Kawasaki Ninja 400](https://t0niske.github.io/mybike-nhatrang/arenda/kawasaki-ninja-400/): 399 см³, Права A. 1 300 000 ₫/день (1–6 дн.), 1 100 000 ₫/день (7–29 дн.), 24 000 000 ₫/30 дней.
 
 ## Частые вопросы
 ### Нужны ли права, чтобы арендовать байк в Нячанге?
