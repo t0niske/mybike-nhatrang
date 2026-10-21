@@ -1,0 +1,53 @@
+# Автопубликация: каждые 15 минут забирает цены и тексты из базы (админка) и пересобирает сайт.
+# Нужны секреты репозитория: SUPABASE_URL и SUPABASE_SERVICE_KEY (Settings → Secrets and variables → Actions).
+# Без секретов workflow просто ничего не делает.
+name: Публикация сайта
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Забрать данные из админки
+        env:
+          SB_URL: ${{ secrets.SUPABASE_URL }}
+          SB_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          if [ -z "$SB_URL" ] || [ -z "$SB_KEY" ]; then
+            echo "База не подключена (нет секретов SUPABASE_URL / SUPABASE_SERVICE_KEY) — пропускаю"
+            echo "SKIP=1" >> "$GITHUB_ENV"; exit 0
+          fi
+          curl -sSf -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" "$SB_URL/rest/v1/bikes?select=*&order=rank.asc" > /tmp/bikes.json
+          curl -sSf -H "apikey: $SB_KEY" -H "Authorization: Bearer $SB_KEY" "$SB_URL/rest/v1/content?select=key,value" > /tmp/content.json
+          jq -n --slurpfile b /tmp/bikes.json --slurpfile c /tmp/content.json \
+            '{bikes: $b[0], content: ($c[0] | map({(.key): .value}) | add // {})}' > data/remote.json
+          echo "Моделей: $(jq '.bikes | length' data/remote.json), разделов контента: $(jq '.content | length' data/remote.json)"
+
+      - name: Собрать сайт
+        if: env.SKIP != '1'
+        run: sh build-pages.sh
+
+      - name: Опубликовать, если что-то изменилось
+        if: env.SKIP != '1'
+        run: |
+          git config user.name "mybike-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data/remote.json docs
+          if git diff --cached --quiet -- . ':!docs/sitemap.xml' ':!docs/build.json'; then
+            echo "Изменений нет — сайт актуален"; exit 0
+          fi
+          git commit -m "Публикация изменений из админки"
+          git push

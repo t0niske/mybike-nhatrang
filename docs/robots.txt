@@ -1,9 +1,11 @@
 User-agent: *
 Allow: /
 Disallow: /*?
+Disallow: /mybike-nhatrang/admin/
 
 User-agent: Yandex
 Allow: /
+Disallow: /mybike-nhatrang/admin/
 Clean-param: ysclid&utm_source&utm_medium&utm_campaign&utm_content&utm_term&from&to&type
 
 Sitemap: https://t0niske.github.io/mybike-nhatrang/sitemap.xml

@@ -7,7 +7,10 @@ my %T = (html=>'text/html; charset=utf-8', css=>'text/css', js=>'application/jav
 my $s = IO::Socket::INET->new(LocalAddr=>'127.0.0.1', LocalPort=>$port, Listen=>20, ReuseAddr=>1) or die "port $port: $!";
 print "http://localhost:$port\n";
 while (my $c = $s->accept) {
-  my $req = <$c> // ''; while (my $l = <$c>) { last if $l =~ /^\r?\n$/ }
+  # браузер держит «пустые» соединения про запас — не даём им заблокировать сервер
+  my $req = eval { local $SIG{ALRM} = sub { die "timeout\n" }; alarm 3; my $r = <$c> // ''; while (my $l = <$c>) { last if $l =~ /^\r?\n$/ } alarm 0; $r };
+  alarm 0;
+  unless (defined $req && length $req) { close $c; next }
   my ($path) = $req =~ m{^GET\s+(\S+)}; $path //= '/'; $path =~ s/\?.*//; $path =~ s/%([0-9A-F]{2})/chr hex $1/gie; $path =~ s/\.\.//g; $path =~ s{^/mybike-nhatrang(?=/|$)}{}; $path ||= '/';
   my $f = "$root$path"; $f .= 'index.html' if $f =~ m{/$}; $f .= '/index.html' if -d $f;
   my $code = '200 OK'; unless (-f $f) { $f = "$root/404.html"; $code = '404 Not Found' }

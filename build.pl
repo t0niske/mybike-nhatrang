@@ -10,6 +10,7 @@ use File::Copy qw(copy);
 use File::Find;
 use JSON::PP;
 use POSIX qw(strftime ceil);
+use Digest::MD5;
 binmode STDOUT, q{:encoding(UTF-8)};
 
 our (%SITE, @INCLUDED, @COMPARE, @STEPS, @REVIEWS, @FAQ_MAIN, @BIKES, @CATEGORIES, @PAGES, @DELIVERY);
@@ -19,12 +20,45 @@ for my $f (qw(site bikes categories pages)) {
   die "data/$f.pl: $!" unless defined $r;
 }
 
+# Данные из админки: GitHub Actions выгружает их из базы в data/remote.json (или файл скачан в «Публикация»).
+# Если файла нет — сайт собирается из data/*.pl.
+if (-f "$Bin/data/remote.json" && !$ENV{NO_REMOTE}) {
+  open my $rf, '<:raw', "$Bin/data/remote.json" or die "remote.json: $!";
+  my $raw = do { local $/; <$rf> }; close $rf;
+  apply_remote(JSON::PP->new->utf8->decode($raw));
+  print "Контент и цены взяты из data/remote.json\n";
+}
+
+sub tuples { my ($list, @k) = @_; [ map { my $o = $_; ref $o eq 'ARRAY' ? $o : [ map { $o->{$_} // '' } @k ] } @{ $list || [] } ] }
+sub apply_remote {
+  my $r = shift; my $c = $r->{content} || {};
+  if ($r->{bikes} && @{ $r->{bikes} }) {
+    @BIKES = map {
+      my %b = %$_; $b{slug} = delete $b{id}; $b{group} = delete $b{grp};
+      $b{$_} = $b{$_} ? 1 : 0 for qw(abs popular);
+      $b{$_} ||= [] for qw(tags about pros);
+      \%b
+    } grep { !defined $_->{visible} || $_->{visible} } @{ $r->{bikes} };
+  }
+  if ($c->{site}) { for my $k (keys %{ $c->{site} }) { my $v = $c->{site}{$k}; $SITE{$k} = $v if defined $v && $v ne '' } }
+  @REVIEWS  = @{ tuples($c->{reviews},  qw(name city text)) }  if $c->{reviews};
+  @FAQ_MAIN = @{ tuples($c->{faq_main}, qw(q a)) }             if $c->{faq_main};
+  @INCLUDED = @{ tuples($c->{included}, qw(icon title text)) } if $c->{included};
+  @COMPARE  = @{ tuples($c->{compare},  qw(row us them)) }     if $c->{compare};
+  @DELIVERY = @{ tuples($c->{delivery}, qw(place price time)) } if $c->{delivery};
+  @STEPS    = @{ tuples($c->{steps},    qw(title text)) }      if $c->{steps};
+  @CATEGORIES = map { my %x = %$_; $x{sections} = tuples($x{sections}, qw(h2 html)); $x{faq} = tuples($x{faq}, qw(q a)); \%x } @{ $c->{categories} } if $c->{categories};
+  @PAGES = map {
+    my %x = %$_; $x{faq} = tuples($x{faq}, qw(q a)); delete $x{faq} unless @{ $x{faq} }; $x{noindex} = $x{noindex} ? 1 : 0; \%x
+  } @{ $c->{pages} } if $c->{pages};
+}
+
 my $OUT   = "$Bin/docs";
 my $B     = $ENV{BASE} // $SITE{base};
 $SITE{url} = $ENV{SITE_URL} if $ENV{SITE_URL};
 my $PREVIEW = $ENV{PREVIEW};   # 1 = тестовая копия: noindex на всех страницах
 my $TODAY = strftime('%Y-%m-%d', localtime);
-my $VER   = time;
+my $VER   = src_hash();   # версия CSS/JS меняется только при изменении файлов
 my @SITEMAP;
 my $JSON  = JSON::PP->new->canonical->pretty(0);
 my %BIKE  = map { $_->{slug} => $_ } @BIKES;
@@ -70,7 +104,14 @@ sub lic_text {
   return "Нужны национальные права категории A и международное водительское удостоверение (МВУ).";
 }
 sub cc_label { my $b = shift; $b->{cc} ? "$b->{cc} см³" : 'Электро' }
-sub img { my $b = shift; $b->{img} // 'placeholder.png' }
+sub img { my $b = shift; $b->{img} || 'placeholder.png' }
+sub img_url { my $i = img(shift); $i =~ m{^https?://} ? $i : u('/assets/img/bikes/' . $i) }
+sub img_abs { my $i = img(shift); $i =~ m{^https?://} ? $i : abs_url('/assets/img/bikes/' . $i) }
+sub src_hash {
+  my $ctx = Digest::MD5->new;
+  find({ no_chdir=>1, wanted=>sub { return unless -f $_ && /\.(css|js|html)$/; open my $fh, '<:raw', $_ or return; $ctx->addfile($fh) } }, "$Bin/src");
+  substr($ctx->hexdigest, 0, 10);
+}
 sub min_p { my @b = @_; my ($m) = sort { $a <=> $b } map { $_->{p7} } @b; $m }
 
 sub write_file {
@@ -158,7 +199,7 @@ sub product_ld {
   return +{
     '@type'=>'Product', '@id'=>abs_url("/arenda/$b->{slug}/#product"),
     name=>"Аренда $b->{name} в Нячанге", sku=>$b->{slug}, brand=>{ '@type'=>'Brand', name=>$b->{brand} },
-    image=>abs_url('/assets/img/bikes/' . img($b)), description=>$b->{short}, category=>$b->{type},
+    image=>img_abs($b), description=>$b->{short}, category=>$b->{type},
     offers=>{
       '@type'=>'AggregateOffer', priceCurrency=>'VND', lowPrice=>int($b->{pm}/30), highPrice=>$b->{p1}, offerCount=>3,
       availability=>'https://schema.org/InStock', url=>abs_url("/arenda/$b->{slug}/"),
@@ -256,6 +297,7 @@ sub booking_modal {
     </div>
     <label class="field"><span>Куда привезти</span><input type="text" name="place" placeholder="Отель или адрес в Нячанге" autocomplete="street-address"></label>
     <label class="field"><span>Ваше имя</span><input type="text" name="name" placeholder="Как к вам обращаться" autocomplete="given-name"></label>
+    <label class="field"><span>Telegram или телефон <small>(необязательно)</small></span><input type="text" name="contact" placeholder="\@username или +7…" autocomplete="tel"></label>
     <div class="modal__total" data-modal-total></div>
     <p class="modal__label">Куда отправить заявку</p>
     <div class="modal__send">
@@ -276,6 +318,29 @@ sub breadcrumbs_html {
     push @parts, $i == $#c ? qq{<span aria-current="page">$c[$i][0]</span>} : qq{<a href="${\ u($c[$i][1])}">$c[$i][0]</a>};
   }
   '<nav class="crumbs container" aria-label="Хлебные крошки">' . join('<span class="crumbs__sep">/</span>', @parts) . '</nav>';
+}
+
+sub verification_meta {
+  join "\n", grep { $_ }
+    ($SITE{yandex_verification} ? qq{<meta name="yandex-verification" content="${\ esc($SITE{yandex_verification})}">} : ''),
+    ($SITE{google_verification} ? qq{<meta name="google-site-verification" content="${\ esc($SITE{google_verification})}">} : '');
+}
+sub counters_html {
+  my $h = '';
+  if (($SITE{ym} // '') =~ /^(\d+)$/) {
+    $h .= qq{<script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym($1,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script><noscript><div><img src="https://mc.yandex.ru/watch/$1" style="position:absolute;left:-9999px" alt=""></div></noscript>\n};
+  }
+  if (($SITE{ga} // '') =~ /^(G-[A-Z0-9]+)$/) {
+    $h .= qq{<script async src="https://www.googletagmanager.com/gtag/js?id=$1"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","$1");</script>\n};
+  }
+  $h;
+}
+sub site_js_config {
+  my %c = (tg=>$SITE{telegram}, wa=>$SITE{whatsapp}, rub=>$SITE{rub_rate} + 0, base=>$B);
+  $c{ym} = $SITE{ym} + 0 if ($SITE{ym} // '') =~ /^\d+$/;
+  $c{sb} = { url=>$SITE{sb_url}, key=>$SITE{sb_key} } if $SITE{sb_url} && $SITE{sb_key};
+  (my $j = $JSON->encode(\%c)) =~ s{</}{<\\/}g;
+  $j;
 }
 
 sub page {
@@ -318,8 +383,7 @@ sub page {
 <meta property="og:image" content="$og">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#FF6B2C">
-<!-- TODO: коды подтверждения Яндекс.Вебмастера и Google Search Console -->
-<!-- <meta name="yandex-verification" content=""> <meta name="google-site-verification" content=""> -->
+${\ verification_meta()}
 <link rel="icon" href="${\ u('/assets/img/favicon.svg')}" type="image/svg+xml">
 <link rel="manifest" href="${\ u('/manifest.webmanifest')}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -327,7 +391,7 @@ sub page {
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght\@500;600;700&family=Manrope:wght\@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="${\ u('/assets/css/style.css')}?v=$VER">
 <script type="application/ld+json">$ld</script>
-<!-- TODO: счётчик Яндекс Метрики / GA4 -->
+${\ counters_html()}
 </head>
 <body class="$bodyclass">
 <a class="skip" href="#main">Перейти к содержимому</a>
@@ -338,7 +402,7 @@ $a{body}
 </main>
 ${\ footer_html()}
 ${\ booking_modal()}
-<script>window.MYBIKE={tg:"$SITE{telegram}",wa:"$SITE{whatsapp}",rub:$SITE{rub_rate}};</script>
+<script>window.MYBIKE=${\ site_js_config()};</script>
 <script src="${\ u('/assets/js/app.js')}?v=$VER" defer></script>
 </body>
 </html>
@@ -362,7 +426,7 @@ sub bike_card {
   my $alt = esc("$b->{name} — аренда в Нячанге");
   return <<"H";
 <article class="bike" data-bike data-group="$b->{group}" data-license="$lic" data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-cc="$b->{cc}" data-rank="$b->{rank}" data-name="${\ esc($b->{name})}" data-slug="$b->{slug}">
-  <a class="bike__img" href="$url" tabindex="-1" aria-hidden="true"><img src="${\ u('/assets/img/bikes/' . img($b))}" alt="$alt" width="540" height="423" loading="lazy" decoding="async"><span class="bike__badges">$licbadge$hit$abs</span></a>
+  <a class="bike__img" href="$url" tabindex="-1" aria-hidden="true"><img src="${\ img_url($b)}" alt="$alt" width="540" height="423" loading="lazy" decoding="async"><span class="bike__badges">$licbadge$hit$abs</span></a>
   <div class="bike__body">
     <$h class="bike__name"><a href="$url">$b->{name}</a></$h>
     <p class="bike__meta">$b->{type} · ${\ cc_label($b)} · $b->{year} · <span class="lic lic--$lic">${\ lic_label($lic)}</span></p>
@@ -706,7 +770,7 @@ sub build_bike {
 <section class="section section--top">
   <div class="container product" data-product data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-slug="$b->{slug}">
     <div class="product__media">
-      <div class="product__img"><img src="${\ u('/assets/img/bikes/' . img($b))}" alt="${\ esc("$b->{name} в аренду в Нячанге")}" width="540" height="423" fetchpriority="high">
+      <div class="product__img"><img src="${\ img_url($b)}" alt="${\ esc("$b->{name} в аренду в Нячанге")}" width="540" height="423" fetchpriority="high">
         <span class="bike__badges">${\ ($lic eq 'none' ? '<span class="badge badge--green">Без прав</span>' : '')}${\ ($b->{abs} ? '<span class="badge">ABS</span>' : '')}</span></div>
       <ul class="keyspecs">
         <li>${\ icon('gauge')}<b>${\ cc_label($b)}</b><span>$b->{power}</span></li>
@@ -828,7 +892,7 @@ sub build_static {
 
   my $sm = join '', map { "  <url><loc>${\ abs_url($_->[0])}</loc><lastmod>$TODAY</lastmod><priority>$_->[1]</priority></url>\n" } @SITEMAP;
   write_file('/sitemap.xml', qq{<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n$sm</urlset>\n});
-  write_file('/robots.txt', "User-agent: *\nAllow: /\nDisallow: /*?\n\nUser-agent: Yandex\nAllow: /\nClean-param: ysclid&utm_source&utm_medium&utm_campaign&utm_content&utm_term&from&to&type\n\nSitemap: ${\ abs_url('/sitemap.xml')}\nHost: $SITE{url}\n");
+  write_file('/robots.txt', "User-agent: *\nAllow: /\nDisallow: /*?\nDisallow: $B/admin/\n\nUser-agent: Yandex\nAllow: /\nDisallow: $B/admin/\nClean-param: ysclid&utm_source&utm_medium&utm_campaign&utm_content&utm_term&from&to&type\n\nSitemap: ${\ abs_url('/sitemap.xml')}\nHost: $SITE{url}\n");
   write_file('/manifest.webmanifest', $JSON->encode({ name=>'MYBIKE — аренда байков в Нячанге', short_name=>'MYBIKE', start_url=>u('/'), display=>'standalone', background_color=>'#ffffff', theme_color=>'#FF6B2C', icons=>[{ src=>u('/assets/img/favicon.svg'), sizes=>'any', type=>'image/svg+xml' }] }));
 
   # llms.txt — краткая выжимка для ИИ-поисковиков (GEO)
@@ -865,5 +929,40 @@ build_info($_) for @PAGES;
 build_faq();
 build_404();
 build_static();
+build_admin();
 write_file('/.nojekyll', '');
 printf "OK: %d страниц в sitemap, вывод в %s\n", scalar @SITEMAP, $OUT;
+
+# ------------------------------------------------------------ админка: конфиг, сид демо-данных, версия сборки
+sub build_admin {
+  # config.js — публичные настройки (anon key Supabase публичный по задумке)
+  my %cfg = (site_base=>$B, repo=>$SITE{repo} // '', sb_url=>$SITE{sb_url} // '', sb_key=>$SITE{sb_key} // '');
+  write_file('/admin/config.js', 'window.MYBIKE_ADMIN=' . $JSON->encode(\%cfg) . ";\n");
+  # index.html: версия файлов
+  my $idx = "$OUT/admin/index.html";
+  open my $in, '<:encoding(UTF-8)', $idx or die "$idx: $!"; my $h = do { local $/; <$in> }; close $in;
+  $h =~ s/__VER__/$VER/g;
+  write_file('/admin/index.html', $h);
+  # seed.json — текущие модели и тексты в формате базы (стартовые данные админки)
+  my @site_keys = qw(name url phone phone_raw whatsapp telegram vk email address street lat lng rub_rate usd_rate founded clients fleet_size ym ga yandex_verification google_verification);
+  my $obj = sub { my ($list, @k) = @_; [ map { my $t = $_; +{ map { $k[$_] => $t->[$_] } 0..$#k } } @$list ] };
+  my %content = (
+    site     => { map { $_ => $SITE{$_} // '' } @site_keys },
+    reviews  => $obj->(\@REVIEWS, qw(name city text)),
+    faq_main => $obj->(\@FAQ_MAIN, qw(q a)),
+    included => $obj->(\@INCLUDED, qw(icon title text)),
+    compare  => $obj->(\@COMPARE, qw(row us them)),
+    delivery => $obj->(\@DELIVERY, qw(place price time)),
+    steps    => $obj->(\@STEPS, qw(title text)),
+    categories => [ map { my %c = %$_; $c{sections} = $obj->($c{sections} || [], qw(h2 html)); $c{faq} = $obj->($c{faq} || [], qw(q a)); \%c } @CATEGORIES ],
+    pages    => [ map { my %p = %$_; $p{faq} = $obj->($p{faq} || [], qw(q a)); $p{noindex} = $p{noindex} ? JSON::PP::true : JSON::PP::false; \%p } @PAGES ],
+  );
+  my @bikes = map {
+    my %b = %$_; $b{id} = delete $b{slug}; $b{grp} = delete $b{group};
+    $b{$_} = $b{$_} ? JSON::PP::true : JSON::PP::false for qw(abs popular);
+    $b{visible} = JSON::PP::true; $b{$_} += 0 for grep { defined $b{$_} } qw(cc year seats speed p1 p7 pm rank);
+    \%b
+  } @BIKES;
+  write_file('/admin/seed.json', $JSON->encode({ bikes=>\@bikes, content=>\%content }));
+  write_file('/build.json', $JSON->encode({ built_at=>strftime('%Y-%m-%dT%H:%M:%S', gmtime) . 'Z', pages=>scalar @SITEMAP, version=>$VER }));
+}

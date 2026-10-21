@@ -21,7 +21,50 @@
   function data(el) { return { p1: +el.dataset.p1, p7: +el.dataset.p7, pm: +el.dataset.pm }; }
   function rangeFill(r) { r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'); }
 
-  // ---------- метрика (TODO: подставьте ID счётчика) ----------
+  // ---------- своя аналитика и заявки → база MYBIKE (Supabase); без базы — в браузер для демо-админки ----------
+  var T = (function () {
+    function store(k, d) { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } }
+    var sid;
+    try { sid = sessionStorage.getItem('mb_sid'); if (!sid) { sid = Math.random().toString(36).slice(2, 10); sessionStorage.setItem('mb_sid', sid); } } catch (e) { sid = Math.random().toString(36).slice(2, 10); }
+    var q = new URLSearchParams(location.search), src = {}, ref = document.referrer, host = '';
+    try { host = ref ? new URL(ref).host : ''; } catch (e) {}
+    if (q.get('utm_source')) src = { source: q.get('utm_source'), medium: q.get('utm_medium') || 'utm', campaign: q.get('utm_campaign') || '' };
+    else if (q.get('yclid')) src = { source: 'yandex', medium: 'cpc', campaign: q.get('utm_campaign') || '' };
+    else if (q.get('gclid')) src = { source: 'google', medium: 'cpc', campaign: '' };
+    else if (host && host !== location.host) src = {
+      source: /yandex|ya\.ru/.test(host) ? 'yandex' : /google/.test(host) ? 'google' : /t\.me|telegram/.test(host) ? 'telegram' : /instagram/.test(host) ? 'instagram' : /vk\.com/.test(host) ? 'vk' : /2gis/.test(host) ? '2gis' : host.replace(/^www\./, ''),
+      medium: /yandex|ya\.ru|google|bing|mail\.ru|duckduckgo/.test(host) ? 'organic' : 'referral', campaign: '', referrer: ref.slice(0, 300),
+    };
+    var saved = store('mb_src', null);
+    if (src.source) { src.ts = Date.now(); try { localStorage.setItem('mb_src', JSON.stringify(src)); } catch (e) {} }
+    else if (saved && Date.now() - saved.ts < 30 * 864e5) src = saved;   // источник помним 30 дней
+    else src = { source: 'direct', medium: 'none', campaign: '' };
+    var ua = navigator.userAgent, dev = /iPad|Tablet/i.test(ua) ? 'tablet' : /Mobi|Android|iPhone/i.test(ua) ? 'mobile' : 'desktop';
+    var base = CFG.base || '', path = location.pathname.indexOf(base) === 0 ? location.pathname.slice(base.length) || '/' : location.pathname;
+    function send(table, row) {
+      if (CFG.sb) {
+        fetch(CFG.sb.url + '/rest/v1/' + table, { method: 'POST', keepalive: true, headers: { apikey: CFG.sb.key, Authorization: 'Bearer ' + CFG.sb.key, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row) }).catch(function () {});
+      } else {
+        var k = table === 'leads' ? 'mybike_site_leads' : 'mybike_site_events', a = store(k, []);
+        a.push(row); if (a.length > 3000) a = a.slice(-3000);
+        try { localStorage.setItem(k, JSON.stringify(a)); } catch (e) {}
+      }
+    }
+    return {
+      path: path,
+      ev: function (type, extra) {
+        send('events', Object.assign({ ts: new Date().toISOString(), sid: sid, type: type, path: path, bike_id: null, source: src.source, medium: src.medium, campaign: src.campaign || '', referrer: src.referrer || '', device: dev, data: null }, extra || {}));
+      },
+      lead: function (row) {
+        send('leads', Object.assign({ created_at: new Date().toISOString(), status: 'new', sid: sid, source: src.source, medium: src.medium, campaign: src.campaign || '', referrer: src.referrer || '', page: path, device: dev }, row));
+      },
+    };
+  })();
+  var prodEl = $('[data-product]');
+  T.ev('page_view', prodEl ? { bike_id: prodEl.dataset.slug } : null);
+  if (prodEl) T.ev('bike_view', { bike_id: prodEl.dataset.slug });
+
+  // ---------- цели: Метрика / GA + своя аналитика ----------
   function goal(name) {
     try { if (window.ym && CFG.ym) window.ym(CFG.ym, 'reachGoal', name); } catch (e) {}
     try { if (window.gtag) window.gtag('event', name); } catch (e) {}
@@ -29,6 +72,11 @@
   document.addEventListener('click', function (e) {
     var g = e.target.closest('[data-goal]');
     if (g) goal(g.dataset.goal);
+    var a = e.target.closest('a[href]'); if (!a) return;
+    var h = a.getAttribute('href');
+    if (/^https:\/\/t\.me\//.test(h)) T.ev('tg_click');
+    else if (/^https:\/\/wa\.me\//.test(h)) T.ev('wa_click');
+    else if (/^tel:/.test(h)) T.ev('phone_click');
   });
 
   // ---------- шапка / меню ----------
@@ -101,6 +149,7 @@
       if (g) { state.group = g.dataset.groupBtn; apply(); }
       if (l) { state.lic = l.dataset.licBtn; if (state.lic === 'none' && state.group !== 'all' && state.group !== '50' && state.group !== 'e') state.group = 'all'; apply(); }
       if (e.target.closest('[data-reset]')) { state.lic = 'all'; state.group = 'all'; apply(); }
+      if (g || l) T.ev('filter', { data: { group: state.group, lic: state.lic } });
     });
     var sort = $('[data-sort]', cat);
     if (sort) sort.addEventListener('change', function () { state.sort = sort.value; apply(); });
@@ -140,6 +189,7 @@
       cat._set({ group: type, lic: type === 'nolicense' ? 'none' : 'all', days: diffDays(f.value, t.value) || 1 });
       $('#catalog').scrollIntoView({ behavior: 'smooth' });
       goal('search');
+      T.ev('search', { data: { type: type, days: diffDays(f.value, t.value) || 1 } });
     });
   }
 
@@ -179,6 +229,7 @@
     form.elements.from.min = addDays(0);
     modal.hidden = false; document.body.style.overflow = 'hidden';
     modalTotal();
+    T.ev('book_open', { bike_id: form.elements.bike.value });
     setTimeout(function () { form.elements.from.focus(); }, 50);
   }
   function closeModal() { modal.hidden = true; document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }
@@ -214,6 +265,8 @@
         } catch (err) {}
       }
       goal('booking_sent');
+      T.lead({ bike_id: el.bike.value, date_from: el.from.value, date_to: el.to.value, days: d, total: Math.round(total), price_final: Math.round(total), name: el.name.value.trim() || null, contact: el.contact.value.trim() || null, place: el.place.value.trim() || null, via: via, history: [{ ts: new Date().toISOString(), who: 'сайт', text: 'Заявка с сайта' }] });
+      T.ev('lead', { bike_id: el.bike.value, data: { via: via, days: d, total: Math.round(total) } });
       window.open(url, '_blank', 'noopener');
       closeModal();
     });

@@ -18,6 +18,14 @@ our %SITE = (
   street      => 'ул. Чан Фу',
   lat         => '12.2388',
   lng         => '109.1967',
+  # --- админка и аналитика ---
+  sb_url      => '',      # TODO: Supabase Project URL — тогда сайт пишет заявки и аналитику в базу
+  sb_key      => '',      # TODO: Supabase anon public key (публичный, его можно хранить в коде)
+  repo        => 't0niske/mybike-nhatrang',   # GitHub-репозиторий (кнопка «Опубликовать сейчас» в админке)
+  ym          => '',      # ID счётчика Яндекс Метрики (цифры)
+  ga          => '',      # ID Google Analytics 4 (G-XXXX)
+  yandex_verification => '',
+  google_verification => '',
   rub_rate    => 300,     # сколько донгов в 1 рубле (для подсказки «≈ ₽»)
   usd_rate    => 26000,
   founded     => 2019,    # TODO
