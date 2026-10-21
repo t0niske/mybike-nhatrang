@@ -1,1 +1,1 @@
-window.MYBIKE_ADMIN={"repo":"t0niske/mybike-nhatrang","sb_key":"","sb_url":"","site_base":"/mybike-nhatrang"};
+window.MYBIKE_ADMIN={"repo":"t0niske/mybike-nhatrang","sb_key":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiY2dkdnVibXRiZXBmbXZnZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1ODgzMzUsImV4cCI6MjEwODE2NDMzNX0.-WQSEz0w_2JGjI95fzTeGNhIyJSpfOPYiGjIwUXJDjM","sb_url":"https://lbcgdvubmtbepfmvggvx.supabase.co","site_base":"/mybike-nhatrang"};

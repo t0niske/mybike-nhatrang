@@ -19,8 +19,8 @@ our %SITE = (
   lat         => '12.2388',
   lng         => '109.1967',
   # --- админка и аналитика ---
-  sb_url      => '',      # TODO: Supabase Project URL — тогда сайт пишет заявки и аналитику в базу
-  sb_key      => '',      # TODO: Supabase anon public key (публичный, его можно хранить в коде)
+  sb_url      => 'https://lbcgdvubmtbepfmvggvx.supabase.co',   # Supabase: сайт пишет заявки и аналитику в базу
+  sb_key      => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxiY2dkdnVibXRiZXBmbXZnZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1ODgzMzUsImV4cCI6MjEwODE2NDMzNX0.-WQSEz0w_2JGjI95fzTeGNhIyJSpfOPYiGjIwUXJDjM',   # anon public key — публичный по задумке, права ограничены RLS
   repo        => 't0niske/mybike-nhatrang',   # GitHub-репозиторий (кнопка «Опубликовать сейчас» в админке)
   ym          => '',      # ID счётчика Яндекс Метрики (цифры)
   ga          => '',      # ID Google Analytics 4 (G-XXXX)

@@ -115,7 +115,7 @@
   };
   Supa.prototype.login = async function (email, pw) { this.ok(await this.sb.auth.signInWithPassword({ email: email, password: pw })); return this.session(); };
   Supa.prototype.signup = async function (email, pw) {
-    var r = this.ok(await this.sb.auth.signUp({ email: email, password: pw }));
+    var r = this.ok(await this.sb.auth.signUp({ email: email, password: pw, options: { emailRedirectTo: location.href.split('#')[0] } }));
     if (!r.session) throw new Error('Аккаунт создан. Подтвердите email по ссылке из письма и войдите.');
     return this.session();
   };

@@ -63,7 +63,7 @@
         : '<label class="fld"><span>Email</span><input class="input" name="email" type="email" autocomplete="username" required></label>' +
           '<label class="fld"><span>Пароль</span><input class="input" name="pw" type="password" autocomplete="current-password" required minlength="6"></label>' +
           '<button class="btn btn--o" type="submit">Войти</button><button class="btn" type="button" id="su">Создать аккаунт сотрудника</button>' +
-          '<p class="hint">Первый созданный аккаунт становится владельцем. Остальных сотрудников владелец добавляет в «Настройки → Сотрудники».</p>') +
+          '<p class="hint">Владельцем становится аккаунт с email, заданным при настройке базы. Остальных сотрудников владелец добавляет в «Настройки → Сотрудники».</p>') +
       (msg ? '<p class="note note--red">' + U.esc(msg) + '</p>' : '') + '</form></div>';
     var f = document.getElementById('lf');
     async function go(signup) {
