@@ -526,7 +526,7 @@ sub build_home {
   <div class="container hero__in">
     <div class="hero__text">
       <h1 class="hero__h1">Аренда скутеров<br>и мотоциклов в Нячанге</h1>
-      <p class="hero__sub">${\ scalar @BIKES} моделей от 100${\ "\x{a0}"}000${\ "\x{a0}"}₫ в день — от мопедов без прав до макси-скутеров. Привезём к отелю бесплатно за 30 минут.</p>
+      <p class="hero__sub">${\ scalar @BIKES} моделей от 100${\ "\x{a0}"}000${\ "\x{a0}"}₫ в день — от мопедов без прав до макси-скутеров. Привезём к отелю бесплатно — от 30 минут.</p>
       ${\ trust_chips()}
       <div class="hero__btns">
         <a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a>

@@ -208,8 +208,10 @@
       if (via === 'wa') url = 'https://wa.me/' + CFG.wa + '?text=' + encodeURIComponent(msg);
       else {
         url = 'https://t.me/' + CFG.tg + '?text=' + encodeURIComponent(msg);
-        try { navigator.clipboard.writeText(msg); } catch (err) {}
-        showToast('Текст заявки скопирован — если он не подставился, вставьте его в чат');
+        var copied = function () { showToast('Текст заявки скопирован — если он не подставился, вставьте его в чат'); };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).then(copied, function () {});
+        } catch (err) {}
       }
       goal('booking_sent');
       window.open(url, '_blank', 'noopener');
