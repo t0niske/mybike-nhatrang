@@ -47,7 +47,7 @@ git add -A && git commit -m "Обновление сайта" && git push
 1. Создать проект на supabase.com (регион Singapore).
 2. SQL Editor → вставить `supabase/schema.sql` → Run.
 3. В админке: Настройки → Подключение → Project URL + anon key. Создать аккаунт — первый станет владельцем.
-4. Настройки → Данные: восстановить резервную копию из демо (модели и тексты попадут в базу).
+4. При первом входе админка предложит одной кнопкой перенести в базу модели, цены и тексты сайта.
 5. Вписать `sb_url` и `sb_key` (anon) в `data/site.pl` и пересобрать — сайт начнёт писать заявки и аналитику в базу.
 6. GitHub → Settings → Secrets and variables → Actions: `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` (service_role, секретный). После этого `.github/workflows/publish.yml` каждые 15 минут забирает изменения из базы и пересобирает сайт.
 7. Настройки → Telegram: токен бота и chat id — каждая новая заявка придёт в Telegram.

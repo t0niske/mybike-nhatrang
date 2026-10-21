@@ -179,7 +179,7 @@ begin
          coalesce(bike, new.bike_id, '—') || chr(10) ||
          '📅 ' || coalesce(to_char(new.date_from,'DD.MM'),'?') || ' — ' || coalesce(to_char(new.date_to,'DD.MM'),'?') ||
          ' (' || coalesce(new.days::text,'?') || ' дн.)' || chr(10) ||
-         '💰 ' || coalesce(to_char(new.total,'FM999 999 999'),'—') || ' ₫' || chr(10) ||
+         '💰 ' || coalesce(regexp_replace(new.total::text, '(\d)(?=(\d{3})+$)', '\1 ', 'g'),'—') || ' ₫' || chr(10) ||
          coalesce('👤 ' || new.name || chr(10), '') ||
          coalesce('📍 ' || new.place || chr(10), '') ||
          coalesce('✉️ ' || new.via || ' ' || coalesce(new.contact,''), '') || chr(10) ||

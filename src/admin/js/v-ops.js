@@ -17,6 +17,7 @@
   var dashP = 30;
   V.dashboard = async function (root) {
     var d = await A.data();
+    if (A.DB.mode === 'supabase' && !d.bikes.length) return A.onboarding(root);
     A.setTop('Дашборд', periodSel(dashP));
     document.getElementById('per').onclick = function (e) { var b = e.target.closest('[data-p]'); if (b) { dashP = +b.dataset.p; A.rerender(); } };
     var from = U.daysAgo(dashP - 1).toISOString(), prevFrom = U.daysAgo(dashP * 2 - 1).toISOString();
@@ -377,5 +378,30 @@
     root.addEventListener('click', function (e) { var tr = e.target.closest('tr[data-c]'); if (tr) { A.leadFilter.q = tr.dataset.c; A.leadFilter.tab = 'all'; A.leadFilter.per = 'all'; location.hash = '#/leads'; } });
     document.getElementById('csv').onclick = function () { U.csv('klienty-' + U.today() + '.csv', [['Имя', function (g) { return g.name; }], ['Контакт', function (g) { return g.contact; }], ['Заявок', function (g) { return g.n; }], ['Аренд', function (g) { return g.ok; }], ['Сумма', function (g) { return g.sum; }], ['Последняя', function (g) { return g.last; }]], groups); };
     draw();
+  };
+})();
+
+/* Первый запуск с пустой базой: перенос моделей и текстов сайта одним нажатием */
+(function () {
+  'use strict';
+  A.seedDb = async function () {
+    var seed = await (await fetch('seed.json', { cache: 'no-store' })).json();
+    await A.DB.importAll({ bikes: seed.bikes, content: seed.content });
+    A.log('Перенесены модели и тексты сайта в базу', 'data', '', { bikes: seed.bikes.length });
+    return seed.bikes.length;
+  };
+  A.onboarding = function (root) {
+    A.setTop('Добро пожаловать');
+    root.innerHTML = '<div class="card stack" style="max-width:720px"><h2 class="card__t">База подключена, но пока пустая</h2>' +
+      '<p>Перенесите в неё модели, цены и все тексты, которые сейчас на сайте. Это нужно сделать один раз — дальше всё редактируется здесь.</p>' +
+      (A.canWrite() ? '<div class="row"><button class="btn btn--o" id="seed">' + U.icon('dl') + 'Перенести модели и тексты сайта в базу</button></div>'
+        : '<p class="note">Перенос делает владелец или менеджер. Ваша роль: ' + U.esc(A.ME.role) + '.</p>') +
+      '<p class="hint">Заявки и аналитика начнут копиться с момента, когда сайт подключён к базе.</p><div id="res"></div></div>';
+    var b = root.querySelector('#seed'); if (!b) return;
+    b.onclick = async function () {
+      b.disabled = true; b.textContent = 'Переношу…';
+      try { var n = await A.seedDb(); U.toast('Готово: моделей ' + n, 'ok'); A.refresh(); }
+      catch (e) { b.disabled = false; b.textContent = 'Повторить перенос'; root.querySelector('#res').innerHTML = '<p class="note note--red">' + U.esc(e.message) + '</p>'; }
+    };
   };
 })();
