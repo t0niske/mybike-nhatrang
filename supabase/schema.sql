@@ -246,3 +246,8 @@ grant execute on function private.is_admin(), private.is_staff(), private.is_own
 
 -- ВАЖНО: email будущего владельца админки (замените на свой до регистрации)
 insert into secrets(key, value) values ('owner_email', 'owner@example.com') on conflict (key) do nothing;
+
+-- индексы для связей
+create index if not exists expenses_unit on expenses(unit_id);
+create index if not exists leads_unit on leads(unit_id);
+create index if not exists units_bike on units(bike_id);
