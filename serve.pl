@@ -8,7 +8,7 @@ my $s = IO::Socket::INET->new(LocalAddr=>'127.0.0.1', LocalPort=>$port, Listen=>
 print "http://localhost:$port\n";
 while (my $c = $s->accept) {
   my $req = <$c> // ''; while (my $l = <$c>) { last if $l =~ /^\r?\n$/ }
-  my ($path) = $req =~ m{^GET\s+(\S+)}; $path //= '/'; $path =~ s/\?.*//; $path =~ s/%([0-9A-F]{2})/chr hex $1/gie; $path =~ s/\.\.//g;
+  my ($path) = $req =~ m{^GET\s+(\S+)}; $path //= '/'; $path =~ s/\?.*//; $path =~ s/%([0-9A-F]{2})/chr hex $1/gie; $path =~ s/\.\.//g; $path =~ s{^/mybike-nhatrang(?=/|$)}{}; $path ||= '/';
   my $f = "$root$path"; $f .= 'index.html' if $f =~ m{/$}; $f .= '/index.html' if -d $f;
   my $code = '200 OK'; unless (-f $f) { $f = "$root/404.html"; $code = '404 Not Found' }
   my ($ext) = $f =~ /\.(\w+)$/; open my $fh, '<:raw', $f; local $/; my $body = <$fh>; close $fh;
