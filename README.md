@@ -24,6 +24,17 @@ perl build.pl
 perl serve.pl 8080   # http://localhost:8080
 ```
 
+## Тестовая копия на GitHub Pages
+
+Живой адрес: https://t0niske.github.io/mybike-nhatrang/ (Pages раздаёт папку `docs/` из ветки `main`).
+
+```bash
+sh build-pages.sh    # сборка с путями /mybike-nhatrang/ и noindex
+git add -A && git commit -m "Обновление сайта" && git push
+```
+
+Копия на github.io закрыта от индексации, чтобы не конкурировать в поиске с основным доменом. Для боевого домена укажите его в `data/site.pl` и соберите обычным `perl build.pl`.
+
 ## Что генерируется для SEO / GEO
 
 - 19 страниц байков + 10 страниц фильтров + каталог + инфо-страницы
