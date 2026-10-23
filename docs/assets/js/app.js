@@ -167,6 +167,26 @@
     apply();
   });
 
+  // ---------- лента «Популярные модели»: стрелки листают на одну карточку ----------
+  $$('[data-rail]').forEach(function (rail) {
+    var track = $('[data-rail-track]', rail), prev = $('[data-rail-prev]', rail), next = $('[data-rail-next]', rail);
+    function step() { var c = track.firstElementChild; return c ? c.getBoundingClientRect().width + (parseFloat(getComputedStyle(track).columnGap) || 0) : track.clientWidth; }
+    function upd() {
+      var end = track.scrollWidth - track.clientWidth - 2;
+      if (prev) prev.disabled = track.scrollLeft <= 2;
+      if (next) next.disabled = track.scrollLeft >= end;
+    }
+    function go(dir) {   // к точной позиции соседней карточки — так прокрутка не спорит со scroll-snap
+      var s = step(), i = Math.round(track.scrollLeft / s) + dir;
+      track.scrollTo({ left: Math.max(0, i * s), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }
+    if (prev) prev.addEventListener('click', function () { go(-1); });
+    if (next) next.addEventListener('click', function () { go(1); });
+    track.addEventListener('scroll', upd, { passive: true });
+    addEventListener('resize', upd);
+    upd();
+  });
+
   function diffDays(a, b) {
     if (!a || !b) return 0;
     var d = Math.round((new Date(b) - new Date(a)) / 864e5);

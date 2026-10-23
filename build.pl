@@ -503,15 +503,36 @@ $controls
 H
 }
 
+sub plural { my ($n, @f) = @_; my $m = $n % 100; my $d = $n % 10; "$n\x{a0}" . $f[ $m >= 11 && $m <= 14 ? 2 : $d == 1 ? 0 : $d >= 2 && $d <= 4 ? 1 : 2 ] }
+sub models { plural(shift, 'модель', 'модели', 'моделей') }
+
+# плитка категории: счётчик, фото самого популярного байка, название; при наведении — фирменный цвет
+sub cat_tile {
+  my ($url, $title, $sub, @m) = @_;
+  my ($top) = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @m;
+  return qq{<a class="tile" href="$url"><span class="tile__n">${\ models(scalar @m)}</span><span class="tile__img"><img src="${\ img_url($top)}" alt="${\ esc($top->{name})}" width="540" height="423" loading="lazy" decoding="async"></span><span class="tile__t">$title</span><span class="tile__s">$sub</span><span class="tile__p">от\x{a0}${\ vnd(min_p(@m))} в день</span></a>};
+}
+
 sub cat_tiles {
   my $cur = shift // '';
-  my $all = qq{<a class="tile tile--orange" href="${\ u('/katalog/')}"><span class="tile__t">Все байки</span><span class="tile__s">${\ scalar @BIKES} моделей</span><span class="tile__go">${\ icon('arrow')}</span></a>};
-  my $tiles = join '', map {
-    my $c = $_; my @m = filter_bikes($c->{filter});
-    my $active = $cur eq $c->{slug} ? ' is-current' : '';
-    qq{<a class="tile$active" href="${\ u("/$c->{slug}/")}"><span class="tile__ic">${\ icon($c->{icon} =~ /^\d+$/ ? 'gauge' : $c->{icon})}</span><span class="tile__t">$c->{chip}</span><span class="tile__s">$c->{short}</span><span class="tile__p">от ${\ vnd(min_p(@m))}</span><span class="tile__go">${\ icon('arrow')}</span></a>}
-  } @CATEGORIES;
+  my $all = $cur eq 'katalog' ? '' : cat_tile(u('/katalog/'), 'Все байки', 'Весь парк', @BIKES);
+  my $tiles = join '', map { my @m = filter_bikes($_->{filter}); @m ? cat_tile(u("/$_->{slug}/"), $_->{chip}, $_->{short}, @m) : '' } @CATEGORIES;
   qq{<div class="tiles">$all$tiles</div>};
+}
+
+# «Популярные модели»: горизонтальная лента карточек со стрелками
+sub popular_block {
+  my @all = @_;
+  my @b = grep { $_->{popular} } @all;
+  @b = @all[0 .. ($#all < 7 ? $#all : 7)] if @b < 4;
+  my $cards = join '', map { bike_card($_, h=>'h3') } @b;
+  return (<<"H", @b);
+<div class="rail" data-rail>
+  <div class="head"><h2 class="h2">Популярные<br>модели</h2><div class="head__side"><p class="head__p">Цены открыты и уже включают доставку, 2 шлема и дождевики. Двигайте ползунок — увидите итог за ваш срок.</p><div class="rail__nav"><button class="rail__btn rail__btn--prev" type="button" data-rail-prev aria-label="Предыдущие модели">${\ icon('arrow')}</button><button class="rail__btn" type="button" data-rail-next aria-label="Следующие модели">${\ icon('arrow')}</button></div></div></div>
+  <div class="rail__track" data-rail-track>$cards</div>
+  <div class="rail__more"><a class="btn btn--dark btn--lg" href="${\ u('/katalog/')}">Весь каталог — ${\ models(scalar @all)} ${\ icon('arrow')}</a></div>
+</div>
+H
 }
 
 sub filter_bikes {
@@ -583,6 +604,7 @@ sub trust_chips {
 # ------------------------------------------------------------ pages
 sub build_home {
   my @all = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @BIKES;
+  my ($popular, @pop) = popular_block(@all);
   my $types = join '', map { qq{<option value="$_">$GROUP{$_}[0]</option>} } @GROUP_ORDER;
   my $reviews = join '', map { qq{<figure class="review"><div class="review__stars">${\ join '', map { icon('star') } 1..5}</div><blockquote>$_->[2]</blockquote><figcaption><b>$_->[0]</b><span>$_->[1]</span></figcaption></figure>} } @REVIEWS;
   my $body = <<"H";
@@ -618,8 +640,7 @@ sub build_home {
 
 <section class="section section--grey" id="catalog">
   <div class="container">
-    <div class="head"><h2 class="h2">Все байки и цены</h2><p class="head__p">Цены открыты и уже включают доставку, 2 шлема и дождевики. Двигайте ползунок — увидите итог за ваш срок.</p></div>
-    ${\ catalog_block(bikes=>\@all, full=>1, h=>'h3')}
+    $popular
   </div>
 </section>
 
@@ -680,7 +701,7 @@ H
     path=>'/', priority=>'1.0', bodyclass=>'home',
     title=>'Аренда байков в Нячанге — скутеры от 100 000 ₫, без депозита | MYBIKE',
     desc=>'Аренда скутеров и мотоциклов в Нячанге: ' . scalar(@BIKES) . ' моделей, есть байки без прав (50cc). Без депозита и залога паспорта, бесплатная доставка в отель 24/7, 2 шлема в комплекте. Цены от 100 000 ₫.',
-    body=>$body, ld=>[ faq_ld(@FAQ_MAIN), itemlist_ld('Байки в аренду в Нячанге', @all) ],
+    body=>$body, ld=>[ faq_ld(@FAQ_MAIN), itemlist_ld('Популярные байки в аренду в Нячанге', @pop) ],
   );
 }
 

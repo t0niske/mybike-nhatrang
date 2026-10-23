@@ -104,24 +104,33 @@ h1,h2,h3{margin:0}
 .crumbs__sep{opacity:.5}
 
 /* ---------- category tiles ---------- */
-.tiles{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
-.tile--orange{grid-row:span 2}
-.tile{position:relative;display:flex;flex-direction:column;gap:4px;min-height:190px;padding:22px;border-radius:var(--r);background:var(--grey);text-decoration:none;transition:transform .2s,box-shadow .2s,background .2s;overflow:hidden}
-.section--grey .tile{background:#fff}
-.tile:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
-.tile__ic{width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;margin-bottom:auto;color:var(--orange)}
-.section--grey .tile__ic{background:var(--grey)}
-.tile__ic svg{width:22px;height:22px}
-.tile__t{font-family:var(--head);font-weight:700;text-transform:uppercase;font-size:24px;line-height:1.1;color:var(--ink)}
-.tile__s{font-size:14px;color:#777}
-.tile__p{font-weight:700;font-size:14px;color:var(--orange)}
-.tile__go{position:absolute;right:18px;bottom:18px;width:34px;height:34px;border-radius:50%;background:var(--orange);color:#fff;display:grid;place-items:center}
-.tile__go svg{width:16px;height:16px}
-.tile--orange{background:var(--orange)!important;justify-content:flex-start}
-.tile--orange .tile__t{color:#fff;font-size:30px}
-.tile--orange .tile__s{color:rgba(255,255,255,.85)}
-.tile--orange .tile__go{background:#fff;color:var(--orange)}
-.tile.is-current{box-shadow:inset 0 0 0 2px var(--orange)}
+/* сетка с тонкими линиями: правая и нижняя граница у каждой плитки, лишнее справа обрезает overflow */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);overflow:hidden}
+.tile{position:relative;display:flex;flex-direction:column;min-height:330px;padding:22px 28px 26px;text-decoration:none;color:var(--ink);box-shadow:1px 0 0 var(--line),0 1px 0 var(--line);transition:background .25s,color .25s}
+.tile__n{align-self:flex-end;font-size:14px;font-weight:600;color:var(--muted);transition:color .25s}
+.tile__img{flex:1;display:grid;place-items:center;padding:18px 4px 22px;min-height:0}
+.tile__img img{width:100%;max-width:240px;max-height:190px;object-fit:contain;border-radius:14px;transition:transform .35s}
+.tile__t{font-size:24px;font-weight:700;line-height:1.15}
+.tile__s{margin-top:4px;font-size:14px;color:#777;transition:color .25s}
+.tile__p{margin-top:2px;font-size:14px;font-weight:700;color:var(--orange);transition:color .25s}
+.tile:hover,.tile:focus-visible{background:var(--orange);color:#fff}
+.tile:hover .tile__n,.tile:hover .tile__s,.tile:hover .tile__p,.tile:focus-visible .tile__n,.tile:focus-visible .tile__s,.tile:focus-visible .tile__p{color:rgba(255,255,255,.92)}
+.tile:hover .tile__img img{transform:scale(1.05)}
+.tile:focus-visible{outline-offset:-3px;outline-color:var(--ink)}
+
+/* ---------- лента «Популярные модели» ---------- */
+.head__side{display:flex;flex-direction:column;align-items:flex-end;gap:20px}
+.rail__nav{display:flex;gap:10px}
+.rail__btn{width:52px;height:52px;border-radius:50%;border:0;background:var(--dark);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,opacity .2s}
+.rail__btn:hover{background:var(--orange)}
+.rail__btn:disabled{opacity:.3;cursor:default;background:var(--dark)}
+.rail__btn svg{width:22px;height:22px}
+.rail__btn--prev svg{transform:rotate(180deg)}
+.rail__track{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 48px) / 3);gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;padding:8px 0 28px;margin-bottom:-20px}
+.rail__track::-webkit-scrollbar{display:none}
+.rail__track>.bike{scroll-snap-align:start}
+.rail__more{display:flex;justify-content:center;margin-top:40px}
+.rail__more .btn svg{width:20px;height:20px}
 
 /* ---------- filters ---------- */
 .filters{background:#fff;border-radius:var(--r);padding:20px 24px;margin-bottom:28px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow)}
@@ -360,7 +369,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .nav{gap:18px}.nav a{font-size:14px}
   .grid{grid-template-columns:repeat(2,1fr)}
   .incs{grid-template-columns:repeat(2,1fr)}
-  .tiles{grid-template-columns:repeat(4,1fr)}
+  .rail__track{grid-auto-columns:calc((100% - 24px) / 2)}
   .search{grid-template-columns:1fr 1fr;border-radius:32px;padding:18px}
 }
 @media (max-width:1024px){
@@ -380,6 +389,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .product__buy{position:static}
   .section{padding:72px 0}
   .head{flex-direction:column;align-items:flex-start;gap:12px}
+  .head__side{align-items:flex-start;gap:16px}
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .tile{min-height:290px;padding:20px 22px 22px}
   .footer__top{grid-template-columns:1fr 1fr}
   .reviews{grid-template-columns:1fr}
   .grid-3{grid-template-columns:1fr}
@@ -405,10 +417,17 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .search__btn{height:56px}
 
   .section{padding:56px 0}
-  .tiles{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:62%;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:0 16px 8px;scrollbar-width:none}
-  .tiles::-webkit-scrollbar{display:none}
-  .tile{scroll-snap-align:start;min-height:170px}
-  .tile--orange{grid-row:auto}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 -16px}
+  .tile{min-height:0;padding:14px 16px 18px}
+  .tile__n{font-size:12px}
+  .tile__img{padding:10px 0 14px}
+  .tile__img img{max-height:110px;border-radius:10px}
+  .tile__t{font-size:17px}
+  .tile__s,.tile__p{font-size:12px}
+  .rail__nav{display:none}
+  .rail__track{grid-auto-columns:86%;gap:12px;margin:0 -16px -20px;padding:8px 16px 28px;scroll-padding:0 16px}
+  .rail__more{margin-top:28px}
+  .rail__more .btn{width:100%}
   .grid{grid-template-columns:1fr}
   .incs{grid-template-columns:1fr}
   .filters{padding:16px;border-radius:20px}
