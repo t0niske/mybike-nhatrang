@@ -539,7 +539,7 @@ sub cat_tiles {
 sub cat_menu {
   my $items = join '', map {
     my @m = @{ $_->{bikes} };
-    qq{<li><a class="hcat__item" href="$_->{url}"><img src="${\ img_url($_->{top})}" alt="${\ esc($_->{top}{name})}" width="64" height="50" loading="lazy" decoding="async"><span><b>$_->{title}</b><small>${\ models(scalar @m)} · от\x{a0}${\ vnd(min_p(@m))}</small></span></a></li>}
+    qq{<li><a class="hcat__item" href="$_->{url}"><b>$_->{title}</b><small>${\ models(scalar @m)}</small></a></li>}
   } cat_list();
   return qq{<ul class="hcat__list">$items</ul>};
 }
@@ -584,8 +584,32 @@ sub faq_html {
   qq{<div class="faq">$items</div>};
 }
 
+# иллюстрация под текстом карточки преимущества — собрана из элементов интерфейса, по ключу иконки
+sub inc_art {
+  my $k = shift;
+  my $ic = sub { my ($n, $pos) = @_; qq{<span class="art-ic art-ic--${\ ($pos // 'r')}">${\ icon($n)}</span>} };
+  my $pill = sub { my ($cls, $t) = @_; qq{<span class="art-pill $cls">$t</span>} };
+  my $row = sub { my ($t, $hl) = @_; qq{<span class="art-row${\ ($hl ? ' art-row--hl' : '')}">${\ icon('check')} $t</span>} };
+  my $msg = sub { my ($t, $me) = @_; qq{<span class="art-msg${\ ($me ? ' art-msg--me' : '')}">$t</span>} };
+  my %art = (
+    passport => sub { qq{<span class="art-card art-r1"><b class="art-card__h">Договор аренды</b>${\ $row->('Фото паспорта')}${\ $row->('Права и МВУ')}${\ $row->('Оригинал паспорта — у вас', 1)}</span>} . $ic->('passport') },
+    truck    => sub { $pill->('art-r1', icon('pin') . ' Отель <b>0 ₫</b>') . $pill->('art-r2', icon('pin') . ' Вокзал <b>0 ₫</b>') . $pill->('art-r3', icon('pin') . ' Аэропорт, от 7 дней <b>0 ₫</b>') . $ic->('truck') },
+    helmet   => sub { $pill->('art-r2', icon('helmet') . ' Шлем · M') . $pill->('art-r3', icon('helmet') . ' Шлем · L') . $pill->('art-r1', icon('helmet') . ' Детский <b>бесплатно</b>') },
+    rain     => sub { qq{<span class="art-card art-r2"><b class="art-card__h">В комплекте</b>${\ $row->('2 дождевика')}${\ $row->('Держатель для телефона')}${\ $row->('Замок от угона')}</span>} . $ic->('rain') },
+    wrench   => sub { $msg->('Пробил колесо у Хон Чонг 😩') . $msg->('Не переживайте, уже везём замену 🛵', 1) . $ic->('wrench') },
+    chat     => sub { $msg->('Куда съездить в выходные?') . $msg->('Ба Хо или Зоклет — скинули маршрут и заправки 👌', 1) . $ic->('chat') },
+    card     => sub { $pill->('art-r1', '<b>₽</b> на карту РФ') . $pill->('art-r3', '<b>₫</b> наличными') . $pill->('art-r2', '<b>$</b> доллары · <b>USDT</b>') . $ic->('card') },
+    coin     => sub {
+      my ($b) = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @BIKES;
+      my $off = int((1 - $b->{p7} / $b->{p1}) * 100 + 0.5);
+      qq{<span class="art-card art-r1"><b class="art-card__h">$b->{name}</b><span class="art-tier"><span>1–6 дней</span><b>${\ vnd($b->{p1})}</b></span><span class="art-tier art-tier--hl"><span>7–29 дней <i>−$off%</i></span><b>${\ vnd($b->{p7})}</b></span><span class="art-tier"><span>30 дней</span><b>${\ vnd($b->{pm} / 30)}</b></span></span>} . $ic->('coin')
+    },
+  );
+  return $art{$k} ? $art{$k}->() : $ic->($k, 'c');
+}
+
 sub included_html {
-  my $items = join '', map { qq{<li class="inc"><span class="inc__ic">${\ icon($_->[0])}</span><b>$_->[1]</b><p>$_->[2]</p></li>} } @INCLUDED;
+  my $items = join '', map { qq{<li class="inc"><b class="inc__t">$_->[1]</b><p>$_->[2]</p><div class="inc__art inc__art--$_->[0]" aria-hidden="true">${\ inc_art($_->[0])}</div></li>} } @INCLUDED;
   qq{<ul class="incs">$items</ul>};
 }
 
