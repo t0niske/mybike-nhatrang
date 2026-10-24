@@ -584,21 +584,55 @@ sub faq_html {
   qq{<div class="faq">$items</div>};
 }
 
-# иллюстрация под текстом карточки преимущества — собрана из элементов интерфейса, по ключу иконки
+# иллюстрация под текстом карточки преимущества (по ключу иконки): элементы интерфейса или SVG-рисунок
 sub inc_art {
   my $k = shift;
   my $ic = sub { my ($n, $pos) = @_; qq{<span class="art-ic art-ic--${\ ($pos // 'r')}">${\ icon($n)}</span>} };
-  my $pill = sub { my ($cls, $t) = @_; qq{<span class="art-pill $cls">$t</span>} };
-  my $row = sub { my ($t, $hl) = @_; qq{<span class="art-row${\ ($hl ? ' art-row--hl' : '')}">${\ icon('check')} $t</span>} };
   my $msg = sub { my ($t, $me) = @_; qq{<span class="art-msg${\ ($me ? ' art-msg--me' : '')}">$t</span>} };
   my %art = (
-    passport => sub { qq{<span class="art-card art-r1"><b class="art-card__h">Договор аренды</b>${\ $row->('Фото паспорта')}${\ $row->('Права и МВУ')}${\ $row->('Оригинал паспорта — у вас', 1)}</span>} . $ic->('passport') },
-    truck    => sub { $pill->('art-r1', icon('pin') . ' Отель <b>0 ₫</b>') . $pill->('art-r2', icon('pin') . ' Вокзал <b>0 ₫</b>') . $pill->('art-r3', icon('pin') . ' Аэропорт, от 7 дней <b>0 ₫</b>') . $ic->('truck') },
-    helmet   => sub { $pill->('art-r2', icon('helmet') . ' Шлем · M') . $pill->('art-r3', icon('helmet') . ' Шлем · L') . $pill->('art-r1', icon('helmet') . ' Детский <b>бесплатно</b>') },
-    rain     => sub { qq{<span class="art-card art-r2"><b class="art-card__h">В комплекте</b>${\ $row->('2 дождевика')}${\ $row->('Держатель для телефона')}${\ $row->('Замок от угона')}</span>} . $ic->('rain') },
+    # паспорт остаётся у клиента: обложка, фото для договора и отметка
+    passport => sub { q{<svg class="art-svg" viewBox="0 0 260 170">
+<g transform="rotate(-8 105 90)"><rect x="48" y="14" width="114" height="150" rx="12" fill="#2B2B2B"/><rect x="56" y="22" width="98" height="134" rx="8" fill="none" stroke="#FF6B2C" stroke-opacity=".45" stroke-width="1.5"/><circle cx="105" cy="72" r="22" fill="none" stroke="#FF6B2C" stroke-width="3"/><ellipse cx="105" cy="72" rx="10" ry="22" fill="none" stroke="#FF6B2C" stroke-width="2.5"/><path d="M83 72h44" stroke="#FF6B2C" stroke-width="2.5"/><text x="105" y="124" text-anchor="middle" fill="#fff" font-size="12" font-weight="800" letter-spacing="3">ПАСПОРТ</text></g>
+<g transform="rotate(6 204 50)"><rect x="160" y="16" width="88" height="66" rx="12" class="art-svg__bg"/><rect x="168" y="24" width="34" height="50" rx="6" fill="#FFF1EA"/><circle cx="185" cy="42" r="7" fill="#FF6B2C"/><path d="M174 66c2-6 6-9 11-9s9 3 11 9z" fill="#FF6B2C"/><rect x="208" y="32" width="32" height="5" rx="2.5" fill="#E6E6E6"/><rect x="208" y="43" width="24" height="5" rx="2.5" fill="#E6E6E6"/><rect x="208" y="54" width="28" height="5" rx="2.5" fill="#E6E6E6"/></g>
+<rect x="112" y="120" width="142" height="38" rx="19" class="art-svg__bg"/><circle cx="132" cy="139" r="10" fill="#1F9D55"/><path d="m127 139 3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="149" y="143.5" font-size="12.5" font-weight="800" fill="#1E1E1E">Остаётся у вас</text>
+</svg>} },
+    # доставка: карта с маршрутом от байка до отеля
+    truck    => sub { q{<svg class="art-svg" viewBox="0 0 260 170">
+<rect x="4" y="4" width="252" height="162" rx="22" class="art-svg__bg"/><path d="M226 4h30v162h-40q16-40 6-78t4-84z" fill="#DCEBFA"/>
+<g stroke="#EFEFEF" stroke-linecap="round" fill="none"><path d="M12 60h200M12 128h200M78 12v146M188 12v146" stroke-width="12"/><path d="M118 158 214 50" stroke-width="8"/></g>
+<path d="M44 128h34V78q0-18 18-18h92V46" fill="none" stroke="#FF6B2C" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 9"/>
+<circle cx="44" cy="128" r="18" fill="#FF6B2C"/><svg x="32" y="116" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="M8 17.5h7.5l2.5-7h-3M14 5h2.5l1.5 5.5M5.5 15l2-4H13"/></svg>
+<path d="M188 46s-16-14-16-26a16 16 0 0 1 32 0c0 12-16 26-16 26z" fill="#1E1E1E"/><circle cx="188" cy="20" r="6" fill="#fff"/>
+<rect x="92" y="10" width="74" height="24" rx="12" fill="#1E1E1E"/><text x="129" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Ваш отель</text>
+<rect x="16" y="76" width="50" height="24" rx="12" fill="#FF6B2C"/><text x="41" y="92" text-anchor="middle" font-size="11.5" font-weight="800" fill="#fff">0 ₫</text>
+</svg>} },
+    # шлемы: взрослые M и L и детский
+    helmet   => sub { q{<svg class="art-svg" viewBox="0 0 260 160">
+<defs><g id="art-hm"><path d="M8 70C4 34 30 8 62 8c30 0 46 24 46 50v12q0 8-8 8H16q-7 0-8-8z"/><path d="M10 66h98v6q0 6-8 6H16q-6 0-6-6z" fill="#000" fill-opacity=".18"/><path d="M56 34h48q3 0 3.5 6l.5 18q0 4-4 4H58q-10 0-10-14t8-14z" fill="#2A2F36"/><path d="M62 40h34" stroke="#fff" stroke-opacity=".4" stroke-width="3" stroke-linecap="round"/><path d="M16 54Q26 22 60 16" stroke="#fff" stroke-opacity=".45" stroke-width="5" fill="none" stroke-linecap="round"/></g></defs>
+<use href="#art-hm" fill="#333" transform="translate(120 10) scale(1.12)"/>
+<use href="#art-hm" fill="#FF6B2C" transform="translate(12 42) scale(1.12)"/>
+<use href="#art-hm" fill="#FFB792" transform="translate(166 92) scale(.55)"/>
+<g font-size="12" font-weight="800" text-anchor="middle"><circle cx="38" cy="56" r="13" class="art-svg__bg"/><text x="38" y="60.5" fill="#1E1E1E">M</text><circle cx="234" cy="18" r="13" class="art-svg__bg"/><text x="234" y="22.5" fill="#1E1E1E">L</text></g>
+<rect x="150" y="136" width="100" height="22" rx="11" fill="#1E1E1E"/><text x="200" y="151" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Детский · 0 ₫</text>
+</svg>} },
+    # держатель с телефоном на руле и капли дождя
+    rain     => sub { q{<svg class="art-svg" viewBox="0 0 260 170">
+<g fill="#BFD9F5"><path d="M30 14c5 7 7 11 7 14a7 7 0 0 1-14 0c0-3 2-7 7-14z"/><path d="M62 58c4 6 6 9 6 12a6 6 0 0 1-12 0c0-3 2-6 6-12z"/><path d="M26 96c5 7 7 11 7 14a7 7 0 0 1-14 0c0-3 2-7 7-14z"/><path d="M222 20c4 6 6 9 6 12a6 6 0 0 1-12 0c0-3 2-6 6-12z"/><path d="M200 60c5 7 7 11 7 14a7 7 0 0 1-14 0c0-3 2-7 7-14z"/></g>
+<path d="M18 152h224" stroke="#333" stroke-width="10" stroke-linecap="round"/><path d="M14 152h30M216 152h30" stroke="#1E1E1E" stroke-width="15" stroke-linecap="round"/>
+<rect x="116" y="134" width="28" height="24" rx="6" fill="#555"/><path d="M101 44h-6v82h6M159 44h6v82h-6" stroke="#555" stroke-width="5" fill="none" stroke-linejoin="round"/>
+<rect x="96" y="12" width="68" height="126" rx="13" fill="#1E1E1E"/><rect x="101" y="18" width="58" height="114" rx="9" fill="#FFF1EA"/>
+<path d="M101 60h58M101 100h58M126 18v114" stroke="#fff" stroke-width="5"/><path d="M114 120v-20h26V60h10V36" fill="none" stroke="#FF6B2C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="150" cy="34" r="5" fill="#1E1E1E"/><circle cx="114" cy="120" r="5.5" fill="#FF6B2C" stroke="#fff" stroke-width="2"/>
+<rect x="170" y="98" width="84" height="26" rx="13" class="art-svg__bg"/><path d="M184 104c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 1-4 4-8z" fill="#7FB4EA"/><text x="194" y="115.5" font-size="11.5" font-weight="800" fill="#1E1E1E">2 дождевика</text>
+</svg>} },
     wrench   => sub { $msg->('Пробил колесо у Хон Чонг 😩') . $msg->('Не переживайте, уже везём замену 🛵', 1) . $ic->('wrench') },
     chat     => sub { $msg->('Куда съездить в выходные?') . $msg->('Ба Хо или Зоклет — скинули маршрут и заправки 👌', 1) . $ic->('chat') },
-    card     => sub { $pill->('art-r1', '<b>₽</b> на карту РФ') . $pill->('art-r3', '<b>₫</b> наличными') . $pill->('art-r2', '<b>$</b> доллары · <b>USDT</b>') . $ic->('card') },
+    # оплата: купюра в донгах, карты в рублях и долларах, монета USDT
+    card     => sub { q{<svg class="art-svg" viewBox="0 0 260 160">
+<g transform="rotate(-12 80 70)"><rect x="18" y="34" width="130" height="70" rx="10" fill="#DFF3E7"/><rect x="26" y="42" width="114" height="54" rx="6" fill="none" stroke="#1F9D55" stroke-opacity=".35" stroke-width="1.5"/><circle cx="83" cy="69" r="16" fill="none" stroke="#1F9D55" stroke-opacity=".5" stroke-width="2"/><text x="83" y="75" text-anchor="middle" font-size="17" font-weight="800" fill="#1F9D55">₫</text></g>
+<g transform="rotate(8 174 62)"><rect x="104" y="18" width="140" height="88" rx="14" fill="#333"/><rect x="104" y="36" width="140" height="14" fill="#1E1E1E"/><text x="230" y="94" text-anchor="end" font-size="18" font-weight="800" fill="#fff">$</text></g>
+<g transform="rotate(-3 128 108)"><rect x="54" y="62" width="150" height="92" rx="14" fill="#FF6B2C"/><rect x="70" y="82" width="28" height="21" rx="4" fill="#FFD9B8"/><path d="M70 92.5h28M84 82v21" stroke="#E2551A" stroke-width="1"/><text x="70" y="140" font-size="13" font-weight="700" fill="#fff" letter-spacing="1.5">•••• 2468</text><text x="190" y="106" text-anchor="end" font-size="28" font-weight="800" fill="#fff">₽</text></g>
+<circle cx="216" cy="128" r="24" fill="#26A17B"/><circle cx="216" cy="128" r="19" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><text x="216" y="136" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">₮</text>
+</svg>} },
     coin     => sub {
       my ($b) = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @BIKES;
       my $off = int((1 - $b->{p7} / $b->{p1}) * 100 + 0.5);
