@@ -147,8 +147,8 @@
       audit.push({ page: page, url: url, iss: iss, score: Math.max(0, 100 - iss.length * 20) });
     }
     d.bikes.filter(function (b) { return b.visible !== false; }).forEach(function (b) {
-      var t = 'Аренда ' + b.name + ' в Нячанге — от ' + U.vnd(b.p7) + '/день, без депозита';
-      var ds = 'Аренда ' + b.name + ' в Нячанге: ' + U.vnd(b.p1) + ' в день, ' + U.vnd(b.pm) + ' в месяц. ' + U.LIC[b.license] + '. Бесплатная доставка в отель, без депозита и залога паспорта, 2 шлема в комплекте.';
+      var t = 'Аренда ' + b.name + ' в Нячанге — от ' + U.vnd(b.p7) + '/день, с доставкой';
+      var ds = 'Аренда ' + b.name + ' в Нячанге: ' + U.vnd(b.p1) + ' в день, ' + U.vnd(b.pm) + ' в месяц. ' + U.LIC[b.license] + '. Бесплатная доставка в отель, без залога паспорта, 2 шлема в комплекте.';
       var w = ((b.about || []).join(' ') + ' ' + (b.suits || '') + ' ' + (b.pros || []).join(' ') + ' ' + (b.short || '')).split(/\s+/).filter(Boolean).length + 120;
       var extra = []; if (!b.img || /placeholder/.test(b.img)) extra.push('нет своего фото');
       chk(b.name, '/arenda/' + b.id + '/', t, ds, w, 5, extra);

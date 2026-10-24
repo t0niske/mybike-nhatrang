@@ -214,7 +214,7 @@
       { k: 'comment', label: 'Комментарий', type: 'textarea', full: true, rows: 3 },
     ]; };
     var link = U.contactLink(l);
-    var confirmMsg = 'Здравствуйте' + (l.name ? ', ' + l.name : '') + '! Бронь подтверждена ✅\n🛵 ' + A.bikeName(d, l.bike_id) + '\n📅 ' + U.date(l.date_from) + ' — ' + U.date(l.date_to) + ' (' + l.days + ' дн.)\n💰 ' + U.vnd(A.val(l)) + '\n📍 ' + (l.place || 'адрес уточним') + '\nОплата при получении, депозит не нужен. Курьер напишет за 30 минут до приезда. MYBIKE';
+    var confirmMsg = 'Здравствуйте' + (l.name ? ', ' + l.name : '') + '! Бронь подтверждена ✅\n🛵 ' + A.bikeName(d, l.bike_id) + '\n📅 ' + U.date(l.date_from) + ' — ' + U.date(l.date_to) + ' (' + l.days + ' дн.)\n💰 ' + U.vnd(A.val(l)) + '\n📍 ' + (l.place || 'адрес уточним') + '\nОплата при получении. Курьер напишет за 30 минут до приезда. MYBIKE';
     var evs = d.events.filter(function (e) { return l.sid && e.sid === l.sid; });
     root.innerHTML = '<div class="grid g-2-1"><div class="stack"><div class="card"><div class="card__h"><h2>Данные заявки</h2>' + U.badge(l.status) + '</div><div id="frm">' + U.form(F(), l) + '</div><div id="warn"></div>' +
       (A.canWrite() ? '<div class="row" style="margin-top:16px"><button class="btn btn--o" id="save">Сохранить</button><button class="btn" id="recalc">Пересчитать по прайсу</button>' +

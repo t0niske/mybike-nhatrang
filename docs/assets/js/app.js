@@ -93,6 +93,15 @@
   });
   if (nav) nav.addEventListener('click', function (e) { if (e.target.closest('a') && nav.classList.contains('is-open')) burger.click(); });
 
+  // ---------- кнопка «Каталог»: меню по клику (и по наведению — в CSS) ----------
+  var hcat = $('[data-hcat]'), hcatBtn = $('[data-hcat-btn]');
+  function hcatSet(open) { hcat.classList.toggle('is-open', open); hcatBtn.setAttribute('aria-expanded', open); }
+  if (hcat) {
+    hcatBtn.addEventListener('click', function () { hcatSet(!hcat.classList.contains('is-open')); });
+    document.addEventListener('click', function (e) { if (!hcat.contains(e.target)) hcatSet(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && hcat.classList.contains('is-open')) { hcatSet(false); hcatBtn.focus(); } });
+  }
+
   // ---------- карточки: ползунок срока ----------
   function updateCard(card, d) {
     var b = data(card), t = cost(b, d);

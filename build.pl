@@ -175,13 +175,12 @@ sub org_ld {
     '@type' => ['AutoRental', 'LocalBusiness'], '@id' => abs_url('/#org'),
     name => $SITE{name}, alternateName => $SITE{legal_name}, url => abs_url('/'),
     logo => abs_url('/assets/img/logo.svg'), image => abs_url('/assets/img/bikes/placeholder.png'),
-    description => 'Аренда скутеров, мотоциклов и электроскутеров в Нячанге без депозита и залога паспорта. Бесплатная доставка в отель 24/7.',
+    description => 'Аренда скутеров, мотоциклов и электроскутеров в Нячанге без залога паспорта. Бесплатная доставка в отель с первого дня аренды.',
     telephone => $SITE{phone_raw}, email => $SITE{email}, priceRange => '100000–1300000 VND',
     currenciesAccepted => 'VND, RUB, USD, USDT', paymentAccepted => 'Cash, Bank transfer, Cryptocurrency',
     address => { '@type'=>'PostalAddress', streetAddress=>$SITE{street}, addressLocality=>'Nha Trang', addressRegion=>'Khánh Hòa', addressCountry=>'VN' },
     geo => { '@type'=>'GeoCoordinates', latitude=>$SITE{lat}+0, longitude=>$SITE{lng}+0 },
     areaServed => [ map { +{ '@type'=>'Place', name=>$_ } } 'Нячанг', 'Камрань', 'Кханьхоа' ],
-    openingHoursSpecification => { '@type'=>'OpeningHoursSpecification', dayOfWeek=>[qw(Monday Tuesday Wednesday Thursday Friday Saturday Sunday)], opens=>'00:00', closes=>'23:59' },
     sameAs => [ "https://t.me/$SITE{telegram}", $SITE{vk} ],
     knowsLanguage => ['ru', 'en', 'vi'],
   }
@@ -215,19 +214,28 @@ sub product_ld {
 
 # ------------------------------------------------------------ layout
 sub nav_items {
-  ( ['Каталог', '/katalog/'], ['Без прав', '/arenda-bajka-bez-prav/'], ['Как арендовать', '/kak-arendovat/'],
+  ( ['Без прав', '/arenda-bajka-bez-prav/'], ['Как арендовать', '/kak-arendovat/'],
     ['Доставка', '/dostavka/'], ['Права', '/prava-vo-vetname/'], ['О сервисе', '/o-nas/'], ['FAQ', '/faq/'] )
 }
 
+my $CAT_MENU;   # одинаковое на всех страницах — собираем один раз
 sub header_html {
   my $path = shift;
   my $nav = join '', map { my $cur = $path eq $_->[1] ? ' aria-current="page"' : ''; qq{<a href="${\ u($_->[1])}"$cur>$_->[0]</a>} } nav_items();
   my $tg = "https://t.me/$SITE{telegram}"; my $wa = "https://wa.me/$SITE{whatsapp}";
+  $CAT_MENU //= cat_menu();
+  my $all = qq{<a class="hcat__all" href="${\ u('/katalog/')}">Весь каталог — ${\ models(scalar @BIKES)} ${\ icon('arrow')}</a>};
   return <<"H";
 <header class="header" data-header>
   <div class="container header__in">
     <a class="logo" href="${\ u('/')}" aria-label="MYBIKE — на главную"><span class="logo__mark">${\ icon('scooter')}</span><span class="logo__text">MYBIKE</span></a>
-    <nav class="nav" aria-label="Основное меню" data-nav>$nav
+    <div class="hcat" data-hcat>
+      <button class="hcat__btn" type="button" aria-expanded="false" aria-controls="hcat-menu" data-hcat-btn>${\ icon('menu')}<span>Каталог</span></button>
+      <div class="hcat__menu" id="hcat-menu"><div class="hcat__box">$CAT_MENU$all</div></div>
+    </div>
+    <nav class="nav" aria-label="Основное меню" data-nav>
+      <details class="nav__cat"><summary>Каталог ${\ icon('chev')}</summary>$CAT_MENU$all</details>
+      $nav
       <div class="nav__mobile-cta"><a class="btn btn--orange" href="$tg" rel="nofollow">${\ icon('telegram')} Написать в Telegram</a><a class="btn btn--light" href="tel:$SITE{phone_raw}">${\ icon('phone')} $SITE{phone}</a></div>
     </nav>
     <div class="header__social">
@@ -253,14 +261,14 @@ sub footer_html {
     <div class="footer__top">
       <div class="footer__brand">
         <a class="logo logo--light" href="${\ u('/')}"><span class="logo__mark">${\ icon('scooter')}</span><span class="logo__text">MYBIKE</span></a>
-        <p>Аренда скутеров и мотоциклов в Нячанге без депозита и залога паспорта. Бесплатная доставка в отель 24/7.</p>
+        <p>Аренда скутеров и мотоциклов в Нячанге без залога паспорта. Бесплатная доставка в отель с первого дня аренды.</p>
         <div class="footer__contacts">
           <a href="https://t.me/$SITE{telegram}" rel="nofollow">${\ icon('telegram')} Telegram</a>
           <a href="https://wa.me/$SITE{whatsapp}" rel="nofollow">${\ icon('whatsapp')} WhatsApp</a>
           <a href="tel:$SITE{phone_raw}">${\ icon('phone')} $SITE{phone}</a>
           <a href="mailto:$SITE{email}">${\ icon('mail')} $SITE{email}</a>
           <span>${\ icon('pin')} $SITE{address}</span>
-          <span>${\ icon('clock')} Ежедневно, 24/7</span>
+          <span>${\ icon('clock')} $SITE{hours}</span>
         </div>
       </div>
       <div><p class="footer__h">Подборки</p><ul>$cats<li><a href="${\ u('/katalog/')}">Весь каталог</a></li></ul></div>
@@ -289,7 +297,7 @@ sub booking_modal {
   <form class="modal__box" data-booking-form novalidate>
     <button class="modal__x" type="button" aria-label="Закрыть" data-close>${\ icon('close')}</button>
     <p class="modal__title" id="booking-title">Бронирование байка</p>
-    <p class="modal__sub">Без предоплаты и депозита. Подтвердим за 5 минут.</p>
+    <p class="modal__sub">Без предоплаты. Подтвердим за 5 минут.</p>
     <label class="field"><span>Байк</span><select name="bike" required>$opts</select></label>
     <div class="field-row">
       <label class="field"><span>Получение</span><input type="date" name="from" required></label>
@@ -506,18 +514,34 @@ H
 sub plural { my ($n, @f) = @_; my $m = $n % 100; my $d = $n % 10; "$n\x{a0}" . $f[ $m >= 11 && $m <= 14 ? 2 : $d == 1 ? 0 : $d >= 2 && $d <= 4 ? 1 : 2 ] }
 sub models { plural(shift, 'модель', 'модели', 'моделей') }
 
+# список для плиток и меню «Каталог»: «Все байки» + непустые подборки → { url, title, sub, bikes, top }
+sub cat_list {
+  my $all_url = shift // u('/katalog/');
+  my @l = ({ url=>$all_url, title=>'Все байки', sub=>'Весь парк', bikes=>[@BIKES] },
+    map { my @m = filter_bikes($_->{filter}); @m ? { url=>u("/$_->{slug}/"), title=>$_->{chip}, sub=>$_->{short}, bikes=>\@m } : () } @CATEGORIES);
+  $_->{top} = (sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @{ $_->{bikes} })[0] for @l;
+  @l;
+}
+
 # плитка категории: счётчик, фото самого популярного байка, название; при наведении — фирменный цвет
 sub cat_tile {
-  my ($url, $title, $sub, @m) = @_;
-  my ($top) = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @m;
-  return qq{<a class="tile" href="$url"><span class="tile__n">${\ models(scalar @m)}</span><span class="tile__img"><img src="${\ img_url($top)}" alt="${\ esc($top->{name})}" width="540" height="423" loading="lazy" decoding="async"></span><span class="tile__t">$title</span><span class="tile__s">$sub</span><span class="tile__p">от\x{a0}${\ vnd(min_p(@m))} в день</span></a>};
+  my $c = shift; my @m = @{ $c->{bikes} };
+  return qq{<a class="tile" href="$c->{url}"><span class="tile__n">${\ models(scalar @m)}</span><span class="tile__img"><img src="${\ img_url($c->{top})}" alt="${\ esc($c->{top}{name})}" width="540" height="423" loading="lazy" decoding="async"></span><span class="tile__t">$c->{title}</span><span class="tile__s">$c->{sub}</span><span class="tile__p">от\x{a0}${\ vnd(min_p(@m))} в день</span></a>};
 }
 
 sub cat_tiles {
   my $cur = shift // '';
-  my $all = $cur eq 'katalog' ? '' : cat_tile(u('/katalog/'), 'Все байки', 'Весь парк', @BIKES);
-  my $tiles = join '', map { my @m = filter_bikes($_->{filter}); @m ? cat_tile(u("/$_->{slug}/"), $_->{chip}, $_->{short}, @m) : '' } @CATEGORIES;
-  qq{<div class="tiles">$all$tiles</div>};
+  # на странице каталога «Все байки» ведёт к списку моделей ниже
+  qq{<div class="tiles">${\ join '', map { cat_tile($_) } cat_list($cur eq 'katalog' ? '#models' : undef)}</div>};
+}
+
+# выпадающее меню кнопки «Каталог» в шапке
+sub cat_menu {
+  my $items = join '', map {
+    my @m = @{ $_->{bikes} };
+    qq{<li><a class="hcat__item" href="$_->{url}"><img src="${\ img_url($_->{top})}" alt="${\ esc($_->{top}{name})}" width="64" height="50" loading="lazy" decoding="async"><span><b>$_->{title}</b><small>${\ models(scalar @m)} · от\x{a0}${\ vnd(min_p(@m))}</small></span></a></li>}
+  } cat_list();
+  return qq{<ul class="hcat__list">$items</ul>};
 }
 
 # «Популярные модели»: горизонтальная лента карточек со стрелками
@@ -528,7 +552,7 @@ sub popular_block {
   my $cards = join '', map { bike_card($_, h=>'h3') } @b;
   return (<<"H", @b);
 <div class="rail" data-rail>
-  <div class="head"><h2 class="h2">Популярные<br>модели</h2><div class="head__side"><p class="head__p">Цены открыты и уже включают доставку, 2 шлема и дождевики. Двигайте ползунок — увидите итог за ваш срок.</p><div class="rail__nav"><button class="rail__btn rail__btn--prev" type="button" data-rail-prev aria-label="Предыдущие модели">${\ icon('arrow')}</button><button class="rail__btn" type="button" data-rail-next aria-label="Следующие модели">${\ icon('arrow')}</button></div></div></div>
+  <div class="head"><h2 class="h2">Популярные модели</h2><div class="rail__nav"><button class="rail__btn rail__btn--prev" type="button" data-rail-prev aria-label="Предыдущие модели">${\ icon('arrow')}</button><button class="rail__btn" type="button" data-rail-next aria-label="Следующие модели">${\ icon('arrow')}</button></div></div>
   <div class="rail__track" data-rail-track>$cards</div>
   <div class="rail__more"><a class="btn btn--dark btn--lg" href="${\ u('/katalog/')}">Весь каталог — ${\ models(scalar @all)} ${\ icon('arrow')}</a></div>
 </div>
@@ -541,6 +565,7 @@ sub filter_bikes {
   @b = grep { $_->{license} eq $f->{license} } @b if $f->{license};
   if ($f->{groups}) { my %g = map { $_ => 1 } @{ $f->{groups} }; @b = grep { $g{$_->{group}} } @b }
   @b = grep { $_->{p1} <= $f->{maxp1} } @b if $f->{maxp1};
+  @b = grep { $_->{abs} } @b if $f->{abs};
   @b = ($f->{sort} // '') eq 'pm' ? sort { $a->{pm} <=> $b->{pm} } @b : sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @b;
   @b;
 }
@@ -597,7 +622,7 @@ sub delivery_table {
 
 sub trust_chips {
   qq{<ul class="trust">}
-  . join('', map { qq{<li>${\ icon('check')} $_</li>} } 'Без депозита', 'Без залога паспорта', 'Доставка 0 ₫ 24/7', '2 шлема в комплекте')
+  . join('', map { qq{<li>${\ icon('check')} $_</li>} } 'Без залога паспорта', 'Бесплатная доставка', '2 шлема в комплекте', 'Оплата при получении')
   . '</ul>';
 }
 
@@ -646,7 +671,7 @@ sub build_home {
 
 <section class="section">
   <div class="container">
-    <div class="head"><h2 class="h2">Всё включено.<br>Без депозита.</h2><p class="head__p">Мы изучили все прокаты Нячанга и собрали лучшие условия рынка в одном месте.</p></div>
+    <div class="head"><h2 class="h2">Всё включено.<br>Без доплат.</h2><p class="head__p">Мы изучили все прокаты Нячанга и собрали лучшие условия рынка в одном месте.</p></div>
     ${\ included_html()}
   </div>
 </section>
@@ -674,7 +699,7 @@ sub build_home {
     <div class="why__photo"><img src="${\ u('/assets/img/bikes/placeholder.png')}" alt="Парк байков MYBIKE в Нячанге" width="540" height="423" loading="lazy"></div>
     <div class="why__text">
       <h2 class="h2">Почему выбирают <span class="accent">MYBIKE</span></h2>
-      <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из $SITE{fleet_size} байков 2023–2025 годов, собственный сервис и команда, которая говорит по-русски и отвечает за 5 минут — днём и ночью.</p>
+      <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из $SITE{fleet_size} байков 2023–2025 годов, собственный сервис и команда, которая говорит по-русски и отвечает за 5 минут.</p>
       <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
       <div class="stats"><div><b>$SITE{fleet_size}</b><span>байков в парке</span></div><div><b>$SITE{clients}</b><span>клиентов</span></div><div><b>5 мин</b><span>время ответа</span></div></div>
       <a class="btn btn--orange" href="#catalog">Выбрать байк</a>
@@ -699,8 +724,8 @@ ${\ cta_block()}
 H
   page(
     path=>'/', priority=>'1.0', bodyclass=>'home',
-    title=>'Аренда байков в Нячанге — скутеры от 100 000 ₫, без депозита | MYBIKE',
-    desc=>'Аренда скутеров и мотоциклов в Нячанге: ' . scalar(@BIKES) . ' моделей, есть байки без прав (50cc). Без депозита и залога паспорта, бесплатная доставка в отель 24/7, 2 шлема в комплекте. Цены от 100 000 ₫.',
+    title=>'Аренда байков в Нячанге — скутеры от 100 000 ₫, доставка бесплатно | MYBIKE',
+    desc=>'Аренда скутеров и мотоциклов в Нячанге: ' . scalar(@BIKES) . ' моделей, есть байки без прав (50cc). Без залога паспорта, бесплатная доставка в отель, 2 шлема в комплекте. Цены от 100 000 ₫.',
     body=>$body, ld=>[ faq_ld(@FAQ_MAIN), itemlist_ld('Популярные байки в аренду в Нячанге', @pop) ],
   );
 }
@@ -721,7 +746,7 @@ sub build_catalog {
     ${\ cat_tiles('katalog')}
   </div>
 </section>
-<section class="section section--grey section--tight"><div class="container">${\ catalog_block(bikes=>\@all, full=>1, h=>'h2')}</div></section>
+<section class="section section--grey section--tight" id="models"><div class="container">${\ catalog_block(bikes=>\@all, full=>1, h=>'h2')}</div></section>
 <section class="section"><div class="container"><h2 class="h2">Цены на аренду байков в Нячанге</h2><p class="lead">Цены в донгах. 1 ₽ ≈ $SITE{rub_rate} ₫. Доставка, шлемы и дождевики включены.</p>${\ price_table(sort { $a->{p1} <=> $b->{p1} } @BIKES)}</div></section>
 ${\ cta_block()}
 H
@@ -743,7 +768,7 @@ sub build_category {
   <div class="container">
     <h1 class="h1">$c->{h1}</h1>
     <p class="lead">${\ fill($c->{lead})}</p>
-    <ul class="facts"><li><b>${\ scalar @b}</b><span>моделей</span></li><li><b>от ${\ vnd($minp)}</b><span>в день</span></li><li><b>0 ₫</b><span>депозит и доставка</span></li></ul>
+    <ul class="facts"><li><b>${\ scalar @b}</b><span>моделей</span></li><li><b>от ${\ vnd($minp)}</b><span>в день</span></li><li><b>0 ₫</b><span>доставка</span></li></ul>
     <div class="chips chips--links">$others</div>
   </div>
 </section>
@@ -766,7 +791,7 @@ sub build_bike {
   my @faq = (
     ["Нужны ли права для аренды $b->{name}?", lic_text($b) . ($b->{license} ne 'none' ? ' Нет прав? Посмотрите <a href="{base}/arenda-bajka-bez-prav/">байки без прав</a>.' : '')],
     ["Сколько стоит аренда $b->{name} в Нячанге?", "При аренде на 1–6 дней — " . vnd($b->{p1}) . " в день, на 7–29 дней — " . vnd($b->{p7}) . " в день, на месяц — " . vnd($b->{pm}) . ". Доставка, 2 шлема и дождевики включены."],
-    ["Нужен ли депозит за $b->{name}?", 'Нет. Мы не берём денежный депозит и не забираем паспорт — нужно только фото паспорта для договора.'],
+    ["Нужно ли оставлять паспорт в залог за $b->{name}?", 'Нет. Паспорт остаётся у вас — для договора нужно только фото паспорта со штампом о въезде.'],
     ["Можно ли ездить на $b->{name} вдвоём?", $b->{seats} >= 2 ? "Да, $b->{name} двухместный, в комплекте два шлема." : 'Нет, байк одноместный.'],
     ["Какой расход топлива у $b->{name}?", $b->{cc} ? "Около $b->{fuel}, бак $b->{tank}." : "$b->{fuel}. Зарядное устройство выдаём вместе с байком, зарядка от обычной розетки."],
   );
@@ -785,7 +810,7 @@ sub build_bike {
   my $catlink = $cat ? [$cat->{h1}, "/$cat->{slug}/"] : ['Каталог', '/katalog/'];
   my $tot = cost($b, 3);
   my $lic = $b->{license};
-  my $incl = join '', map { qq{<li>${\ icon('check')} $_</li>} } 'Без депозита и залога паспорта', 'Бесплатная доставка и возврат 24/7', '2 шлема и 2 дождевика', 'Держатель для телефона и замок', 'Замена за 60 минут при поломке';
+  my $incl = join '', map { qq{<li>${\ icon('check')} $_</li>} } 'Без залога паспорта', 'Бесплатная доставка и возврат', '2 шлема и 2 дождевика', 'Держатель для телефона и замок', 'Бесплатная замена при поломке';
   my $tags = join '', map { qq{<li>$_</li>} } @{ $b->{tags} };
   my $body = <<"H";
 <section class="section section--top">
@@ -841,11 +866,11 @@ sub build_bike {
 </section>
 <section class="section"><div class="container faq-wrap"><div><h2 class="h2">Вопросы о $b->{name}</h2></div>${\ faq_html(@faq)}</div></section>
 <section class="section section--grey"><div class="container"><div class="head"><h2 class="h2">Похожие байки</h2><a class="btn btn--dark" href="${\ u($catlink->[1])}">Смотреть все</a></div><div class="grid">$sim</div></div></section>
-${\ cta_block("Забронируйте $b->{name} сейчас", 'Без предоплаты и депозита. Привезём к отелю бесплатно в удобное время.')}
+${\ cta_block("Забронируйте $b->{name} сейчас", 'Без предоплаты. Привезём к отелю бесплатно в удобное время.')}
 H
   page(path=>"/arenda/$b->{slug}/", priority=>'0.8', bodyclass=>'bike-page',
-    title=>"Аренда $b->{name} в Нячанге — от " . vnd($b->{p7}) . "/день, без депозита",
-    desc=>"Аренда $b->{name} в Нячанге: " . vnd($b->{p1}) . " в день, " . vnd($b->{pm}) . " в месяц. " . lic_label($b->{license}) . ". Бесплатная доставка в отель, без депозита и залога паспорта, 2 шлема в комплекте.",
+    title=>"Аренда $b->{name} в Нячанге — от " . vnd($b->{p7}) . "/день, с доставкой",
+    desc=>"Аренда $b->{name} в Нячанге: " . vnd($b->{p1}) . " в день, " . vnd($b->{pm}) . " в месяц. " . lic_label($b->{license}) . ". Бесплатная доставка в отель, без залога паспорта, 2 шлема в комплекте.",
     crumbs=>[['Главная','/'], $catlink, [$b->{name}, "/arenda/$b->{slug}/"]], body=>$body,
     ld=>[ product_ld($b), faq_ld(@faq) ]);
 }
@@ -886,13 +911,13 @@ sub build_faq {
   my $body = <<"H";
 <section class="section section--top"><div class="container">
   <h1 class="h1">Вопросы и ответы об аренде байка в Нячанге</h1>
-  <p class="lead">Собрали ответы на всё, что спрашивают перед арендой: права, депозит, цены, доставка, поломки.</p>
+  <p class="lead">Собрали ответы на всё, что спрашивают перед арендой: права, документы, цены, доставка, поломки.</p>
   ${\ faq_html(@all)}
 </div></section>
-${\ cta_block('Остались вопросы?', 'Напишите — живой человек ответит за 5 минут, 24/7.')}
+${\ cta_block('Остались вопросы?', 'Напишите — живой человек ответит за 5 минут.')}
 H
-  page(path=>'/faq/', priority=>'0.7', title=>'Аренда байка в Нячанге: ответы на частые вопросы — права, депозит, цены',
-    desc=>'Ответы на частые вопросы об аренде байка в Нячанге: нужны ли права, есть ли депозит, сколько стоит, как работает доставка и что делать при поломке.',
+  page(path=>'/faq/', priority=>'0.7', title=>'Аренда байка в Нячанге: ответы на частые вопросы — права, цены, доставка',
+    desc=>'Ответы на частые вопросы об аренде байка в Нячанге: нужны ли права, какие нужны документы, сколько стоит, как работает доставка и что делать при поломке.',
     crumbs=>[['Главная','/'],['FAQ','/faq/']], body=>$body, ld=>[ faq_ld(@all) ]);
 }
 
@@ -924,9 +949,9 @@ sub build_static {
   write_file('/llms.txt', <<"T");
 # MYBIKE — аренда байков в Нячанге (Вьетнам)
 
-> Сервис аренды скутеров, мотоциклов и электроскутеров в Нячанге для русскоязычных туристов. Без депозита и залога паспорта, бесплатная доставка в отель 24/7, 2 шлема в комплекте. Есть байки без прав (50 см³ и электро). Цены от 100 000 ₫ в день.
+> Сервис аренды скутеров, мотоциклов и электроскутеров в Нячанге для русскоязычных туристов. Без залога паспорта, бесплатная доставка в отель, 2 шлема в комплекте. Есть байки без прав (50 см³ и электро). Цены от 100 000 ₫ в день.
 
-Контакты: Telegram https://t.me/$SITE{telegram}, WhatsApp https://wa.me/$SITE{whatsapp}, телефон $SITE{phone}, $SITE{address}. Работаем 24/7.
+Контакты: Telegram https://t.me/$SITE{telegram}, WhatsApp https://wa.me/$SITE{whatsapp}, телефон $SITE{phone}, $SITE{address}. Режим работы: $SITE{hours}.
 
 ## Условия
 $inc

@@ -114,8 +114,8 @@
     function cur() { return Object.assign({}, b, U.read(root, ALL), { img: (root.querySelector('#imgurl') || {}).value || b.img }); }
     function preview() {
       var v = cur();
-      var t = 'Аренда ' + v.name + ' в Нячанге — от ' + U.vnd(v.p7) + '/день, без депозита';
-      var ds = 'Аренда ' + v.name + ' в Нячанге: ' + U.vnd(v.p1) + ' в день, ' + U.vnd(v.pm) + ' в месяц. ' + ({ none: 'Без прав', A1: 'Права A1 / A', A: 'Права A' }[v.license]) + '. Бесплатная доставка в отель, без депозита и залога паспорта, 2 шлема в комплекте.';
+      var t = 'Аренда ' + v.name + ' в Нячанге — от ' + U.vnd(v.p7) + '/день, с доставкой';
+      var ds = 'Аренда ' + v.name + ' в Нячанге: ' + U.vnd(v.p1) + ' в день, ' + U.vnd(v.pm) + ' в месяц. ' + ({ none: 'Без прав', A1: 'Права A1 / A', A: 'Права A' }[v.license]) + '. Бесплатная доставка в отель, без залога паспорта, 2 шлема в комплекте.';
       root.querySelector('#serp').innerHTML = '<div style="font-family:arial,sans-serif"><div style="font-size:12px;color:#202124">mybike · /arenda/' + U.esc(v.id || '…') + '/</div><div style="color:#1a0dab;font-size:18px;line-height:1.3;margin:2px 0">' + U.esc(t.length > 65 ? t.slice(0, 62) + '…' : t) + '</div><div style="font-size:13px;color:#4d5156">' + U.esc(ds.length > 160 ? ds.slice(0, 157) + '…' : ds) + '</div></div>' +
         '<p class="hint" style="margin-top:8px">Title: ' + t.length + ' симв. · Description: ' + ds.length + ' симв. · Текст страницы: ' + (v.about || []).join(' ').split(/\s+/).filter(Boolean).length + ' слов' + ((v.about || []).join(' ').split(/\s+/).length < 60 ? ' <b style="color:var(--yellow)">— мало, добавьте 1–2 абзаца</b>' : '') + '</p>';
       var rows = [1, 3, 7, 14, 30, 60].map(function (n) { var c = U.cost(v, n); return '<tr><td>' + n + ' дн.</td><td class="num">' + U.vnd(c) + '</td><td class="num muted">' + U.vnd(c / n) + '/день</td></tr>'; }).join('');
