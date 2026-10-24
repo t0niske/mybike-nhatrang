@@ -114,10 +114,23 @@ sub src_hash {
 }
 sub min_p { my @b = @_; my ($m) = sort { $a <=> $b } map { $_->{p7} } @b; $m }
 
+# типографика HTML: короткие слова (предлоги, союзы, числа) не висят в конце строки,
+# тире не переносится в начало новой строки; теги, script и style не трогаем
+sub typo {
+  my @parts = split /(<script\b.*?<\/script>|<style\b.*?<\/style>|<[^>]*>)/s, shift;
+  for (@parts) {
+    next if /^</;
+    s/(?<![\p{L}\d])(?!(?:ли|же|бы)\b)(\p{L}{1,2}|\d{1,3}) (?=\S)/$1\x{a0}/g;
+    s/ (—|–)/\x{a0}$1/g;
+  }
+  join '', @parts;
+}
+
 sub write_file {
   my ($path, $content) = @_;
   my $full = "$OUT$path";
   $full .= 'index.html' if $full =~ m{/$};
+  $content = typo($content) if $full =~ /\.html$/;
   (my $dir = $full) =~ s{/[^/]+$}{};
   make_path($dir);
   open my $fh, '>:encoding(UTF-8)', $full or die "$full: $!";
@@ -594,7 +607,7 @@ sub inc_art {
     passport => sub { q{<svg class="art-svg" viewBox="0 0 260 170">
 <g transform="rotate(-8 105 90)"><rect x="48" y="14" width="114" height="150" rx="12" fill="#2B2B2B"/><rect x="56" y="22" width="98" height="134" rx="8" fill="none" stroke="#FF6B2C" stroke-opacity=".45" stroke-width="1.5"/><circle cx="105" cy="72" r="22" fill="none" stroke="#FF6B2C" stroke-width="3"/><ellipse cx="105" cy="72" rx="10" ry="22" fill="none" stroke="#FF6B2C" stroke-width="2.5"/><path d="M83 72h44" stroke="#FF6B2C" stroke-width="2.5"/><text x="105" y="124" text-anchor="middle" fill="#fff" font-size="12" font-weight="800" letter-spacing="3">ПАСПОРТ</text></g>
 <g transform="rotate(6 204 50)"><rect x="160" y="16" width="88" height="66" rx="12" class="art-svg__bg"/><rect x="168" y="24" width="34" height="50" rx="6" fill="#FFF1EA"/><circle cx="185" cy="42" r="7" fill="#FF6B2C"/><path d="M174 66c2-6 6-9 11-9s9 3 11 9z" fill="#FF6B2C"/><rect x="208" y="32" width="32" height="5" rx="2.5" fill="#E6E6E6"/><rect x="208" y="43" width="24" height="5" rx="2.5" fill="#E6E6E6"/><rect x="208" y="54" width="28" height="5" rx="2.5" fill="#E6E6E6"/></g>
-<rect x="112" y="120" width="142" height="38" rx="19" class="art-svg__bg"/><circle cx="132" cy="139" r="10" fill="#1F9D55"/><path d="m127 139 3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="149" y="143.5" font-size="12.5" font-weight="800" fill="#1E1E1E">Остаётся у вас</text>
+<rect x="112" y="120" width="140" height="38" rx="19" class="art-svg__bg"/><circle cx="132" cy="139" r="10" fill="#1F9D55"/><path d="m127 139 3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="149" y="143.5" font-size="12.5" font-weight="800" fill="#1E1E1E">Остаётся у вас</text>
 </svg>} },
     # доставка: карта с маршрутом от байка до отеля
     truck    => sub { q{<svg class="art-svg" viewBox="0 0 260 170">
@@ -613,7 +626,7 @@ sub inc_art {
 <use href="#art-hm" fill="#FF6B2C" transform="translate(12 42) scale(1.12)"/>
 <use href="#art-hm" fill="#FFB792" transform="translate(166 92) scale(.55)"/>
 <g font-size="12" font-weight="800" text-anchor="middle"><circle cx="38" cy="56" r="13" class="art-svg__bg"/><text x="38" y="60.5" fill="#1E1E1E">M</text><circle cx="234" cy="18" r="13" class="art-svg__bg"/><text x="234" y="22.5" fill="#1E1E1E">L</text></g>
-<rect x="150" y="136" width="100" height="22" rx="11" fill="#1E1E1E"/><text x="200" y="151" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Детский · 0 ₫</text>
+<rect x="155" y="136" width="90" height="22" rx="11" fill="#1E1E1E"/><text x="200" y="151" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Детский · 0 ₫</text>
 </svg>} },
     # держатель с телефоном на руле и капли дождя
     rain     => sub { q{<svg class="art-svg" viewBox="0 0 260 170">
@@ -622,7 +635,7 @@ sub inc_art {
 <rect x="116" y="134" width="28" height="24" rx="6" fill="#555"/><path d="M101 44h-6v82h6M159 44h6v82h-6" stroke="#555" stroke-width="5" fill="none" stroke-linejoin="round"/>
 <rect x="96" y="12" width="68" height="126" rx="13" fill="#1E1E1E"/><rect x="101" y="18" width="58" height="114" rx="9" fill="#FFF1EA"/>
 <path d="M101 60h58M101 100h58M126 18v114" stroke="#fff" stroke-width="5"/><path d="M114 120v-20h26V60h10V36" fill="none" stroke="#FF6B2C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="150" cy="34" r="5" fill="#1E1E1E"/><circle cx="114" cy="120" r="5.5" fill="#FF6B2C" stroke="#fff" stroke-width="2"/>
-<rect x="170" y="98" width="84" height="26" rx="13" class="art-svg__bg"/><path d="M184 104c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 1-4 4-8z" fill="#7FB4EA"/><text x="194" y="115.5" font-size="11.5" font-weight="800" fill="#1E1E1E">2 дождевика</text>
+<rect x="150" y="99" width="108" height="26" rx="13" class="art-svg__bg"/><path d="M164 106c3 4 4 6 4 8a4 4 0 0 1-8 0c0-2 1-4 4-8z" fill="#7FB4EA"/><text x="174" y="116.5" font-size="11.5" font-weight="800" fill="#1E1E1E">2 дождевика</text>
 </svg>} },
     wrench   => sub { $msg->('Пробил колесо у Хон Чонг 😩') . $msg->('Не переживайте, уже везём замену 🛵', 1) . $ic->('wrench') },
     chat     => sub { $msg->('Куда съездить в выходные?') . $msg->('Ба Хо или Зоклет — скинули маршрут и заправки 👌', 1) . $ic->('chat') },
@@ -631,7 +644,7 @@ sub inc_art {
 <g transform="rotate(-12 80 70)"><rect x="18" y="34" width="130" height="70" rx="10" fill="#DFF3E7"/><rect x="26" y="42" width="114" height="54" rx="6" fill="none" stroke="#1F9D55" stroke-opacity=".35" stroke-width="1.5"/><circle cx="83" cy="69" r="16" fill="none" stroke="#1F9D55" stroke-opacity=".5" stroke-width="2"/><text x="83" y="75" text-anchor="middle" font-size="17" font-weight="800" fill="#1F9D55">₫</text></g>
 <g transform="rotate(8 174 62)"><rect x="104" y="18" width="140" height="88" rx="14" fill="#333"/><rect x="104" y="36" width="140" height="14" fill="#1E1E1E"/><text x="230" y="94" text-anchor="end" font-size="18" font-weight="800" fill="#fff">$</text></g>
 <g transform="rotate(-3 128 108)"><rect x="54" y="62" width="150" height="92" rx="14" fill="#FF6B2C"/><rect x="70" y="82" width="28" height="21" rx="4" fill="#FFD9B8"/><path d="M70 92.5h28M84 82v21" stroke="#E2551A" stroke-width="1"/><text x="70" y="140" font-size="13" font-weight="700" fill="#fff" letter-spacing="1.5">•••• 2468</text><text x="190" y="106" text-anchor="end" font-size="28" font-weight="800" fill="#fff">₽</text></g>
-<circle cx="216" cy="128" r="24" fill="#26A17B"/><circle cx="216" cy="128" r="19" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><text x="216" y="136" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">₮</text>
+<circle cx="216" cy="128" r="24" fill="#26A17B"/><circle cx="216" cy="128" r="19" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><text x="216" y="131.5" text-anchor="middle" font-size="10.5" font-weight="800" fill="#fff">USDT</text>
 </svg>} },
     coin     => sub {
       my ($b) = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @BIKES;
@@ -643,7 +656,7 @@ sub inc_art {
 }
 
 sub included_html {
-  my $items = join '', map { qq{<li class="inc"><b class="inc__t">$_->[1]</b><p>$_->[2]</p><div class="inc__art inc__art--$_->[0]" aria-hidden="true">${\ inc_art($_->[0])}</div></li>} } @INCLUDED;
+  my $items = join '', map { (my $t = $_->[2]) =~ s/\.\s*$//; qq{<li class="inc"><b class="inc__t">$_->[1]</b><p>$t</p><div class="inc__art inc__art--$_->[0]" aria-hidden="true">${\ inc_art($_->[0])}</div></li>} } @INCLUDED;
   qq{<ul class="incs">$items</ul>};
 }
 
