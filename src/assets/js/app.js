@@ -10,7 +10,8 @@
   function num(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, NB); }
   function vnd(n) { return num(n) + NB + '₫'; }
   function rub(n) { return '≈' + NB + num(Math.ceil(n / (CFG.rub || 300) / 10) * 10) + NB + '₽'; }
-  function days(n) { var m = n % 100, k = n % 10; return n + NB + (m >= 11 && m <= 14 ? 'дней' : k === 1 ? 'день' : k >= 2 && k <= 4 ? 'дня' : 'дней'); }
+  function dayWord(n) { var m = n % 100, k = n % 10; return m >= 11 && m <= 14 ? 'дней' : k === 1 ? 'день' : k >= 2 && k <= 4 ? 'дня' : 'дней'; }
+  function days(n) { return n + NB + dayWord(n); }
   function cost(b, d) { // дольше никогда не дороже
     if (d >= 30) return b.pm / 30 * d;
     var c = d * (d >= 7 ? b.p7 : b.p1);
@@ -102,13 +103,14 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && hcat.classList.contains('is-open')) { hcatSet(false); hcatBtn.focus(); } });
   }
 
-  // ---------- карточки: срок «− N дней +», цена за день и итого ----------
+  // ---------- карточки: срок «− N дней +» (число можно ввести вручную), цена за день и итого ----------
   var MAX_DAYS = 60;
   function updateCard(card, d) {
-    d = Math.max(1, Math.min(MAX_DAYS, d));
+    d = Math.max(1, Math.min(MAX_DAYS, Math.round(d) || 1));
     card.dataset.days = d;
-    var t = cost(data(card), d);
-    $('[data-days]', card).textContent = days(d);
+    var t = cost(data(card), d), inp = $('[data-days-input]', card);
+    if (+inp.value !== d) inp.value = d;
+    $('[data-days-word]', card).textContent = dayWord(d);
     $('[data-perday]', card).textContent = vnd(Math.round(t / d / 100) * 100);   // цена за день — до сотен
     $('[data-sum-label]', card).textContent = 'Итого за ' + days(d);
     $('[data-total]', card).textContent = vnd(t);
@@ -120,6 +122,16 @@
     var s = e.target.closest('[data-step]'), card = s && s.closest('[data-bike]');
     if (card) updateCard(card, +card.dataset.days + +s.dataset.step);
   });
+  // ручной ввод: пересчёт на лету, пустое или неверное значение возвращается к последнему сроку
+  document.addEventListener('input', function (e) {
+    var inp = e.target.closest('[data-days-input]'), v = inp && parseInt(inp.value, 10);
+    if (v >= 1) updateCard(inp.closest('[data-bike]'), v);
+  });
+  document.addEventListener('change', function (e) {
+    var inp = e.target.closest('[data-days-input]');
+    if (inp) { var card = inp.closest('[data-bike]'); updateCard(card, parseInt(inp.value, 10) || +card.dataset.days); }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.matches('[data-days-input]')) e.target.blur(); });
 
   // ---------- каталог: фильтры ----------
   $$('[data-catalog]').forEach(function (cat) {

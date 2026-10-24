@@ -445,14 +445,15 @@ sub bike_card {
   # три главные характеристики: ABS (или коробка), для двоих, права
   (my $gear = $b->{gearbox} // '') =~ s/[\s,(].*//;
   my @feats = (
-    $b->{abs} ? ['shield', 'ABS'] : $gear ? ['gauge', $gear] : (),
-    ($b->{seats} // 0) >= 2 ? ['users', 'Для двоих'] : (),
-    [$lic eq 'none' ? 'nolicense' : 'passport', $lic eq 'none' ? 'Без прав' : "Права $lic", "lic--$lic"],
+    $b->{abs} ? ['ABS'] : $gear ? [$gear] : (),
+    ($b->{seats} // 0) >= 2 ? ['Для двоих'] : (),
+    [$lic eq 'none' ? 'Без прав' : "Права $lic", "lic--$lic"],
   );
-  my $feats = join '', map { qq{<li${\ ($_->[2] ? qq{ class="$_->[2]"} : '')}>${\ icon($_->[0])}$_->[1]</li>} } @feats;
+  my $feats = join '', map { qq{<li${\ ($_->[1] ? qq{ class="$_->[1]"} : '')}>$_->[0]</li>} } @feats;
   my $h = $o{h} // 'h3';
   my $alt = esc("$b->{name} — аренда в Нячанге");
   my $dw = plural($days, 'день', 'дня', 'дней');
+  my ($dword) = $dw =~ /\x{a0}(.+)/;
   return <<"H";
 <article class="bike" data-bike data-group="$b->{group}" data-license="$lic" data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-cc="$b->{cc}" data-rank="$b->{rank}" data-name="${\ esc($b->{name})}" data-slug="$b->{slug}" data-days="$days">
   <a class="bike__img" href="$url" tabindex="-1" aria-hidden="true"><img src="${\ img_url($b)}" alt="$alt" width="540" height="423" loading="lazy" decoding="async"><span class="bike__badges">$licbadge$hit</span></a>
@@ -460,8 +461,8 @@ sub bike_card {
     <$h class="bike__name"><a href="$url">$b->{name}</a></$h>
     <p class="bike__meta">$b->{type} · ${\ cc_label($b)} · $b->{year}</p>
     <ul class="bike__feats">$feats</ul>
-    <div class="bike__term"><span>Срок аренды</span><div class="stepper"><button type="button" data-step="-1" aria-label="Меньше дней">−</button><output data-days aria-live="polite">$dw</output><button type="button" data-step="1" aria-label="Больше дней">+</button></div></div>
-    <div class="bike__price"><b data-perday>${\ vnd($tot / $days)}</b><span>/ день</span></div>
+    <div class="bike__term"><span>Срок аренды</span><div class="stepper"><button type="button" data-step="-1" aria-label="Меньше дней">−</button><label class="stepper__val"><input type="number" inputmode="numeric" min="1" max="60" value="$days" data-days-input aria-label="Срок аренды, дней"><span data-days-word>$dword</span></label><button type="button" data-step="1" aria-label="Больше дней">+</button></div></div>
+    <div class="bike__price"><b data-perday>${\ vnd(int($tot / $days / 100 + 0.5) * 100)}</b><span>/ день</span></div>
     <div class="bike__sum"><span><span data-sum-label>Итого за $dw</span><small data-rub>${\ rub($tot)}</small></span><b data-total>${\ vnd($tot)}</b></div>
     <button class="btn btn--orange btn--block bike__book" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать</button>
   </div>
