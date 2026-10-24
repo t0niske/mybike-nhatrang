@@ -10,7 +10,7 @@
   function num(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, NB); }
   function vnd(n) { return num(n) + NB + '₫'; }
   function rub(n) { return '≈' + NB + num(Math.ceil(n / (CFG.rub || 300) / 10) * 10) + NB + '₽'; }
-  function days(n) { return n + ' дн.'; }
+  function days(n) { var m = n % 100, k = n % 10; return n + NB + (m >= 11 && m <= 14 ? 'дней' : k === 1 ? 'день' : k >= 2 && k <= 4 ? 'дня' : 'дней'); }
   function cost(b, d) { // дольше никогда не дороже
     if (d >= 30) return b.pm / 30 * d;
     var c = d * (d >= 7 ? b.p7 : b.p1);
@@ -102,19 +102,23 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && hcat.classList.contains('is-open')) { hcatSet(false); hcatBtn.focus(); } });
   }
 
-  // ---------- карточки: ползунок срока ----------
+  // ---------- карточки: срок «− N дней +», цена за день и итого ----------
+  var MAX_DAYS = 60;
   function updateCard(card, d) {
-    var b = data(card), t = cost(b, d);
-    var r = $('[data-range]', card); if (r && +r.value !== d) r.value = d; if (r) rangeFill(r);
+    d = Math.max(1, Math.min(MAX_DAYS, d));
+    card.dataset.days = d;
+    var t = cost(data(card), d);
     $('[data-days]', card).textContent = days(d);
+    $('[data-perday]', card).textContent = vnd(Math.round(t / d / 100) * 100);   // цена за день — до сотен
+    $('[data-sum-label]', card).textContent = 'Итого за ' + days(d);
     $('[data-total]', card).textContent = vnd(t);
-    $('[data-rub]', card).textContent = rub(t) + ' · ' + vnd(t / d) + '/день';
+    $('[data-rub]', card).textContent = rub(t);
+    $$('[data-step]', card).forEach(function (s) { s.disabled = +s.dataset.step < 0 ? d <= 1 : d >= MAX_DAYS; });
   }
-  $$('[data-bike]').forEach(function (card) {
-    var r = $('[data-range]', card);
-    if (!r) return;
-    r.addEventListener('input', function () { updateCard(card, +r.value); });
-    updateCard(card, +r.value);
+  $$('[data-bike]').forEach(function (card) { if ($('[data-perday]', card)) updateCard(card, +card.dataset.days || 7); });
+  document.addEventListener('click', function (e) {
+    var s = e.target.closest('[data-step]'), card = s && s.closest('[data-bike]');
+    if (card) updateCard(card, +card.dataset.days + +s.dataset.step);
   });
 
   // ---------- каталог: фильтры ----------
@@ -249,12 +253,13 @@
     var t = cost(data(opt), d);
     box.innerHTML = 'Итого за ' + days(d) + ': <b>' + vnd(t) + '</b> <span class="muted">' + rub(t) + '</span>';
   }
-  function openModal(slug) {
+  function openModal(slug, cardDays) {
     lastFocus = document.activeElement;
     if (slug) form.elements.bike.value = slug;
     var pf2 = $('[data-pfrom]'), pt2 = $('[data-pto]'), sf = $('[data-from]'), st = $('[data-to]');
     form.elements.from.value = (pf2 && pf2.value) || (sf && sf.value) || form.elements.from.value || addDays(1);
     form.elements.to.value = (pt2 && pt2.value) || (st && st.value) || form.elements.to.value || addDays(4);
+    if (cardDays) { var to = new Date(form.elements.from.value); to.setDate(to.getDate() + cardDays); form.elements.to.value = iso(to); }   // срок из карточки
     form.elements.from.min = addDays(0);
     modal.hidden = false; document.body.style.overflow = 'hidden';
     modalTotal();
@@ -264,7 +269,7 @@
   function closeModal() { modal.hidden = true; document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-book]');
-    if (b) { e.preventDefault(); openModal(b.dataset.book); }
+    if (b) { var card = b.closest('[data-bike]'); e.preventDefault(); openModal(b.dataset.book, card && +card.dataset.days); }
     if (e.target.closest('[data-close]')) closeModal();
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal && !modal.hidden) closeModal(); });

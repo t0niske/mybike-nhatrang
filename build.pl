@@ -58,6 +58,7 @@ my $B     = $ENV{BASE} // $SITE{base};
 $SITE{url} = $ENV{SITE_URL} if $ENV{SITE_URL};
 my $PREVIEW = $ENV{PREVIEW};   # 1 = тестовая копия: noindex на всех страницах
 my $TODAY = strftime('%Y-%m-%d', localtime);
+my $CARD_DAYS = 7;   # срок по умолчанию в карточках байков и в ползунке «для всех»
 my $VER   = src_hash();   # версия CSS/JS меняется только при изменении файлов
 my @SITEMAP;
 my $JSON  = JSON::PP->new->canonical->pretty(0);
@@ -436,36 +437,33 @@ sub bike_card {
   my ($b, %o) = @_;
   $o{sfx} //= q{};
   my $url = u("/arenda/$b->{slug}/");
-  my $days = 3;
+  my $days = $CARD_DAYS;
   my $tot = cost($b, $days);
   my $lic = $b->{license};
   my $licbadge = $lic eq 'none' ? '<span class="badge badge--green">Без прав</span>' : '';
   my $hit = ($b->{popular} && $b->{rank} <= 2) ? '<span class="badge badge--orange">Хит</span>' : '';
-  my $abs = $b->{abs} ? '<span class="badge">ABS</span>' : '';
-  my $tags = join '', map { qq{<li>$_</li>} } grep { $_ ne 'Без прав' && $_ ne 'Хит' } @{ $b->{tags} };
+  # три главные характеристики: ABS (или коробка), для двоих, права
+  (my $gear = $b->{gearbox} // '') =~ s/[\s,(].*//;
+  my @feats = (
+    $b->{abs} ? ['shield', 'ABS'] : $gear ? ['gauge', $gear] : (),
+    ($b->{seats} // 0) >= 2 ? ['users', 'Для двоих'] : (),
+    [$lic eq 'none' ? 'nolicense' : 'passport', $lic eq 'none' ? 'Без прав' : "Права $lic", "lic--$lic"],
+  );
+  my $feats = join '', map { qq{<li${\ ($_->[2] ? qq{ class="$_->[2]"} : '')}>${\ icon($_->[0])}$_->[1]</li>} } @feats;
   my $h = $o{h} // 'h3';
   my $alt = esc("$b->{name} — аренда в Нячанге");
+  my $dw = plural($days, 'день', 'дня', 'дней');
   return <<"H";
-<article class="bike" data-bike data-group="$b->{group}" data-license="$lic" data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-cc="$b->{cc}" data-rank="$b->{rank}" data-name="${\ esc($b->{name})}" data-slug="$b->{slug}">
-  <a class="bike__img" href="$url" tabindex="-1" aria-hidden="true"><img src="${\ img_url($b)}" alt="$alt" width="540" height="423" loading="lazy" decoding="async"><span class="bike__badges">$licbadge$hit$abs</span></a>
+<article class="bike" data-bike data-group="$b->{group}" data-license="$lic" data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-cc="$b->{cc}" data-rank="$b->{rank}" data-name="${\ esc($b->{name})}" data-slug="$b->{slug}" data-days="$days">
+  <a class="bike__img" href="$url" tabindex="-1" aria-hidden="true"><img src="${\ img_url($b)}" alt="$alt" width="540" height="423" loading="lazy" decoding="async"><span class="bike__badges">$licbadge$hit</span></a>
   <div class="bike__body">
     <$h class="bike__name"><a href="$url">$b->{name}</a></$h>
-    <p class="bike__meta">$b->{type} · ${\ cc_label($b)} · $b->{year} · <span class="lic lic--$lic">${\ lic_label($lic)}</span></p>
-    <ul class="bike__tags">$tags</ul>
-    <div class="tiers">
-      <div class="tier"><span>1–6 дней</span><b>${\ vnd($b->{p1})}</b><small>в день</small></div>
-      <div class="tier tier--hl"><span>7–29 дней</span><b>${\ vnd($b->{p7})}</b><small>в день</small></div>
-      <div class="tier"><span>Месяц</span><b>${\ vnd($b->{pm})}</b><small>за 30 дней</small></div>
-    </div>
-    <div class="calc" data-calc>
-      <div class="calc__row"><label for="d-$b->{slug}$o{sfx}">Срок аренды</label><output data-days>$days дн.</output></div>
-      <input id="d-$b->{slug}$o{sfx}" type="range" min="1" max="60" value="$days" data-range aria-label="Срок аренды в днях">
-      <div class="calc__sum"><span>Итого</span><b data-total>${\ vnd($tot)}</b><small data-rub>${\ rub($tot)}</small></div>
-    </div>
-    <div class="bike__actions">
-      <button class="btn btn--orange" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать</button>
-      <a class="btn btn--dark" href="$url">Подробнее</a>
-    </div>
+    <p class="bike__meta">$b->{type} · ${\ cc_label($b)} · $b->{year}</p>
+    <ul class="bike__feats">$feats</ul>
+    <div class="bike__term"><span>Срок аренды</span><div class="stepper"><button type="button" data-step="-1" aria-label="Меньше дней">−</button><output data-days aria-live="polite">$dw</output><button type="button" data-step="1" aria-label="Больше дней">+</button></div></div>
+    <div class="bike__price"><b data-perday>${\ vnd($tot / $days)}</b><span>/ день</span></div>
+    <div class="bike__sum"><span><span data-sum-label>Итого за $dw</span><small data-rub>${\ rub($tot)}</small></span><b data-total>${\ vnd($tot)}</b></div>
+    <button class="btn btn--orange btn--block bike__book" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать</button>
   </div>
 </article>
 H
@@ -497,8 +495,8 @@ sub catalog_block {
   </div>
   <div class="chips" role="group" aria-label="Класс байка">$chips</div>
   <div class="filters__days">
-    <label for="days-all$o{sfx}">${\ icon('calendar')} Срок аренды для всех байков: <output data-days-all>3 дн.</output></label>
-    <input id="days-all$o{sfx}" type="range" min="1" max="60" value="3" data-range-all>
+    <label for="days-all$o{sfx}">${\ icon('calendar')} Срок аренды для всех байков: <output data-days-all>${\ plural($CARD_DAYS, 'день', 'дня', 'дней')}</output></label>
+    <input id="days-all$o{sfx}" type="range" min="1" max="60" value="$CARD_DAYS" data-range-all>
   </div>
 </div>
 H
@@ -506,8 +504,8 @@ H
     $controls = <<"H";
 <div class="filters filters--compact" data-filters>
   <div class="filters__days">
-    <label for="days-all$o{sfx}">${\ icon('calendar')} Срок аренды: <output data-days-all>3 дн.</output></label>
-    <input id="days-all$o{sfx}" type="range" min="1" max="60" value="3" data-range-all>
+    <label for="days-all$o{sfx}">${\ icon('calendar')} Срок аренды: <output data-days-all>${\ plural($CARD_DAYS, 'день', 'дня', 'дней')}</output></label>
+    <input id="days-all$o{sfx}" type="range" min="1" max="60" value="$CARD_DAYS" data-range-all>
   </div>
   <label class="sort">Сортировка
     <select data-sort><option value="rank">Популярные</option><option value="cheap">Сначала дешевле</option><option value="exp">Сначала дороже</option><option value="cc">По мощности</option></select>
