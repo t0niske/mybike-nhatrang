@@ -12,13 +12,10 @@
   function rub(n) { return '≈' + NB + num(Math.ceil(n / (CFG.rub || 300) / 10) * 10) + NB + '₽'; }
   function dayWord(n) { var m = n % 100, k = n % 10; return m >= 11 && m <= 14 ? 'дней' : k === 1 ? 'день' : k >= 2 && k <= 4 ? 'дня' : 'дней'; }
   function days(n) { return n + NB + dayWord(n); }
-  function cost(b, d) { // дольше никогда не дороже
-    if (d >= 30) return b.pm / 30 * d;
-    var c = d * (d >= 7 ? b.p7 : b.p1);
-    if (d < 7 && b.p7 * 7 < c) c = b.p7 * 7;
-    if (b.pm < c) c = b.pm;
-    return c;
-  }
+  // три ступени цены за день: 1–6 дней, от 7 дней, от 30 дней (цена месяца / 30); итог = цена за день × дни
+  function rate(b, d) { return d >= 30 ? b.pm / 30 : d >= 7 ? b.p7 : b.p1; }
+  function cost(b, d) { return rate(b, d) * d; }
+  function r100(n) { return Math.round(n / 100) * 100; }
   function data(el) { return { p1: +el.dataset.p1, p7: +el.dataset.p7, pm: +el.dataset.pm }; }
   function rangeFill(r) { r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'); }
 
@@ -105,25 +102,15 @@
 
   // ---------- карточки: срок «− N дней +» (число можно ввести вручную), цена за день и итого ----------
   var MAX_DAYS = 365;
-  // цена за день (до сотен), скидка к цене 1–6 дней и подсказка про следующую ступень — как card_offer в build.pl
-  function offer(b, d) {
-    function per(n) { return Math.round(cost(b, n) / n / 100) * 100; }
-    function off(p) { return Math.round((1 - p / b.p1) * 100); }
-    var next = d < 7 ? 7 : d < 30 ? 30 : 0, hint = '';
-    if (next) hint = cost(b, d) >= cost(b, next) ? next + NB + 'дней — за ту же сумму'
-      : (next === 7 ? 'С 7-го дня' : 'От 30 дней') + ' — ' + vnd(per(next)) + '/день, −' + off(per(next)) + '%';
-    return { per: per(d), off: off(per(d)), hint: hint };
-  }
   function updateCard(card, d) {
     d = Math.max(1, Math.min(MAX_DAYS, Math.round(d) || 1));
     card.dataset.days = d;
-    var b = data(card), t = cost(b, d), o = offer(b, d), inp = $('[data-days-input]', card);
+    var b = data(card), t = cost(b, d), inp = $('[data-days-input]', card), tier = d >= 30 ? 30 : d >= 7 ? 7 : 1;
     if (+inp.value !== d) inp.value = d;
+    inp.style.width = String(d).length + 'ch';   // ширина по числу — «N дней» стоит ровно по центру
     $('[data-days-word]', card).textContent = dayWord(d);
-    $('[data-perday]', card).textContent = vnd(o.per);
-    var offEl = $('[data-off]', card), hintEl = $('[data-hint]', card);
-    offEl.textContent = '−' + o.off + '%'; offEl.hidden = o.off < 1;
-    hintEl.textContent = o.hint; hintEl.hidden = !o.hint;
+    $('[data-perday]', card).textContent = vnd(r100(rate(b, d)));
+    $$('[data-set-days]', card).forEach(function (p) { p.classList.toggle('is-on', +p.dataset.setDays === tier); });
     $('[data-sum-label]', card).textContent = 'Итого за ' + days(d);
     $('[data-total]', card).textContent = vnd(t);
     $('[data-rub]', card).textContent = rub(t);
@@ -133,6 +120,8 @@
   document.addEventListener('click', function (e) {
     var s = e.target.closest('[data-step]'), card = s && s.closest('[data-bike]');
     if (card) updateCard(card, +card.dataset.days + +s.dataset.step);
+    var p = e.target.closest('[data-set-days]'), pc = p && p.closest('[data-bike]');   // клик по цене ступени ставит её срок
+    if (pc) updateCard(pc, +p.dataset.setDays);
   });
   // ручной ввод: пересчёт на лету, пустое или неверное значение возвращается к последнему сроку
   document.addEventListener('input', function (e) {

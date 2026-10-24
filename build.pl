@@ -90,14 +90,10 @@ sub strip { my $s = shift; $s =~ s/<[^>]+>//g; $s =~ s/\{base\}//g; $s }
 sub num { my $n = int($_[0] + 0.5); 1 while $n =~ s/^(\d+)(\d{3})/$1\x{a0}$2/; $n }
 sub vnd { num(shift) . "\x{a0}₫" }
 sub rub { '≈' . "\x{a0}" . num(ceil($_[0] / $SITE{rub_rate} / 10) * 10) . "\x{a0}₽" }
-sub cost {   # стоимость за $d дней с «умным» потолком (дольше никогда не дороже)
-  my ($b, $d) = @_;
-  return $b->{pm} / 30 * $d if $d >= 30;
-  my $c = $d * ($d >= 7 ? $b->{p7} : $b->{p1});
-  $c = $b->{p7} * 7 if $d < 7 && $b->{p7} * 7 < $c;
-  $c = $b->{pm} if $b->{pm} < $c;
-  $c;
-}
+# три ступени цены за день: 1–6 дней, от 7 дней, от 30 дней (цена месяца / 30); итог = цена за день × дни
+sub rate { my ($b, $d) = @_; $d >= 30 ? $b->{pm} / 30 : $d >= 7 ? $b->{p7} : $b->{p1} }
+sub cost { my ($b, $d) = @_; rate($b, $d) * $d }
+sub r100 { int($_[0] / 100 + 0.5) * 100 }
 sub lic_label { my $l = shift; $l eq 'none' ? 'Без прав' : $l eq 'A1' ? 'Права A1 / A' : 'Права A' }
 sub lic_text {
   my $b = shift;
@@ -434,16 +430,15 @@ H
 }
 
 # ------------------------------------------------------------ components
-# цена за день, скидка к посуточной цене (1–6 дней) и подсказка про следующую ступень: с 7-го дня и от 30 дней.
-# Та же логика — в app.js (offer)
-sub card_offer {
+# три цены по сроку: активная ступень подсвечена, по клику ставит её срок; скидка — к цене 1–6 дней
+sub price_tiers {
   my ($b, $d) = @_;
-  my $per = sub { int(cost($b, $_[0]) / $_[0] / 100 + 0.5) * 100 };
-  my $off = sub { int((1 - $_[0] / $b->{p1}) * 100 + 0.5) };
-  my ($next) = grep { $d < $_ } 7, 30;
-  my $hint = !$next ? '' : cost($b, $d) >= cost($b, $next) ? "$next дней — за ту же сумму"
-    : ($next == 7 ? 'С 7-го дня' : 'От 30 дней') . " — ${\ vnd($per->($next))}/день, −${\ $off->($per->($next))}%";
-  return ($per->($d), $off->($per->($d)), $hint);
+  my $cur = $d >= 30 ? 30 : $d >= 7 ? 7 : 1;
+  join '', map {
+    my ($from, $label) = @$_;
+    my $p = rate($b, $from); my $off = int((1 - $p / $b->{p1}) * 100 + 0.5);
+    qq{<button type="button" class="ptier${\ ($from == $cur ? ' is-on' : '')}" data-set-days="$from"><span>$label</span><b>${\ vnd(r100($p))}</b>${\ ($off > 0 ? "<i>−$off%</i>" : '')}</button>}
+  } [1, '1–6 дней'], [7, 'от 7 дней'], [30, 'от 30 дней'];
 }
 
 sub bike_card {
@@ -467,7 +462,6 @@ sub bike_card {
   my $alt = esc("$b->{name} — аренда в Нячанге");
   my $dw = plural($days, 'день', 'дня', 'дней');
   my ($dword) = $dw =~ /\x{a0}(.+)/;
-  my ($perday, $off, $hint) = card_offer($b, $days);
   return <<"H";
 <article class="bike" data-bike data-group="$b->{group}" data-license="$lic" data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-cc="$b->{cc}" data-rank="$b->{rank}" data-name="${\ esc($b->{name})}" data-slug="$b->{slug}" data-days="$days">
   <a class="bike__img" href="$url" tabindex="-1" aria-hidden="true"><img src="${\ img_url($b)}" alt="$alt" width="540" height="423" loading="lazy" decoding="async"><span class="bike__badges">$licbadge$hit</span></a>
@@ -475,9 +469,9 @@ sub bike_card {
     <$h class="bike__name"><a href="$url">$b->{name}</a></$h>
     <p class="bike__meta">$b->{type} · ${\ cc_label($b)} · $b->{year}</p>
     <ul class="bike__feats">$feats</ul>
-    <div class="bike__term"><span>Срок аренды</span><div class="stepper"><button type="button" data-step="-1" aria-label="Меньше дней">−</button><label class="stepper__val"><input type="number" inputmode="numeric" min="1" max="$MAX_DAYS" value="$days" data-days-input aria-label="Срок аренды, дней"><span data-days-word>$dword</span></label><button type="button" data-step="1" aria-label="Больше дней">+</button></div></div>
-    <div class="bike__price"><b data-perday>${\ vnd($perday)}</b><span>/ день</span><i class="bike__off" data-off${\ ($off > 0 ? '' : ' hidden')}>−$off%</i></div>
-    <p class="bike__hint" data-hint${\ ($hint ? '' : ' hidden')}>$hint</p>
+    <div class="bike__term"><span>Срок аренды</span><div class="stepper"><button type="button" data-step="-1" aria-label="Меньше дней">−</button><label class="stepper__val"><input type="number" inputmode="numeric" min="1" max="$MAX_DAYS" value="$days" style="width:${\ length($days)}ch" data-days-input aria-label="Срок аренды, дней"><span data-days-word>$dword</span></label><button type="button" data-step="1" aria-label="Больше дней">+</button></div></div>
+    <div class="bike__price"><b data-perday>${\ vnd(r100(rate($b, $days)))}</b><span>/ день</span></div>
+    <div class="ptiers" role="group" aria-label="Цена за день по сроку">${\ price_tiers($b, $days)}</div>
     <div class="bike__sum"><span><span data-sum-label>Итого за $dw</span><small data-rub>${\ rub($tot)}</small></span><b data-total>${\ vnd($tot)}</b></div>
     <button class="btn btn--orange btn--block bike__book" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать</button>
   </div>
