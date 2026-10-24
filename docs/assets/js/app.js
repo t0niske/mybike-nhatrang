@@ -104,14 +104,26 @@
   }
 
   // ---------- карточки: срок «− N дней +» (число можно ввести вручную), цена за день и итого ----------
-  var MAX_DAYS = 60;
+  var MAX_DAYS = 365;
+  // цена за день (до сотен), скидка к цене 1–6 дней и подсказка про следующую ступень — как card_offer в build.pl
+  function offer(b, d) {
+    function per(n) { return Math.round(cost(b, n) / n / 100) * 100; }
+    function off(p) { return Math.round((1 - p / b.p1) * 100); }
+    var next = d < 7 ? 7 : d < 30 ? 30 : 0, hint = '';
+    if (next) hint = cost(b, d) >= cost(b, next) ? next + NB + 'дней — за ту же сумму'
+      : (next === 7 ? 'С 7-го дня' : 'От 30 дней') + ' — ' + vnd(per(next)) + '/день, −' + off(per(next)) + '%';
+    return { per: per(d), off: off(per(d)), hint: hint };
+  }
   function updateCard(card, d) {
     d = Math.max(1, Math.min(MAX_DAYS, Math.round(d) || 1));
     card.dataset.days = d;
-    var t = cost(data(card), d), inp = $('[data-days-input]', card);
+    var b = data(card), t = cost(b, d), o = offer(b, d), inp = $('[data-days-input]', card);
     if (+inp.value !== d) inp.value = d;
     $('[data-days-word]', card).textContent = dayWord(d);
-    $('[data-perday]', card).textContent = vnd(Math.round(t / d / 100) * 100);   // цена за день — до сотен
+    $('[data-perday]', card).textContent = vnd(o.per);
+    var offEl = $('[data-off]', card), hintEl = $('[data-hint]', card);
+    offEl.textContent = '−' + o.off + '%'; offEl.hidden = o.off < 1;
+    hintEl.textContent = o.hint; hintEl.hidden = !o.hint;
     $('[data-sum-label]', card).textContent = 'Итого за ' + days(d);
     $('[data-total]', card).textContent = vnd(t);
     $('[data-rub]', card).textContent = rub(t);
