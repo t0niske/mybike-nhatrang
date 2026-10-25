@@ -699,6 +699,33 @@ sub delivery_table {
   qq{<div class="table-wrap"><table class="table"><thead><tr><th>Куда</th><th>Стоимость</th><th>Время</th></tr></thead><tbody>$rows</tbody></table></div>};
 }
 
+# «Почему MYBIKE доверяют»: сетка карточек — два факта, большая цифра клиентов с фото, безопасность, парк
+sub trust_block {
+  my $img = sub { u("/assets/img/about/$_[0]") };
+  my @photos = (['client-couple.jpg', 'Пара на скутере на набережной Нячанга'], ['client-woman.jpg', 'Девушка надевает шлем у скутера'],
+                ['client-friends.jpg', 'Друзья на смотровой площадке над заливом'], ['client-delivery.jpg', 'Курьер передаёт ключи и шлемы у отеля']);
+  my $photos = join '', map { qq{<img src="${\ $img->($_->[0])}" alt="$_->[1]" width="600" height="800" loading="lazy" decoding="async">} } @photos;
+  my $safety = join '', map { "<li>$_</li>" } 'Байки 2023–2025 годов, ТО после каждого клиента', 'Не выдаём байки от 110 см³ без прав', '2 шлема и дождевики в комплекте', 'Бесплатная замена при поломке';
+  return <<"H";
+<section class="section section--grey" id="about">
+  <div class="container">
+    <h2 class="h2 tgrid__h">Почему MYBIKE доверяют</h2>
+    <div class="tgrid">
+      <div class="tcard tcard--fact"><span class="tcard__ic">${\ icon('calendar')}</span><p>Работаем в Нячанге с $SITE{founded} года: свой парк, сервис и команда на месте</p></div>
+      <div class="tcard tcard--fact"><span class="tcard__ic">${\ icon('check')}</span><p>Договор аренды на русском, а цена на сайте — та же, что при получении байка</p></div>
+      <div class="tcard tcard--big">
+        <b class="tcard__num">$SITE{clients}</b><span class="tcard__unit">клиентов</span>
+        <p>Туристы и те, кто живёт в Нячанге, берут у нас байки сезон за сезоном</p>
+        <div class="tcard__photos">$photos</div>
+      </div>
+      <div class="tcard tcard--list"><h3>Ваша безопасность</h3><ul>$safety</ul><img class="tcard__art" src="${\ $img->('art-helmet.jpg')}" alt="Шлем и знак безопасности" width="600" height="600" loading="lazy" decoding="async"></div>
+      <div class="tcard tcard--wide"><h3>В парке $SITE{fleet_size} байков — от мопедов 50 см³ до мотоциклов</h3><a class="btn btn--orange" href="#catalog">Выбрать байк</a><img class="tcard__art" src="${\ $img->('art-fleet.jpg')}" alt="Скутеры из парка MYBIKE" width="1200" height="676" loading="lazy" decoding="async"></div>
+    </div>
+  </div>
+</section>
+H
+}
+
 sub trust_chips {
   qq{<ul class="trust">}
   . join('', map { qq{<li>${\ icon('check')} $_</li>} } 'Без залога паспорта', 'Бесплатная доставка', '2 шлема в комплекте', 'Оплата при получении')
@@ -773,18 +800,7 @@ sub build_home {
   </div>
 </section>
 
-<section class="section section--grey">
-  <div class="container why">
-    <div class="why__photo"><img src="${\ u('/assets/img/bikes/placeholder.png')}" alt="Парк байков MYBIKE в Нячанге" width="540" height="423" loading="lazy"></div>
-    <div class="why__text">
-      <h2 class="h2">Почему выбирают <span class="accent">MYBIKE</span></h2>
-      <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из $SITE{fleet_size} байков 2023–2025 годов, собственный сервис и команда, которая говорит по-русски и отвечает за 5 минут.</p>
-      <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
-      <div class="stats"><div><b>$SITE{fleet_size}</b><span>байков в парке</span></div><div><b>$SITE{clients}</b><span>клиентов</span></div><div><b>5 мин</b><span>время ответа</span></div></div>
-      <a class="btn btn--orange" href="#catalog">Выбрать байк</a>
-    </div>
-  </div>
-</section>
+${\ trust_block()}
 
 <section class="section section--dark">
   <div class="container">
