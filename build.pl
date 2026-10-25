@@ -556,12 +556,13 @@ sub cat_tiles {
   qq{<div class="tiles">${\ join '', map { cat_tile($_) } cat_list($cur eq 'katalog' ? '#models' : undef)}</div>};
 }
 
-# выпадающее меню кнопки «Каталог» в шапке
+# выпадающее меню кнопки «Каталог» в шапке: только подборки — «Все байки» здесь кнопка внизу меню
 sub cat_menu {
+  my (undef, @cats) = cat_list();
   my $items = join '', map {
     my @m = @{ $_->{bikes} };
     qq{<li><a class="hcat__item" href="$_->{url}"><b>$_->{title}</b><small>${\ models(scalar @m)}</small></a></li>}
-  } cat_list();
+  } @cats;
   return qq{<ul class="hcat__list">$items</ul>};
 }
 
