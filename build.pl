@@ -444,6 +444,13 @@ sub price_tiers {
   } [1, '1–6 дней'], [7, 'от 7 дней'], [30, 'от 30 дней'];
 }
 
+# «Срок аренды  − N дней +»: число можно ввести вручную; одинаково в карточке и на странице байка
+sub term_row {
+  my $days = shift;
+  my ($dword) = plural($days, 'день', 'дня', 'дней') =~ /\x{a0}(.+)/;
+  qq{<div class="bike__term"><span>Срок аренды</span><div class="stepper"><button type="button" data-step="-1" aria-label="Меньше дней">−</button><label class="stepper__val"><input type="number" inputmode="numeric" min="1" max="$MAX_DAYS" value="$days" style="width:${\ length($days)}ch" data-days-input aria-label="Срок аренды, дней"><span data-days-word>$dword</span></label><button type="button" data-step="1" aria-label="Больше дней">+</button></div></div>};
+}
+
 sub bike_card {
   my ($b, %o) = @_;
   $o{sfx} //= q{};
@@ -464,7 +471,6 @@ sub bike_card {
   my $h = $o{h} // 'h3';
   my $alt = esc("$b->{name} — аренда в Нячанге");
   my $dw = plural($days, 'день', 'дня', 'дней');
-  my ($dword) = $dw =~ /\x{a0}(.+)/;
   return <<"H";
 <article class="bike" data-bike data-group="$b->{group}" data-license="$lic" data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-cc="$b->{cc}" data-rank="$b->{rank}" data-name="${\ esc($b->{name})}" data-slug="$b->{slug}" data-days="$days">
   <a class="bike__img" href="$url" tabindex="-1" aria-hidden="true"><img src="${\ img_url($b)}" alt="$alt" width="540" height="423" loading="lazy" decoding="async"><span class="bike__badges">$licbadge$hit</span></a>
@@ -472,7 +478,7 @@ sub bike_card {
     <$h class="bike__name"><a href="$url">$b->{name}</a></$h>
     <p class="bike__meta">$b->{type} · ${\ cc_label($b)} · $b->{year}</p>
     <ul class="bike__feats">$feats</ul>
-    <div class="bike__term"><span>Срок аренды</span><div class="stepper"><button type="button" data-step="-1" aria-label="Меньше дней">−</button><label class="stepper__val"><input type="number" inputmode="numeric" min="1" max="$MAX_DAYS" value="$days" style="width:${\ length($days)}ch" data-days-input aria-label="Срок аренды, дней"><span data-days-word>$dword</span></label><button type="button" data-step="1" aria-label="Больше дней">+</button></div></div>
+    ${\ term_row($days)}
     <div class="bike__price"><b data-perday>${\ vnd(r100(rate($b, $days)))}</b><span>/ день</span></div>
     <div class="ptiers" role="group" aria-label="Цена за день по сроку">${\ price_tiers($b, $days)}</div>
     <div class="bike__sum"><span><span data-sum-label>Итого за $dw</span><small data-rub>${\ rub($tot)}</small></span><b data-total>${\ vnd($tot)}</b></div>
@@ -893,9 +899,7 @@ sub build_bike {
   my $thumbs = @ph > 1 ? qq{<div class="pgal__thumbs">${\ join '', map { qq{<button type="button" class="pgal__thumb${\ ($_ ? '' : ' is-on')}" data-gal-thumb="$_" aria-label="Фото ${\ ($_ + 1)}"><img src="${\ photo_url($ph[$_])}" alt="" width="160" height="120" loading="lazy"></button>} } 0 .. $#ph}</div>} : '';
   my $arrows = @ph > 1 ? qq{<button type="button" class="pgal__nav pgal__nav--prev" data-gal-step="-1" aria-label="Предыдущее фото">${\ icon('arrow')}</button><button type="button" class="pgal__nav" data-gal-step="1" aria-label="Следующее фото">${\ icon('arrow')}</button>} : '';
   my $gallery = qq{<div class="pgal" data-gal data-photos="${\ esc(join ' ', map { photo_url($_) } @ph)}"><div class="pgal__main"><img src="${\ img_url($b)}" alt="$alt" width="540" height="400" fetchpriority="high" data-gal-main><span class="bike__badges">${\ ($b->{license} eq 'none' ? '<span class="badge badge--green">Без прав</span>' : '')}${\ ($b->{abs} ? '<span class="badge">ABS</span>' : '')}</span></div>$arrows</div>$thumbs};
-  # срок: готовые варианты, как размеры в карточке товара
   my $days = $CARD_DAYS;
-  my $terms = join '', map { qq{<button type="button" class="pterm${\ ($_ == $days ? ' is-on' : '')}" data-term="$_">${\ plural($_, 'день', 'дня', 'дней')}</button>} } 1, 3, 7, 14, 30;
   my $per = r100(rate($b, $days));
   my @similar = similar_for($b->{slug}, $b->{group}, $b->{p1});
   my $sim = join '', map { bike_card($_, h=>'h3', sfx=>'-s') } @similar;
@@ -908,13 +912,13 @@ sub build_bike {
   my $body = <<"H";
 <section class="section section--top">
   <div class="container">
-    <div class="pcard" data-product data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-slug="$b->{slug}" data-days="$days">
+    <div class="pcard" data-product data-bike data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-slug="$b->{slug}" data-days="$days">
       <div class="pcard__top"><a class="pcard__back" href="${\ u($catlink->[1])}">${\ icon('arrow')} ${\ ($cat ? "Назад к подборке «$cat->{chip}»" : 'Назад в каталог')}</a></div>
       <div class="pcard__grid">
         <div class="pcard__gallery">$gallery</div>
         <div class="pcard__info">
           <h1 class="pcard__title">$b->{name}<span>$b->{type} · ${\ cc_label($b)} · $b->{year} · аренда в Нячанге</span></h1>
-          <div class="pcard__price"><b data-pperday>${\ vnd($per)}</b><span>/ день</span><s data-pold${\ ($per < $b->{p1} ? '' : ' hidden')}>${\ vnd($b->{p1})}</s></div>
+          <div class="pcard__price"><b data-perday>${\ vnd($per)}</b><span>/ день</span><s data-pold${\ ($per < $b->{p1} ? '' : ' hidden')}>${\ vnd($b->{p1})}</s></div>
           <div class="ptabs" role="tablist">
             <button type="button" role="tab" class="is-on" aria-selected="true" data-tab="0">Описание</button>
             <button type="button" role="tab" aria-selected="false" data-tab="1">Характеристики</button>
@@ -929,8 +933,9 @@ sub build_bike {
           <div class="ppanel" role="tabpanel" data-panel="2" hidden><ul class="list-check">$incl</ul></div>
           <div class="ppanel" role="tabpanel" data-panel="3" hidden><ul class="list-check"><li>${\ lic_text($b)}</li><li>Документы: фото паспорта со штампом о въезде${\ ($lic ne 'none' ? ', права категории ' . ($lic eq 'A1' ? 'A1/A' : 'A') . ' и МВУ' : '')}. Паспорт остаётся у вас</li><li>Минимальный срок — 1 день. С 7 дней цена за день ниже, от 30 дней — самая выгодная</li><li>Оплата при получении: рубли на карту РФ, донги, доллары, USDT</li><li>Бензин не входит в стоимость — верните байк с тем же уровнем топлива</li></ul></div>
           <div class="popts">
-            <div><p class="popts__label">Срок аренды</p><div class="pterms" role="group" aria-label="Срок аренды">$terms</div></div>
-            <div class="ptotal"><div><span data-psum-label>Итого за $dw</span><small data-prub>${\ rub($tot)}</small></div><b data-ptotal>${\ vnd($tot)}</b></div>
+            ${\ term_row($days)}
+            <div class="ptiers" role="group" aria-label="Цена за день по сроку">${\ price_tiers($b, $days)}</div>
+            <div class="ptotal"><div><span data-sum-label>Итого за $dw</span><small data-rub>${\ rub($tot)}</small></div><b data-total>${\ vnd($tot)}</b></div>
           </div>
           <div class="pcard__btns">
             <a class="btn btn--light pcard__tg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Спросить в Telegram</a>

@@ -110,6 +110,7 @@
     inp.style.width = String(d).length + 'ch';   // ширина по числу — «N дней» стоит ровно по центру
     $('[data-days-word]', card).textContent = dayWord(d);
     $('[data-perday]', card).textContent = vnd(r100(rate(b, d)));
+    var old = $('[data-pold]', card); if (old) old.hidden = r100(rate(b, d)) >= b.p1;   // страница байка: зачёркнутая цена 1–6 дней
     $$('[data-set-days]', card).forEach(function (p) { p.classList.toggle('is-on', +p.dataset.setDays === tier); });
     $('[data-sum-label]', card).textContent = 'Итого за ' + days(d);
     $('[data-total]', card).textContent = vnd(t);
@@ -241,18 +242,7 @@
 
   // ---------- страница байка ----------
   var prod = $('[data-product]');
-  if (prod) {
-    // срок: цена за день, старая цена (1–6 дней) зачёркнута, итого
-    var setTerm = function (d) {
-      prod.dataset.days = d;
-      var b = data(prod), t = cost(b, d), per = r100(rate(b, d));
-      $('[data-pperday]', prod).textContent = vnd(per);
-      $('[data-pold]', prod).hidden = per >= b.p1;
-      $('[data-psum-label]', prod).textContent = 'Итого за ' + days(d);
-      $('[data-ptotal]', prod).textContent = vnd(t);
-      $('[data-prub]', prod).textContent = rub(t);
-      $$('[data-term]', prod).forEach(function (c) { c.classList.toggle('is-on', +c.dataset.term === d); });
-    };
+  if (prod) {   // срок и цены считает общий код карточек (data-bike); здесь — галерея, вкладки, «Читать далее»
     // галерея: стрелки и миниатюры
     var gal = $('[data-gal]', prod), ph = gal ? gal.dataset.photos.split(' ') : [], cur = 0;
     var show = function (i) {
@@ -261,8 +251,7 @@
       $$('[data-gal-thumb]', prod).forEach(function (t) { t.classList.toggle('is-on', +t.dataset.galThumb === cur); });
     };
     prod.addEventListener('click', function (e) {
-      var term = e.target.closest('[data-term]'), tab = e.target.closest('[data-tab]'), st = e.target.closest('[data-gal-step]'), th = e.target.closest('[data-gal-thumb]');
-      if (term) setTerm(+term.dataset.term);
+      var tab = e.target.closest('[data-tab]'), st = e.target.closest('[data-gal-step]'), th = e.target.closest('[data-gal-thumb]');
       if (st) show(cur + +st.dataset.galStep);
       if (th) show(+th.dataset.galThumb);
       if (tab) {
@@ -301,7 +290,7 @@
   function closeModal() { modal.hidden = true; document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-book]');
-    if (b) { var card = b.closest('[data-bike]') || b.closest('[data-product]'); e.preventDefault(); openModal(b.dataset.book, card && +card.dataset.days); }
+    if (b) { var card = b.closest('[data-bike]'); e.preventDefault(); openModal(b.dataset.book, card && +card.dataset.days); }
     if (e.target.closest('[data-close]')) closeModal();
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal && !modal.hidden) closeModal(); });
