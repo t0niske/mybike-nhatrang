@@ -242,16 +242,35 @@
   // ---------- страница байка ----------
   var prod = $('[data-product]');
   if (prod) {
-    var pf = $('[data-pfrom]'), pt = $('[data-pto]');
-    pf.value = addDays(1); pt.value = addDays(4); pf.min = addDays(0); pt.min = addDays(1);
-    var upd = function () {
-      if (pt.value <= pf.value) { var d0 = new Date(pf.value); d0.setDate(d0.getDate() + 1); pt.value = iso(d0); }
-      var d = diffDays(pf.value, pt.value) || 1, tt = cost(data(prod), d);
-      $('[data-pdays]').textContent = days(d);
-      $('[data-ptotal]').textContent = vnd(tt);
-      $('[data-prub]').textContent = rub(tt) + ' · ' + vnd(tt / d) + '/день';
+    // срок: цена за день, старая цена (1–6 дней) зачёркнута, итого
+    var setTerm = function (d) {
+      prod.dataset.days = d;
+      var b = data(prod), t = cost(b, d), per = r100(rate(b, d));
+      $('[data-pperday]', prod).textContent = vnd(per);
+      $('[data-pold]', prod).hidden = per >= b.p1;
+      $('[data-psum-label]', prod).textContent = 'Итого за ' + days(d);
+      $('[data-ptotal]', prod).textContent = vnd(t);
+      $('[data-prub]', prod).textContent = rub(t);
+      $$('[data-term]', prod).forEach(function (c) { c.classList.toggle('is-on', +c.dataset.term === d); });
     };
-    pf.addEventListener('change', upd); pt.addEventListener('change', upd); upd();
+    // галерея: стрелки и миниатюры
+    var gal = $('[data-gal]', prod), ph = gal ? gal.dataset.photos.split(' ') : [], cur = 0;
+    var show = function (i) {
+      cur = (i + ph.length) % ph.length;
+      $('[data-gal-main]', prod).src = ph[cur];
+      $$('[data-gal-thumb]', prod).forEach(function (t) { t.classList.toggle('is-on', +t.dataset.galThumb === cur); });
+    };
+    prod.addEventListener('click', function (e) {
+      var term = e.target.closest('[data-term]'), tab = e.target.closest('[data-tab]'), st = e.target.closest('[data-gal-step]'), th = e.target.closest('[data-gal-thumb]');
+      if (term) setTerm(+term.dataset.term);
+      if (st) show(cur + +st.dataset.galStep);
+      if (th) show(+th.dataset.galThumb);
+      if (tab) {
+        $$('[data-tab]', prod).forEach(function (t) { var on = t === tab; t.classList.toggle('is-on', on); t.setAttribute('aria-selected', on); });
+        $$('[data-panel]', prod).forEach(function (p) { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+      }
+      if (e.target.closest('[data-more-btn]')) { var m = $('[data-more]', prod), open = m.classList.toggle('is-open'); e.target.textContent = open ? 'Свернуть' : 'Читать далее'; }
+    });
   }
 
   // ---------- модалка бронирования ----------
@@ -282,7 +301,7 @@
   function closeModal() { modal.hidden = true; document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-book]');
-    if (b) { var card = b.closest('[data-bike]'); e.preventDefault(); openModal(b.dataset.book, card && +card.dataset.days); }
+    if (b) { var card = b.closest('[data-bike]') || b.closest('[data-product]'); e.preventDefault(); openModal(b.dataset.book, card && +card.dataset.days); }
     if (e.target.closest('[data-close]')) closeModal();
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal && !modal.hidden) closeModal(); });

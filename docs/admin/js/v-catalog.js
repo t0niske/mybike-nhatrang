@@ -4,7 +4,7 @@
   var V = A.views;
   var DONE = ['issued', 'returned'];
 
-  function imgSrc(b) { var i = b.img || 'placeholder.png'; return /^(https?:|data:)/.test(i) ? i : A.siteUrl('/assets/img/bikes/' + i); }
+  function imgSrc(b) { var i = String(b.img || '').split(/[\s,]+/).filter(Boolean)[0] || 'placeholder.png';   // несколько фото через запятую — берём первое return /^(https?:|data:)/.test(i) ? i : A.siteUrl('/assets/img/bikes/' + i); }
   A.imgSrc = imgSrc;
 
   // ============================================================ МОДЕЛИ
@@ -102,7 +102,7 @@
       '<div class="card"><div class="card__h"><h2>Тексты страницы</h2><small>Уникальный текст = выше в поиске</small></div><div id="f3">' + U.form(TF, b) + '</div></div>' +
       (A.canWrite() ? '<div class="row"><button class="btn btn--o" id="save">' + (isNew ? 'Создать модель' : 'Сохранить') + '</button><span class="hint">На сайте изменения появятся после публикации.</span></div>' : '') + '</div>' +
       '<div class="stack"><div class="card"><div class="card__h"><h2>Фото</h2></div><div class="stack"><img id="pimg" src="' + U.esc(imgSrc(b)) + '" alt="" style="width:100%;border-radius:12px;background:var(--grey-l)">' +
-      (A.canWrite() ? '<label class="btn">' + U.icon('plus') + 'Загрузить фото<input type="file" accept="image/*" id="file" hidden></label><input class="input" id="imgurl" placeholder="или ссылка на фото / имя файла" value="' + U.esc(b.img || '') + '">' : '') + '<p class="hint">Лучше всего: 1200×900, светлый фон, байк целиком сбоку. JPG/WebP до 300 КБ.</p></div></div>' +
+      (A.canWrite() ? '<label class="btn">' + U.icon('plus') + 'Загрузить фото<input type="file" accept="image/*" id="file" hidden></label><input class="input" id="imgurl" placeholder="или ссылки на фото через запятую" value="' + U.esc(b.img || '') + '">' : '') + '<p class="hint">Лучше всего: 1200×900, светлый фон, байк целиком сбоку. JPG/WebP до 300 КБ. Несколько фото — через запятую: первое главное, остальные в галерее на странице байка. Загрузка добавляет фото в конец списка.</p></div></div>' +
       '<div class="card"><div class="card__h"><h2>Так страница выглядит в поиске</h2></div><div id="serp"></div></div>' +
       (!isNew ? '<div class="card"><div class="card__h"><h2>Показатели</h2></div><div class="stack" style="gap:6px">' +
         '<div class="row between"><span class="muted">Байков этой модели</span><b>' + units.length + '</b></div>' +
@@ -129,7 +129,10 @@
     var file = root.querySelector('#file');
     if (file) file.onchange = async function () {
       var f = file.files[0]; if (!f) return;
-      try { U.toast('Загружаю…'); var url = await A.DB.upload(f); root.querySelector('#imgurl').value = url; root.querySelector('#pimg').src = url; U.toast('Фото загружено — не забудьте сохранить', 'ok'); }
+      try { U.toast('Загружаю…'); var url = await A.DB.upload(f), inp = root.querySelector('#imgurl');
+        // новое фото — в конец списка галереи; заглушку заменяет
+        var list = inp.value.split(/[\s,]+/).filter(function (x) { return x && x !== 'placeholder.png'; }); list.push(url);
+        inp.value = list.join(', '); root.querySelector('#pimg').src = imgSrc({ img: inp.value }); U.toast('Фото загружено — не забудьте сохранить', 'ok'); }
       catch (e) { U.toast(e.message, 'err'); }
     };
     var iu = root.querySelector('#imgurl'); if (iu) iu.onchange = function () { root.querySelector('#pimg').src = imgSrc({ img: iu.value }); };

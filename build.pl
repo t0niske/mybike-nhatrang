@@ -102,8 +102,11 @@ sub lic_text {
   return "Нужны национальные права категории A и международное водительское удостоверение (МВУ).";
 }
 sub cc_label { my $b = shift; $b->{cc} ? "$b->{cc} см³" : 'Электро' }
-sub img { my $b = shift; $b->{img} || 'placeholder.png' }
-sub img_url { my $i = img(shift); $i =~ m{^https?://} ? $i : u('/assets/img/bikes/' . $i) }
+# в поле img можно указать несколько фото через запятую или пробел: первое — главное, остальные — в галерее страницы байка
+sub photos { my $b = shift; my @p = grep { length } split /[\s,]+/, $b->{img} // ''; @p ? @p : ('placeholder.png') }
+sub img { (photos(shift))[0] }
+sub photo_url { my $i = shift; $i =~ m{^https?://} ? $i : u('/assets/img/bikes/' . $i) }
+sub img_url { photo_url(img(shift)) }
 sub img_abs { my $i = img(shift); $i =~ m{^https?://} ? $i : abs_url('/assets/img/bikes/' . $i) }
 sub src_hash {
   my $ctx = Digest::MD5->new;
@@ -881,67 +884,62 @@ sub build_bike {
     'Вес'=>$b->{weight}, 'Мест'=>$b->{seats}, 'Багажник'=>$b->{trunk}, 'ABS'=>($b->{abs} ? 'Есть' : 'Нет'), 'Права'=>lic_label($b->{license}),
   );
   my @order = ('Тип','Объём двигателя','Мощность','Год выпуска','Коробка','Макс. скорость','Бак / батарея','Расход / запас хода','Вес','Мест','Багажник','ABS','Права');
-  my $specs = join '', map { qq{<tr><th>$_</th><td>${\ esc($spec{$_})}</td></tr>} } @order;
+  my $specs = join '', map { qq{<div><dt>$_</dt><dd>${\ esc($spec{$_})}</dd></div>} } @order;
   my $about = join '', map { "<p>$_</p>" } @{ $b->{about} };
   my $pros = join '', map { qq{<li>$_</li>} } @{ $b->{pros} };
+  # галерея: главное фото, стрелки и миниатюры — если фото больше одного
+  my @ph = photos($b);
+  my $alt = esc("$b->{name} в аренду в Нячанге");
+  my $thumbs = @ph > 1 ? qq{<div class="pgal__thumbs">${\ join '', map { qq{<button type="button" class="pgal__thumb${\ ($_ ? '' : ' is-on')}" data-gal-thumb="$_" aria-label="Фото ${\ ($_ + 1)}"><img src="${\ photo_url($ph[$_])}" alt="" width="160" height="120" loading="lazy"></button>} } 0 .. $#ph}</div>} : '';
+  my $arrows = @ph > 1 ? qq{<button type="button" class="pgal__nav pgal__nav--prev" data-gal-step="-1" aria-label="Предыдущее фото">${\ icon('arrow')}</button><button type="button" class="pgal__nav" data-gal-step="1" aria-label="Следующее фото">${\ icon('arrow')}</button>} : '';
+  my $gallery = qq{<div class="pgal" data-gal data-photos="${\ esc(join ' ', map { photo_url($_) } @ph)}"><div class="pgal__main"><img src="${\ img_url($b)}" alt="$alt" width="540" height="400" fetchpriority="high" data-gal-main><span class="bike__badges">${\ ($b->{license} eq 'none' ? '<span class="badge badge--green">Без прав</span>' : '')}${\ ($b->{abs} ? '<span class="badge">ABS</span>' : '')}</span></div>$arrows</div>$thumbs};
+  # срок: готовые варианты, как размеры в карточке товара
+  my $days = $CARD_DAYS;
+  my $terms = join '', map { qq{<button type="button" class="pterm${\ ($_ == $days ? ' is-on' : '')}" data-term="$_">${\ plural($_, 'день', 'дня', 'дней')}</button>} } 1, 3, 7, 14, 30;
+  my $per = r100(rate($b, $days));
   my @similar = similar_for($b->{slug}, $b->{group}, $b->{p1});
   my $sim = join '', map { bike_card($_, h=>'h3', sfx=>'-s') } @similar;
   my ($cat) = grep { my $f = $_->{filter}; $f->{groups} && @{ $f->{groups} } == 1 && $f->{groups}[0] eq $b->{group} } @CATEGORIES;
   my $catlink = $cat ? [$cat->{h1}, "/$cat->{slug}/"] : ['Каталог', '/katalog/'];
-  my $tot = cost($b, 3);
+  my $tot = cost($b, $days);
   my $lic = $b->{license};
-  my $incl = join '', map { qq{<li>${\ icon('check')} $_</li>} } 'Без залога паспорта', 'Бесплатная доставка и возврат', '2 шлема и 2 дождевика', 'Держатель для телефона и замок', 'Бесплатная замена при поломке';
-  my $tags = join '', map { qq{<li>$_</li>} } @{ $b->{tags} };
+  my $incl = join '', map { "<li>$_</li>" } 'Доставка и возврат по Нячангу — бесплатно', '2 шлема и 2 дождевика', 'Держатель для телефона и замок', 'Документы на байк и страхование ответственности', 'Бесплатная замена при поломке', 'Поддержка на русском в Telegram и WhatsApp';
+  my $dw = plural($days, 'день', 'дня', 'дней');
   my $body = <<"H";
 <section class="section section--top">
-  <div class="container product" data-product data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-slug="$b->{slug}">
-    <div class="product__media">
-      <div class="product__img"><img src="${\ img_url($b)}" alt="${\ esc("$b->{name} в аренду в Нячанге")}" width="540" height="423" fetchpriority="high">
-        <span class="bike__badges">${\ ($lic eq 'none' ? '<span class="badge badge--green">Без прав</span>' : '')}${\ ($b->{abs} ? '<span class="badge">ABS</span>' : '')}</span></div>
-      <ul class="keyspecs">
-        <li>${\ icon('gauge')}<b>${\ cc_label($b)}</b><span>$b->{power}</span></li>
-        <li>${\ icon('clock')}<b>$b->{speed} км/ч</b><span>макс. скорость</span></li>
-        <li>${\ icon('fuel')}<b>$b->{fuel}</b><span>расход</span></li>
-        <li>${\ icon('users')}<b>$b->{seats} места</b><span>$b->{year} год</span></li>
-      </ul>
+  <div class="container">
+    <div class="pcard" data-product data-p1="$b->{p1}" data-p7="$b->{p7}" data-pm="$b->{pm}" data-slug="$b->{slug}" data-days="$days">
+      <div class="pcard__top"><a class="pcard__back" href="${\ u($catlink->[1])}">${\ icon('arrow')} ${\ ($cat ? "Назад к подборке «$cat->{chip}»" : 'Назад в каталог')}</a></div>
+      <div class="pcard__grid">
+        <div class="pcard__gallery">$gallery</div>
+        <div class="pcard__info">
+          <h1 class="pcard__title">$b->{name}<span>$b->{type} · ${\ cc_label($b)} · $b->{year} · аренда в Нячанге</span></h1>
+          <div class="pcard__price"><b data-pperday>${\ vnd($per)}</b><span>/ день</span><s data-pold${\ ($per < $b->{p1} ? '' : ' hidden')}>${\ vnd($b->{p1})}</s></div>
+          <div class="ptabs" role="tablist">
+            <button type="button" role="tab" class="is-on" aria-selected="true" data-tab="0">Описание</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="1">Характеристики</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="2">Что входит</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="3">Условия</button>
+          </div>
+          <div class="ppanel" role="tabpanel" data-panel="0">
+            <div class="pdesc" data-more><p><b>$b->{short}</b></p>$about<p><b>Кому подойдёт:</b> $b->{suits}</p><ul class="list-check">$pros</ul></div>
+            <button type="button" class="pmore" data-more-btn>Читать далее</button>
+          </div>
+          <div class="ppanel" role="tabpanel" data-panel="1" hidden><dl class="pspecs">$specs</dl></div>
+          <div class="ppanel" role="tabpanel" data-panel="2" hidden><ul class="list-check">$incl</ul></div>
+          <div class="ppanel" role="tabpanel" data-panel="3" hidden><ul class="list-check"><li>${\ lic_text($b)}</li><li>Документы: фото паспорта со штампом о въезде${\ ($lic ne 'none' ? ', права категории ' . ($lic eq 'A1' ? 'A1/A' : 'A') . ' и МВУ' : '')}. Паспорт остаётся у вас</li><li>Минимальный срок — 1 день. С 7 дней цена за день ниже, от 30 дней — самая выгодная</li><li>Оплата при получении: рубли на карту РФ, донги, доллары, USDT</li><li>Бензин не входит в стоимость — верните байк с тем же уровнем топлива</li></ul></div>
+          <div class="popts">
+            <div><p class="popts__label">Срок аренды</p><div class="pterms" role="group" aria-label="Срок аренды">$terms</div></div>
+            <div class="ptotal"><div><span data-psum-label>Итого за $dw</span><small data-prub>${\ rub($tot)}</small></div><b data-ptotal>${\ vnd($tot)}</b></div>
+          </div>
+          <div class="pcard__btns">
+            <a class="btn btn--light pcard__tg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Спросить в Telegram</a>
+            <button class="btn btn--orange" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать</button>
+          </div>
+          <p class="pcard__note">Без предоплаты · привезём к отелю бесплатно</p>
+        </div>
+      </div>
     </div>
-    <aside class="product__buy">
-      <h1 class="h1 h1--product">Аренда $b->{name} в Нячанге</h1>
-      <p class="product__short">$b->{short}</p>
-      <ul class="bike__tags">$tags</ul>
-      <p class="lic-note lic-note--$lic">${\ icon($lic eq 'none' ? 'check' : 'passport')} ${\ lic_text($b)}</p>
-      <div class="tiers">
-        <div class="tier"><span>1–6 дней</span><b>${\ vnd($b->{p1})}</b><small>в день</small></div>
-        <div class="tier tier--hl"><span>7–29 дней</span><b>${\ vnd($b->{p7})}</b><small>в день</small></div>
-        <div class="tier"><span>Месяц</span><b>${\ vnd($b->{pm})}</b><small>за 30 дней</small></div>
-      </div>
-      <div class="dates">
-        <label class="field"><span>Получение</span><input type="date" data-pfrom></label>
-        <label class="field"><span>Возврат</span><input type="date" data-pto></label>
-      </div>
-      <div class="calc__sum calc__sum--big"><span>Итого за <output data-pdays>3 дн.</output></span><b data-ptotal>${\ vnd($tot)}</b><small data-prub>${\ rub($tot)}</small></div>
-      <button class="btn btn--orange btn--lg btn--block" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать без предоплаты</button>
-      <div class="product__quick">
-        <a class="btn btn--light" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Telegram</a>
-        <a class="btn btn--light" href="https://wa.me/$SITE{whatsapp}?text=${\ urlenc("Здравствуйте! Хочу арендовать $b->{name}")}" rel="nofollow" data-goal="wa">${\ icon('whatsapp')} WhatsApp</a>
-      </div>
-      <ul class="product__incl">$incl</ul>
-    </aside>
-  </div>
-</section>
-<section class="section section--grey">
-  <div class="container product-info">
-    <div class="text">
-      <h2>О байке $b->{name}</h2>
-      $about
-      <h2>Кому подойдёт</h2>
-      <p>$b->{suits}</p>
-      <h2>Преимущества</h2>
-      <ul class="list-check">$pros</ul>
-      <h2>Условия аренды</h2>
-      <ul class="list-check"><li>Документы: фото паспорта со штампом о въезде${\ ($lic ne 'none' ? ', права категории ' . ($lic eq 'A1' ? 'A1/A' : 'A') . ' и МВУ' : '')}.</li><li>Минимальный срок — 1 день. Скидка с 7 дней, максимальная выгода — от 30 дней.</li><li>Оплата при получении: рубли на карту РФ, донги, доллары, USDT.</li><li>Бензин не входит в стоимость, байк возвращается с тем же уровнем топлива.</li></ul>
-    </div>
-    <div><h2 class="h3">Характеристики $b->{name}</h2><div class="table-wrap"><table class="table table--spec">$specs</table></div></div>
   </div>
 </section>
 <section class="section"><div class="container faq-wrap"><div><h2 class="h2">Вопросы о $b->{name}</h2></div>${\ faq_html(@faq)}</div></section>
