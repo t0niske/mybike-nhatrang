@@ -310,9 +310,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 /* ---------- why ---------- */
 /* «Почему MYBIKE доверяют»: сетка карточек — факты, большая цифра с фото, безопасность, парк */
 .tgrid__h{text-align:center;margin-bottom:40px}
-.tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,2fr);gap:24px}
+/* первая строка — по высоте фактов, лишнюю высоту большой карточки забирает вторая строка */
+.tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,2fr);grid-template-rows:auto 1fr;gap:24px}
 .tcard{position:relative;overflow:hidden;border-radius:32px;background:#fff;padding:32px}
-.tcard--fact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;min-height:260px}
+.tcard--fact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:28px 24px}
 .tcard--fact p{margin:0;font-size:17px;line-height:1.45;color:#444}
 .tcard__ic{width:56px;height:56px;border-radius:18px;background:var(--orange-l);color:var(--orange);display:grid;place-items:center}
 .tcard__ic svg{width:28px;height:28px}
@@ -450,7 +451,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .incs{grid-template-columns:repeat(2,1fr)}
   .rail__track{grid-auto-columns:calc((100% - 24px) / 2)}
   .search{grid-template-columns:1fr 1fr;border-radius:32px;padding:18px}
-  .tgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tgrid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}
   .tcard--big{grid-column:1/-1;grid-row:auto}
   .tcard--list{grid-column:1/-1}
 }
