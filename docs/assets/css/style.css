@@ -308,33 +308,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .step p{margin:0;color:#666;font-size:15px}
 
 /* ---------- why ---------- */
-/* «Почему MYBIKE доверяют»: сетка карточек — факты, большая цифра с фото, безопасность, парк */
-.tgrid__h{text-align:center;margin-bottom:40px}
-.tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,2fr);gap:24px}
-.tcard{position:relative;overflow:hidden;border-radius:32px;background:#fff;padding:32px}
-.tcard--fact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;min-height:260px}
-.tcard--fact p{margin:0;font-size:17px;line-height:1.45;color:#444}
-.tcard__ic{width:56px;height:56px;border-radius:18px;background:var(--orange-l);color:var(--orange);display:grid;place-items:center}
-.tcard__ic svg{width:28px;height:28px}
-.tcard--big{grid-column:3;grid-row:1/span 2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:48px 0 0;color:#fff;background:radial-gradient(120% 80% at 50% 0%,#FF9A62 0%,var(--orange) 45%,#E8551C 100%)}
-.tcard__num{font-family:var(--head);font-weight:700;font-size:clamp(84px,9vw,140px);line-height:.9;letter-spacing:-.01em}
-.tcard__unit{margin-top:10px;font-size:22px;font-weight:800}
-.tcard--big p{margin:14px 0 0;padding:0 40px;max-width:460px;font-size:16px;opacity:.92}
-.tcard__photos{display:flex;gap:16px;margin-top:auto;padding:36px 0 0;width:calc(100% + 120px);justify-content:center}
-.tcard__photos img{width:24%;aspect-ratio:3/4;object-fit:cover;border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.15)}
-.tcard__photos img:nth-child(odd){transform:rotate(-2deg) translateY(10px)}
-.tcard__photos img:nth-child(even){transform:rotate(2deg)}
-.tcard--list,.tcard--wide{background:var(--orange-l);min-height:300px}
-.tcard--list{grid-column:1/span 2}
-.tcard h3{position:relative;z-index:1;font-size:26px;font-weight:800;line-height:1.2;color:var(--ink);max-width:420px}
-.tcard--list ul{position:relative;z-index:1;list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px;max-width:58%}
-.tcard--list li{position:relative;padding-left:22px;font-size:16px;color:#444}
-.tcard--list li::before{content:"";position:absolute;left:4px;top:.6em;width:7px;height:7px;border-radius:50%;background:var(--orange)}
-/* фон иллюстраций чуть отличается от карточки — края растворяются маской */
-.tcard__art{position:absolute;right:0;bottom:0;height:100%;width:auto;max-width:none;mix-blend-mode:multiply;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,transparent,#000 20%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 35%),linear-gradient(180deg,transparent,#000 20%);mask-composite:intersect}
-.tcard--wide{grid-column:1/-1;min-height:280px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:24px}
-.tcard--wide h3{font-size:clamp(26px,2.6vw,36px);max-width:520px}
-.tcard--wide .btn{position:relative;z-index:1}
+.why{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.why__photo img{border-radius:var(--r);width:100%;aspect-ratio:4/3;object-fit:cover}
+.why__text .h2{margin-bottom:20px}
+.why__text p{color:#555}
+.stats{display:flex;gap:16px;margin:28px 0;flex-wrap:wrap}
+.stats div{background:#fff;border-radius:var(--r-s);padding:16px 22px;display:flex;flex-direction:column}
+.stats b{font-family:var(--head);font-size:34px;color:var(--orange);line-height:1}
+.stats span{font-size:13px;color:#777}
 
 /* ---------- reviews ---------- */
 .reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -386,7 +367,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .product__incl li{display:flex;gap:8px;align-items:center}
 .product__incl svg{width:18px;height:18px;color:var(--green);flex:none}
 .product-info{display:grid;grid-template-columns:1.3fr 1fr;gap:48px;align-items:start}
-.product>*,.product-info>*,.split>*,.faq-wrap>*,.steps-wrap>*,.hero__in>*{min-width:0}
+.product>*,.product-info>*,.split>*,.why>*,.faq-wrap>*,.steps-wrap>*,.hero__in>*{min-width:0}
 
 /* ---------- text pages ---------- */
 .text{max-width:900px}
@@ -450,9 +431,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .incs{grid-template-columns:repeat(2,1fr)}
   .rail__track{grid-auto-columns:calc((100% - 24px) / 2)}
   .search{grid-template-columns:1fr 1fr;border-radius:32px;padding:18px}
-  .tgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .tcard--big{grid-column:1/-1;grid-row:auto}
-  .tcard--list{grid-column:1/-1}
 }
 @media (max-width:1024px){
   :root{--header-h:72px}
@@ -466,7 +444,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .nav__mobile-cta a{border:0!important;font-size:16px!important}
   .nav__mobile-cta .btn--orange{color:#fff!important}
   .header__social{margin-left:auto}
-  .hero__in,.split,.steps-wrap,.faq-wrap,.product,.product-info{grid-template-columns:minmax(0,1fr)}
+  .hero__in,.split,.steps-wrap,.why,.faq-wrap,.product,.product-info{grid-template-columns:minmax(0,1fr)}
   .hero__media{display:none}
   .product__buy{position:static}
   .section{padding:72px 0}
@@ -516,20 +494,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .tile__img img{max-height:110px;border-radius:10px}
   .tile__t{font-size:17px}
   .tile__s,.tile__p{font-size:12px}
-  .tgrid{grid-template-columns:minmax(0,1fr);gap:14px}
-  .tgrid__h{margin-bottom:28px}
-  .tcard{border-radius:26px;padding:24px}
-  .tcard--fact{min-height:0;flex-direction:row;text-align:left;justify-content:flex-start}
-  .tcard--fact p{font-size:15px}
-  .tcard__ic{flex:none}
-  .tcard--big{padding:36px 0 0}
-  .tcard--big p{padding:0 24px}
-  .tcard__photos{width:calc(100% + 80px);gap:10px;padding-top:28px}
-  .tcard__photos img{border-radius:14px 14px 0 0}
-  .tcard--list,.tcard--wide{min-height:0;padding-bottom:0}
-  .tcard h3{font-size:22px}
-  .tcard--list ul{max-width:none}
-  .tcard__art{position:static;display:block;width:78%;height:auto;margin:4px -24px 0 auto}
   .rail__nav{display:none}
   .rail__track{grid-auto-columns:86%;gap:12px;margin:0 -16px -20px;padding:8px 16px 28px;scroll-padding:0 16px}
   .rail__more{margin-top:28px}
