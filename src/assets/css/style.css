@@ -150,7 +150,7 @@ h1,h2,h3{margin:0}
 .cb:hover .cb__img{transform:scale(1.05)}
 .cb:first-child{grid-column:span 2;grid-row:span 2;padding:34px;background:var(--orange-l)}
 .cb:first-child .cb__t{font-size:56px}
-.cb--all .cb__t{font-size:36px}
+.cb--all .cb__t{font-size:28px}
 .cb:first-child .cb__s{margin-top:10px;font-size:18px;color:#6b5a52}
 .cb--all{padding:34px}
 .cb--all .cb__s{margin-top:10px;font-size:18px}
@@ -162,8 +162,8 @@ h1,h2,h3{margin:0}
 .cb:first-child .cb__img{width:50%;margin:auto -34px -34px 0}
 .cb--all{grid-column:span 2;background:var(--dark);color:#fff}
 .cb--all .cb__s{color:rgba(255,255,255,.7)}
-.cb__big{margin-top:auto;padding-top:16px;font:700 76px/.95 var(--head);text-transform:uppercase}
-.cb__big small{font-size:34px}
+.cb__big{margin-top:auto;padding-top:16px;font:700 56px/.95 var(--head);text-transform:uppercase}
+.cb__big small{font-size:26px}
 .cb--all .cb__meta .cb__p{background:rgba(255,255,255,.14)}
 .tile:hover .tile__n,.tile:hover .tile__s,.tile:hover .tile__p,.tile:focus-visible .tile__n,.tile:focus-visible .tile__s,.tile:focus-visible .tile__p{color:rgba(255,255,255,.92)}
 .tile:hover .tile__img img{transform:scale(1.05)}
@@ -488,6 +488,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 /* ---------- responsive ---------- */
 @media (min-width:1025px){
   .cb{padding:18px}
+  .cb.cb--all{padding:34px}
   .cb__t{font-size:22px}
   .cb__img{width:50%;margin:auto -18px -18px 0}
   .cb__meta span{font-size:13px;padding:5px 9px}
@@ -566,13 +567,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .cb:first-child{grid-column:auto;grid-row:auto;min-height:440px;padding:24px}
   .cb--all{padding:24px}
   .cb:first-child .cb__t{font-size:40px}
-  .cb--all .cb__t{font-size:30px}
+  .cb--all .cb__t{font-size:26px}
   .cb:first-child .cb__s,.cb--all .cb__s{font-size:16px}
   .cb:first-child .cb__meta span,.cb--all .cb__meta span{font-size:16px;padding:8px 15px}
   .cb:first-child .cb__arr,.cb--all .cb__arr{width:46px;height:46px}
   .cb:first-child .cb__img{width:84%;margin:auto -24px -24px 0}
   .cb--all{grid-column:auto;min-height:220px}
-  .cb__big{font-size:64px}
+  .cb__big{font-size:48px}
+  .cb__big small{font-size:22px}
   .tile{min-height:0;padding:14px 16px 18px}
   .tile__n{font-size:12px}
   .tile__img{padding:10px 0 14px}
