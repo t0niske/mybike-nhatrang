@@ -202,6 +202,11 @@ sub icon {
   qq{<svg$cls viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">} . ($IC{$n} // '') . '</svg>';
 }
 
+# логотип: метка на карте с колесом внутри — «привезём байк туда, где вы»
+my $LOGO_WHEEL = '<circle cx="20" cy="19" r="10.4" fill="none" stroke="#fff" stroke-width="2.6"/><circle cx="20" cy="19" r="2.5" fill="#fff"/><path d="M20 15.6V10M20 22.4V28M22.94 17.3l4.85-2.8M17.06 20.7l-4.85 2.8M17.06 17.3l-4.85-2.8M22.94 20.7l4.85 2.8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>';
+my $LOGO_PIN = '<path fill="#FF6B2C" d="M20 47.5S3 30.6 3 19a17 17 0 0 1 34 0c0 11.6-17 28.5-17 28.5Z"/>';
+sub logo_mark { qq{<svg viewBox="0 0 40 48" aria-hidden="true">$LOGO_PIN$LOGO_WHEEL</svg>} }
+
 # ------------------------------------------------------------ schema.org
 sub org_ld {
   return +{
@@ -261,7 +266,7 @@ sub header_html {
   return <<"H";
 <header class="header" data-header>
   <div class="container header__in">
-    <a class="logo" href="${\ u('/')}" aria-label="MYBIKE — на главную"><span class="logo__mark">${\ icon('scooter')}</span><span class="logo__text">MYBIKE</span></a>
+    <a class="logo" href="${\ u('/')}" aria-label="MYBIKE — на главную"><span class="logo__mark">${\ logo_mark()}</span><span class="logo__text"><b>MY</b>BIKE</span></a>
     <div class="hcat" data-hcat>
       <button class="hcat__btn" type="button" aria-expanded="false" aria-controls="hcat-menu" data-hcat-btn>${\ icon('menu')}<span>Каталог</span></button>
       <div class="hcat__menu" id="hcat-menu"><div class="hcat__box">$CAT_MENU$all</div></div>
@@ -293,7 +298,7 @@ sub footer_html {
   <div class="container">
     <div class="footer__top">
       <div class="footer__brand">
-        <a class="logo logo--light" href="${\ u('/')}"><span class="logo__mark">${\ icon('scooter')}</span><span class="logo__text">MYBIKE</span></a>
+        <a class="logo logo--light" href="${\ u('/')}"><span class="logo__mark">${\ logo_mark()}</span><span class="logo__text"><b>MY</b>BIKE</span></a>
         <p>Аренда скутеров и мотоциклов в Нячанге без залога паспорта. Бесплатная доставка в отель с первого дня аренды.</p>
         <div class="footer__contacts">
           <a href="https://t.me/$SITE{telegram}" rel="nofollow">${\ icon('telegram')} Telegram</a>
@@ -585,7 +590,7 @@ sub cat_tiles {
 
 # главная, «Выберите свой идеальный байк»: бенто — большая карточка «Без прав», шесть подборок и «Весь каталог»
 sub cat_bento {
-  my @BENTO = (['arenda-bajka-bez-prav', 'cub50'], ['arenda-elektroskutera', 'evo200'], ['skutery-110-125cc', 'vision110'],
+  my @BENTO = (['arenda-bajka-bez-prav', 'candy50'], ['arenda-elektroskutera', 'evo200'], ['skutery-110-125cc', 'vision110'],
   ['bajki-150-160cc', 'pcx160'], ['bajki-s-abs', 'nvx155'], ['maksi-skutery-300cc', 'xmax300'], ['arenda-motocikla', 'cb500x']);
   my ($all, @cats) = cat_list();
   my %by = map { $_->{url} => $_ } @cats;

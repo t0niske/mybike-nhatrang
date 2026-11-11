@@ -30,7 +30,7 @@
 ## Байки и цены (₫, вьетнамские донги)
 - [Honda Wave Alpha 110](https://t0niske.github.io/mybike-nhatrang/arenda/honda-wave-alpha-110/): 110 см³, Права A1 / A. 120 000 ₫/день (1–6 дн.), 100 000 ₫/день (7–29 дн.), 1 800 000 ₫/30 дней.
 - [SYM Elegant 50](https://t0niske.github.io/mybike-nhatrang/arenda/sym-elegant-50/): 50 см³, Без прав. 140 000 ₫/день (1–6 дн.), 110 000 ₫/день (7–29 дн.), 2 000 000 ₫/30 дней.
-- [Honda Super Cub 50](https://t0niske.github.io/mybike-nhatrang/arenda/honda-super-cub-50/): 49 см³, Без прав. 150 000 ₫/день (1–6 дн.), 120 000 ₫/день (7–29 дн.), 2 300 000 ₫/30 дней.
+- [Kymco Candy 50](https://t0niske.github.io/mybike-nhatrang/arenda/kymco-candy-50/): 49 см³, Без прав. 150 000 ₫/день (1–6 дн.), 120 000 ₫/день (7–29 дн.), 2 300 000 ₫/30 дней.
 - [VinFast Evo200 Lite](https://t0niske.github.io/mybike-nhatrang/arenda/vinfast-evo200-lite/): Электро, Без прав. 160 000 ₫/день (1–6 дн.), 130 000 ₫/день (7–29 дн.), 2 400 000 ₫/30 дней.
 - [Honda Vision 110](https://t0niske.github.io/mybike-nhatrang/arenda/honda-vision-110/): 110 см³, Права A1 / A. 160 000 ₫/день (1–6 дн.), 130 000 ₫/день (7–29 дн.), 2 400 000 ₫/30 дней.
 - [Kymco Like 50](https://t0niske.github.io/mybike-nhatrang/arenda/kymco-like-50/): 49 см³, Без прав. 170 000 ₫/день (1–6 дн.), 140 000 ₫/день (7–29 дн.), 2 600 000 ₫/30 дней.

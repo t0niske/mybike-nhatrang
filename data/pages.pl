@@ -15,7 +15,7 @@ our @PAGES = (
 <div class="table-wrap"><table class="table">
 <thead><tr><th>Байк</th><th>Пример</th><th>Права</th></tr></thead>
 <tbody>
-<tr><td>Мопед до 50 см³</td><td>Honda Super Cub 50, Kymco Like 50</td><td><b>Не нужны</b>, с 16 лет</td></tr>
+<tr><td>Мопед до 50 см³</td><td>Kymco Candy 50, Kymco Like 50</td><td><b>Не нужны</b>, с 16 лет</td></tr>
 <tr><td>Электроскутер до 4 кВт и 50 км/ч</td><td>VinFast Evo200 Lite</td><td><b>Не нужны</b>, с 16 лет</td></tr>
 <tr><td>Скутер 110–125 см³</td><td>Honda Vision, Air Blade, Lead</td><td>A1 или A + МВУ</td></tr>
 <tr><td>Скутер / мотоцикл более 125 см³</td><td>Honda PCX 160, Yamaha NVX, XMAX</td><td>A + МВУ</td></tr>
