@@ -798,17 +798,6 @@ sub build_home {
   </div>
 </section>
 
-<section class="section section--grey">
-  <div class="container split">
-    <div>
-      <h2 class="h2">MYBIKE против<br>обычного проката</h2>
-      <p class="lead">Сравнили условия с открытых сайтов прокатов Нячанга. Если где-то найдёте условия лучше — напишите нам, и мы сделаем так же.</p>
-      <a class="btn btn--orange" href="#catalog">Выбрать байк</a>
-    </div>
-    ${\ compare_html()}
-  </div>
-</section>
-
 <section class="section steps-sec">
   <div class="container">
     <h2 class="h2">Арендуйте байк за несколько простых шагов</h2>
