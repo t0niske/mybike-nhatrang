@@ -564,6 +564,23 @@ sub cat_tiles {
   qq{<div class="tiles">${\ join '', map { cat_tile($_) } cat_list($cur eq 'katalog' ? '#models' : undef)}</div>};
 }
 
+# главная, «Выберите свой идеальный байк»: бенто — большая карточка «Без прав», шесть подборок и «Весь каталог»
+sub cat_bento {
+  my @BENTO = (['arenda-bajka-bez-prav', 'cub50'], ['arenda-elektroskutera', 'evo200'], ['skutery-110-125cc', 'vision110'],
+  ['bajki-150-160cc', 'pcx160'], ['bajki-s-abs', 'nvx155'], ['maksi-skutery-300cc', 'xmax300'], ['arenda-motocikla', 'cb500x']);
+  my ($all, @cats) = cat_list();
+  my %by = map { $_->{url} => $_ } @cats;
+  my $arr = qq{<span class="cb__arr" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg></span>};
+  my $cards = join '', map {
+    my ($slug, $pic) = @$_; my $c = $by{ u("/$slug/") };
+    $c ? do { my @m = @{ $c->{bikes} };
+      qq{<a class="cb" href="$c->{url}"><span class="cb__top"><span class="cb__t">$c->{title}</span>$arr</span><span class="cb__s">$c->{sub}</span><span class="cb__meta"><span class="cb__p">от\x{a0}${\ vnd(min_p(@m))}\x{a0}/ день</span><span>${\ models(scalar @m)}</span></span><img class="cb__img" src="${\ u("/assets/img/cats/$pic.jpg")}" alt="${\ esc("$c->{title} — $c->{top}{name}")}" width="800" height="800" loading="lazy" decoding="async"></a>} } : ''
+  } @BENTO;
+  my $n = scalar @{ $all->{bikes} };
+  $cards .= qq{<a class="cb cb--all" href="$all->{url}"><span class="cb__top"><span class="cb__t">Весь каталог</span>$arr</span><span class="cb__s">Скутеры и мотоциклы на любой бюджет</span><span class="cb__big">$n <small>${\ (models($n) =~ /\x{a0}(.+)/)[0]}</small></span><span class="cb__meta"><span class="cb__p">от\x{a0}${\ vnd(min_p(@{ $all->{bikes} }))}\x{a0}/ день</span></span></a>};
+  return qq{<div class="cbento">$cards</div>};
+}
+
 # выпадающее меню кнопки «Каталог» в шапке: только подборки — «Все байки» здесь кнопка внизу меню
 sub cat_menu {
   my (undef, @cats) = cat_list();
@@ -747,7 +764,7 @@ sub build_home {
 <section class="section section--tight">
   <div class="container">
     <div class="head"><h2 class="h2">Выберите свой<br>идеальный байк</h2><p class="head__p">Скутеры и мотоциклы для любых поездок по Нячангу — от лёгких городских моделей до мощных байков для путешествий.</p></div>
-    ${\ cat_tiles()}
+    ${\ cat_bento()}
   </div>
 </section>
 
