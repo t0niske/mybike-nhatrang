@@ -8,7 +8,7 @@
   --head:'Oswald','Arial Narrow',sans-serif; --body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
   --shadow:0 10px 30px rgba(0,0,0,.06);
   --header-h:64px;
-  --head-gap:40px;   /* отступ от заголовка блока до контента — одинаковый везде */
+  --head-gap:32px;   /* отступ «заголовок → контент»: одинаковый во всех блоках и заметно меньше отступа между блоками (96/72/56) */
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + 16px);-webkit-text-size-adjust:100%}
@@ -174,7 +174,8 @@ h1,h2,h3{margin:0}
 .tile:focus-visible{outline-offset:-3px;outline-color:var(--ink)}
 
 /* ---------- лента «Популярные модели» ---------- */
-.rail .head{align-items:flex-end;margin-bottom:var(--head-gap)}
+.rail .head{align-items:flex-end;margin-bottom:calc(var(--head-gap) - 8px)}   /* у ленты сверху свой отступ 8px под тень карточек */
+.rail .head.head--rail{margin-bottom:var(--head-gap)}   /* у ленты «Всё включено» верхнего отступа нет */
 .rail__nav{display:flex;gap:10px;flex:none}
 .rail__btn{width:52px;height:52px;border-radius:50%;border:0;background:var(--dark);color:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,opacity .2s}
 .rail__btn:hover{background:var(--orange)}
@@ -550,6 +551,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .search{grid-template-columns:1fr 1fr;border-radius:32px;padding:18px}
 }
 @media (max-width:1024px){
+  :root{--head-gap:28px}
   .steps-wrap__media{min-height:380px}
   .steps-wrap__media img{width:min(440px,62%);right:auto;left:50%;top:auto;bottom:-24px;transform:translateX(-50%) scaleX(-1)}
   :root{--header-h:60px}
@@ -591,6 +593,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .grid-3{grid-template-columns:1fr}
 }
 @media (max-width:680px){
+  :root{--head-gap:20px}
   .steps-wrap__media{min-height:250px}
   .steps-wrap__media img{width:88%;left:50%}
   .step{width:100%;min-height:0;padding:22px 66px 22px 22px}
