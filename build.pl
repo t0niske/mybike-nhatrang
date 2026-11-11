@@ -577,7 +577,7 @@ sub cat_bento {
       qq{<a class="cb" href="$c->{url}"><span class="cb__top"><span class="cb__t">$c->{title}</span>$arr</span><span class="cb__s">$c->{sub}</span><span class="cb__meta"><span class="cb__p">от\x{a0}${\ vnd(min_p(@m))}\x{a0}/ день</span><span>${\ models(scalar @m)}</span></span><img class="cb__img" src="${\ u("/assets/img/cats/$pic.jpg")}" alt="${\ esc("$c->{title} — $c->{top}{name}")}" width="800" height="800" loading="lazy" decoding="async"></a>} } : ''
   } @BENTO;
   my $n = scalar @{ $all->{bikes} };
-  $cards .= qq{<a class="cb cb--all" href="$all->{url}"><span class="cb__top"><span class="cb__t">Весь каталог</span>$arr</span><span class="cb__s">Скутеры и мотоциклы на любой бюджет</span><span class="cb__big">$n <small>${\ (models($n) =~ /\x{a0}(.+)/)[0]}</small></span><span class="cb__meta"><span class="cb__p">от\x{a0}${\ vnd(min_p(@{ $all->{bikes} }))}\x{a0}/ день</span></span></a>};
+  $cards .= qq{<a class="cb cb--all" href="$all->{url}"><span class="cb__top"><span class="cb__t">Весь каталог</span>$arr</span><span class="cb__s">Скутеры и мотоциклы на любой бюджет</span><span class="cb__meta"><span class="cb__p">от\x{a0}${\ vnd(min_p(@{ $all->{bikes} }))}\x{a0}/ день</span></span><span class="cb__big">$n <small>${\ (models($n) =~ /\x{a0}(.+)/)[0]}</small></span></a>};
   return qq{<div class="cbento">$cards</div>};
 }
 
