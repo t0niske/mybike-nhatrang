@@ -479,9 +479,8 @@ sub bike_card {
     <p class="bike__meta">$b->{type} · ${\ cc_label($b)} · $b->{year}</p>
     <ul class="bike__feats">$feats</ul>
     ${\ term_row($days)}
-    <div class="bike__price"><b data-perday>${\ vnd(r100(rate($b, $days)))}</b><span>/ день</span></div>
     <div class="ptiers" role="group" aria-label="Цена за день по сроку">${\ price_tiers($b, $days)}</div>
-    <div class="bike__sum"><span><span data-sum-label>Итого за $dw</span><small data-rub>${\ rub($tot)}</small></span><b data-total>${\ vnd($tot)}</b></div>
+    <div class="bike__sum"><span><span data-sum-label>Итого за $dw</span><small><span data-perday>${\ vnd(r100(rate($b, $days)))}</span> в день</small></span><b data-total>${\ vnd($tot)}</b></div>
     <button class="btn btn--orange btn--block bike__book" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать</button>
   </div>
 </article>
@@ -935,7 +934,7 @@ sub build_bike {
           <div class="popts">
             ${\ term_row($days)}
             <div class="ptiers" role="group" aria-label="Цена за день по сроку">${\ price_tiers($b, $days)}</div>
-            <div class="ptotal"><div><span data-sum-label>Итого за $dw</span><small data-rub>${\ rub($tot)}</small></div><b data-total>${\ vnd($tot)}</b></div>
+            <div class="ptotal"><div><span data-sum-label>Итого за $dw</span></div><b data-total>${\ vnd($tot)}</b></div>
           </div>
           <div class="pcard__btns">
             <a class="btn btn--light pcard__tg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Спросить в Telegram</a>

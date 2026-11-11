@@ -114,7 +114,6 @@
     $$('[data-set-days]', card).forEach(function (p) { p.classList.toggle('is-on', +p.dataset.setDays === tier); });
     $('[data-sum-label]', card).textContent = 'Итого за ' + days(d);
     $('[data-total]', card).textContent = vnd(t);
-    $('[data-rub]', card).textContent = rub(t);
     $$('[data-step]', card).forEach(function (s) { s.disabled = +s.dataset.step < 0 ? d <= 1 : d >= MAX_DAYS; });
   }
   $$('[data-bike]').forEach(function (card) { if ($('[data-perday]', card)) updateCard(card, +card.dataset.days || 7); });
