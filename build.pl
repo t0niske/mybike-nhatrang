@@ -124,6 +124,18 @@ sub typo {
     s/(?<![\p{L}\d])(?!(?:ли|же|бы)\b)(\p{L}{1,2}|\d{1,3}) (?=\S)/$1\x{a0}/g;
     s/ (—|–)/\x{a0}$1/g;
   }
+  # точка в конце текстового блока (перед закрывающим тегом или <br>) не ставится нигде на сайте;
+  # многоточие и сокращения («и т. д.», «см.», «г.») не трогаем
+  for my $i (0 .. $#parts - 1) {
+    next if $parts[$i] =~ /^</;
+    my $j = $i + 1; $j++ while $j < $#parts && $parts[$j] eq '';
+    next unless $parts[$j] =~ m{^<(?:/|br\b)};
+    next if $parts[$i] =~ /(?:\.\.|(?<![\p{L}])(?:т\.\s?[дпе]|др|пр|см|г|гг|ул|руб|тыс|млн|н\.\s?э)\.)\s*$/;
+    $parts[$i] =~ s/(?<=[\p{L}\d»)\x{a0}"%³])\.(\s*)$/$1/;
+    # «…<a>ссылка</a>.» — точка отдельным кусочком после закрывающего тега
+    my $k = $i - 1; $k-- while $k > 0 && $parts[$k] eq '';
+    $parts[$i] =~ s/^\.(\s*)$/$1/ if $k >= 0 && $parts[$k] =~ m{^</(?:a|b|strong|em|i|span|small)>$};
+  }
   join '', @parts;
 }
 
@@ -146,6 +158,7 @@ my %IC = (
   chev    => '<path d="m6 9 6 6 6-6"/>',
   search  => '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
   calendar=> '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  key     => '<circle cx="7.5" cy="15.5" r="5"/><path d="m11 12 9.5-9.5M17 6l3 3M14.5 8.5l2 2"/>',
   shield  => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
   passport=> '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M15 10h3M15 14h3M6 16c.5-1.5 1.7-2 3-2s2.5.5 3 2"/>',
   truck   => '<path d="M2 6h12v10H2zM14 9h4l3 3v4h-7"/><circle cx="6.5" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/>',
@@ -689,9 +702,13 @@ sub inc_art {
   return $art{$k} ? $art{$k}->() : $ic->($k, 'c');
 }
 
+# «Что входит в аренду»: лента карточек со стрелками — один ряд, чтобы блок помещался в экран
 sub included_html {
+  my ($title, $p) = @_;
   my $items = join '', map { (my $t = $_->[2]) =~ s/\.\s*$//; qq{<li class="inc"><b class="inc__t">$_->[1]</b><p>$t</p><div class="inc__art inc__art--$_->[0]" aria-hidden="true">${\ inc_art($_->[0])}</div></li>} } @INCLUDED;
-  qq{<ul class="incs">$items</ul>};
+  my $nav = qq{<div class="rail__nav"><button class="rail__btn rail__btn--prev" type="button" data-rail-prev aria-label="Назад">${\ icon('arrow')}</button><button class="rail__btn" type="button" data-rail-next aria-label="Вперёд">${\ icon('arrow')}</button></div>};
+  my $side = $p ? qq{<div class="head__side"><p class="head__p">$p</p>$nav</div>} : $nav;
+  qq{<div class="rail" data-rail><div class="head head--rail"><h2 class="h2">$title</h2>$side</div><ul class="incs" data-rail-track>$items</ul></div>};
 }
 
 sub compare_html {
@@ -701,7 +718,8 @@ sub compare_html {
 
 sub steps_html {
   my $i = 0;
-  my $items = join '', map { $i++; my $cls = $i == @STEPS ? ' step--orange' : ''; qq{<li class="step$cls"><span class="step__n">0$i</span><b>$_->[0]</b><p>$_->[1]</p></li>} } @STEPS;
+  my @ic = qw(scooter calendar check key);   # иконка в кружке справа сверху, по шагу
+  my $items = join '', map { $i++; my $cls = $i == @STEPS ? ' step--orange' : ''; qq{<li class="step$cls"><span class="step__ic">${\ icon($ic[$i - 1] // 'check')}</span><b>$_->[0]</b><p>$_->[1]</p></li>} } @STEPS;
   qq{<ol class="steps">$items</ol>};
 }
 
@@ -776,8 +794,7 @@ sub build_home {
 
 <section class="section">
   <div class="container">
-    <div class="head"><h2 class="h2">Всё включено.<br>Без доплат.</h2><p class="head__p">Мы изучили все прокаты Нячанга и собрали лучшие условия рынка в одном месте.</p></div>
-    ${\ included_html()}
+    ${\ included_html('Всё включено<br>Без доплат', 'Мы изучили все прокаты Нячанга и собрали лучшие условия рынка в одном месте')}
   </div>
 </section>
 
@@ -792,10 +809,13 @@ sub build_home {
   </div>
 </section>
 
-<section class="section">
-  <div class="container steps-wrap">
-    <div class="steps-wrap__media"><h2 class="h2">Арендуйте байк<br>за несколько<br>простых шагов</h2><img src="${\ u('/assets/img/bikes/placeholder.png')}" alt="Байк MYBIKE" width="540" height="423" loading="lazy"></div>
-    ${\ steps_html()}
+<section class="section steps-sec">
+  <div class="container">
+    <h2 class="h2">Арендуйте байк за несколько простых шагов</h2>
+    <div class="steps-wrap">
+      <div class="steps-wrap__media"><img src="${\ u('/assets/img/cats/pcx160.jpg')}" alt="Байк MYBIKE" width="800" height="800" loading="lazy" decoding="async"></div>
+      ${\ steps_html()}
+    </div>
   </div>
 </section>
 
@@ -879,7 +899,7 @@ sub build_category {
 </section>
 <section class="section section--grey section--tight"><div class="container">${\ catalog_block(bikes=>\@b, full=>0, h=>'h2')}</div></section>
 <section class="section"><div class="container"><h2 class="h2">Цены: ${\ lc_first($c->{h1})}</h2>${\ price_table(@b)}</div></section>
-<section class="section section--grey"><div class="container"><h2 class="h2">Что входит в аренду</h2>${\ included_html()}</div></section>
+<section class="section section--grey"><div class="container">${\ included_html('Что входит в аренду')}</div></section>
 <section class="section"><div class="container text">$sections</div></section>
 <section class="section section--grey"><div class="container faq-wrap"><div><h2 class="h2">Вопросы и ответы</h2></div>${\ faq_html(@{ $c->{faq} })}</div></section>
 ${\ cta_block()}
@@ -987,7 +1007,7 @@ sub build_info {
   my $p = shift;
   my $faq = $p->{faq} ? qq{<section class="section section--grey"><div class="container faq-wrap"><div><h2 class="h2">Вопросы и ответы</h2></div>${\ faq_html(@{ $p->{faq} })}</div></section>} : '';
   my $extra = $p->{slug} eq 'kak-arendovat' ? qq{<section class="section section--grey"><div class="container"><h2 class="h2">4 шага до байка</h2>${\ steps_html()}</div></section>} : '';
-  $extra .= qq{<section class="section"><div class="container"><h2 class="h2">Что входит в аренду</h2>${\ included_html()}</div></section>} if $p->{slug} =~ /^(dostavka|o-nas)$/;
+  $extra .= qq{<section class="section"><div class="container">${\ included_html('Что входит в аренду')}</div></section>} if $p->{slug} =~ /^(dostavka|o-nas)$/;
   my $body = <<"H";
 <section class="section section--top"><div class="container text text--page">
   <h1 class="h1">$p->{h1}</h1>
