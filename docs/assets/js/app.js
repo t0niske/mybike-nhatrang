@@ -193,6 +193,25 @@
     apply();
   });
 
+  // ---------- шаги аренды: при прокрутке карточки по одной выезжают снизу и ложатся поверх предыдущей ----------
+  (function () {
+    var steps = $$('.step');
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!steps.length || reduce || !('IntersectionObserver' in window)) return;
+    document.documentElement.classList.add('js-anim');
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        // карточки, попавшие в экран одновременно, появляются по очереди
+        var i = steps.filter(function (s) { return !s.classList.contains('is-in') && s.dataset.q; }).length;
+        e.target.dataset.q = 1;
+        setTimeout(function () { e.target.classList.add('is-in'); }, i * 160);
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.2 });
+    steps.forEach(function (s) { io.observe(s); });
+  })();
+
   // ---------- лента «Популярные модели»: стрелки листают на одну карточку ----------
   $$('[data-rail]').forEach(function (rail) {
     var track = $('[data-rail-track]', rail), prev = $('[data-rail-prev]', rail), next = $('[data-rail-next]', rail);

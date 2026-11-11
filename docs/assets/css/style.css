@@ -325,18 +325,21 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 
 /* ---------- steps: байк слева уходит за край, карточки справа «лесенкой» с иконками ---------- */
 .steps-sec{overflow:hidden}
-.steps-sec .h2{position:relative;z-index:2;margin-bottom:28px}
-.steps-wrap{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:24px;align-items:center}
-.steps-wrap__media{position:relative;align-self:stretch;min-height:380px}
-.steps-wrap__media img{position:absolute;right:-2%;top:50%;width:122%;max-width:none;height:auto;transform:translateY(-50%) scaleX(-1);mix-blend-mode:multiply}
-.steps{position:relative;z-index:1}
-.steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column}
-.step{position:relative;width:76%;padding:22px 72px 22px 26px;border-radius:22px;background:#fff;box-shadow:0 14px 40px rgba(0,0,0,.08)}
-.step+.step{margin-top:-6px}
-.step:nth-child(even){margin-left:auto;background:var(--dark);color:#fff;transform:rotate(-2.5deg)}
+.steps-sec .h2{position:relative;z-index:2;margin-bottom:20px}
+.steps-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+.steps-wrap__media{position:relative;align-self:stretch;min-height:360px}
+.steps-wrap__media img{position:absolute;right:6%;top:50%;width:100%;max-width:none;height:auto;transform:translateY(-50%) scaleX(-1);mix-blend-mode:multiply}
+.steps{position:relative;z-index:1;list-style:none;padding:0;margin:0;display:flex;flex-direction:column}
+.step{--r:0deg;position:relative;width:78%;min-height:150px;padding:28px 76px 28px 30px;border-radius:24px;background:#fff;box-shadow:0 14px 40px rgba(0,0,0,.08);transform:rotate(var(--r))}
+.step+.step{margin-top:-36px}
+.step:nth-child(1){z-index:1}.step:nth-child(2){z-index:2}.step:nth-child(3){z-index:3}.step:nth-child(4){z-index:4}
+.step:nth-child(even){--r:-2.5deg;margin-left:20%;background:var(--dark);color:#fff}
 .step:nth-child(even) p{color:rgba(255,255,255,.75)}
-.step--orange{background:var(--orange)!important;color:#fff;transform:none!important}
+.step--orange{--r:0deg!important;background:var(--orange)!important;color:#fff}
 .step--orange p{color:rgba(255,255,255,.92)!important}
+/* появление при прокрутке: карточка выезжает снизу и ложится поверх предыдущей */
+.js-anim .step{opacity:0;transform:translateY(90px) rotate(var(--r))}
+.js-anim .step.is-in{opacity:1;transform:rotate(var(--r));transition:opacity .5s ease,transform .7s cubic-bezier(.2,.75,.25,1)}
 .step__ic{position:absolute;top:16px;right:16px;width:42px;height:42px;border-radius:50%;background:var(--grey);color:var(--ink);display:grid;place-items:center}
 .step__ic svg{width:20px;height:20px}
 .step:nth-child(even) .step__ic,.step--orange .step__ic{background:#fff}
@@ -586,8 +589,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 @media (max-width:680px){
   .steps-wrap__media{min-height:250px}
   .steps-wrap__media img{width:92%;left:-10%}
-  .step{width:100%;padding:20px 66px 20px 20px}
-  .step:nth-child(even){transform:rotate(-1.2deg)}
+  .step{width:100%;min-height:0;padding:22px 66px 22px 22px}
+  .step+.step{margin-top:-14px}
+  .step:nth-child(even){--r:-1.2deg;margin-left:0}
   .container{padding:0 16px}
   body{font-size:15px}
   .logo__mark{width:42px;height:42px}.logo__mark svg{width:22px;height:22px}
