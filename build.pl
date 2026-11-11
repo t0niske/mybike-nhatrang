@@ -103,7 +103,13 @@ sub lic_text {
 }
 sub cc_label { my $b = shift; $b->{cc} ? "$b->{cc} см³" : 'Электро' }
 # в поле img можно указать несколько фото через запятую или пробел: первое — главное, остальные — в галерее страницы байка
-sub photos { my $b = shift; my @p = grep { length } split /[\s,]+/, $b->{img} // ''; @p ? @p : ('placeholder.png') }
+# фото байка: поле img (несколько через запятую); если пусто или заглушка — файл src/assets/img/bikes/<slug>.jpg, если он есть
+sub photos {
+  my $b = shift; my @p = grep { length && $_ ne 'placeholder.png' } split /[\s,]+/, $b->{img} // '';
+  return @p if @p;
+  return ("$b->{slug}.jpg") if $b->{slug} && -f "$Bin/src/assets/img/bikes/$b->{slug}.jpg";
+  ('placeholder.png');
+}
 sub img { (photos(shift))[0] }
 sub photo_url { my $i = shift; $i =~ m{^https?://} ? $i : u('/assets/img/bikes/' . $i) }
 sub img_url { photo_url(img(shift)) }
