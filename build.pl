@@ -577,8 +577,8 @@ sub cat_bento {
       qq{<a class="cb" href="$c->{url}"><span class="cb__top"><span class="cb__t">$c->{title}</span>$arr</span><span class="cb__s">$c->{sub}</span><span class="cb__meta"><span class="cb__p">от\x{a0}${\ vnd(min_p(@m))}\x{a0}/ день</span><span>${\ models(scalar @m)}</span></span><img class="cb__img" src="${\ u("/assets/img/cats/$pic.jpg")}" alt="${\ esc("$c->{title} — $c->{top}{name}")}" width="800" height="800" loading="lazy" decoding="async"></a>} } : ''
   } @BENTO;
   my $n = scalar @{ $all->{bikes} };
-  $cards .= qq{<a class="cb cb--all" href="$all->{url}"><span class="cb__top"><span class="cb__t">Весь каталог</span>$arr</span><span class="cb__s">Скутеры и мотоциклы на любой бюджет</span><span class="cb__meta"><span class="cb__p">от\x{a0}${\ vnd(min_p(@{ $all->{bikes} }))}\x{a0}/ день</span></span><span class="cb__big">$n <small>${\ (models($n) =~ /\x{a0}(.+)/)[0]}</small></span></a>};
-  return qq{<div class="cbento">$cards</div>};
+  my $head = qq{<div class="head"><h2 class="h2">Выберите свой<br>идеальный байк</h2><div class="head__side"><p class="head__p">Скутеры и мотоциклы для любых поездок по Нячангу — от лёгких городских моделей до мощных байков для путешествий.</p><a class="btn btn--dark cb-all" href="$all->{url}">Весь каталог — ${\ models($n)} ${\ icon('arrow')}</a></div></div>};
+  return qq{$head<div class="cbento">$cards</div>};
 }
 
 # выпадающее меню кнопки «Каталог» в шапке: только подборки — «Все байки» здесь кнопка внизу меню
@@ -763,7 +763,6 @@ sub build_home {
 
 <section class="section section--tight">
   <div class="container">
-    <div class="head"><h2 class="h2">Выберите свой<br>идеальный байк</h2><p class="head__p">Скутеры и мотоциклы для любых поездок по Нячангу — от лёгких городских моделей до мощных байков для путешествий.</p></div>
     ${\ cat_bento()}
   </div>
 </section>
