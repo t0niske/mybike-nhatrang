@@ -594,7 +594,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   :root{--head-gap:20px}
   .steps-wrap__media{min-height:250px}
   .steps-wrap__media img{width:88%;left:50%}
-  .step{width:100%;min-height:0;padding:22px 66px 22px 22px}
+  .step{width:100%;min-height:170px;padding:24px 66px 44px 22px}
   .step+.step{margin-top:-14px}
   .step:nth-child(even){--r:-1.2deg;margin-left:0}
   .container{padding:0 16px}
