@@ -814,7 +814,7 @@ ${\ hero_html(@all)}
   <div class="container">
     <h2 class="h2">Арендуйте байк за несколько <span class="hl">простых шагов</span></h2>
     <div class="steps-wrap">
-      <div class="steps-wrap__media"><img src="${\ u('/assets/img/cats/pcx160.jpg')}" alt="Байк MYBIKE" width="800" height="800" loading="lazy" decoding="async"></div>
+      <div class="steps-wrap__media"><img src="${\ u('/assets/img/cats/xmax300.jpg')}" alt="Байк MYBIKE" width="800" height="800" loading="lazy" decoding="async"></div>
       ${\ steps_html()}
     </div>
   </div>
