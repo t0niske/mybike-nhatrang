@@ -770,7 +770,7 @@ sub hero_html {
     <a class="hero__hit" href="${\ u("/arenda/$hit->{slug}/")}"><span class="hero__hit-im"><img src="${\ img_url($hit)}" alt="${\ esc($hit->{name})}" width="900" height="600" loading="lazy" decoding="async"><span class="hero__hit-bd">Хит</span></span><span class="hero__hit-tx"><span class="hero__hit-n">${\ esc($hit->{name})} $lic</span><span class="hero__hit-p">${\ vnd($hit->{p1})} <small>/ день</small></span></span></a>
   </aside>
   <div class="hero__main">
-    <span class="hero__word" aria-hidden="true">Nha Trang</span>
+    <span class="hero__word" aria-hidden="true">MYBIKE</span>
     <div class="hero__bike"><span class="hero__beam" aria-hidden="true"></span><img src="${\ u('/assets/img/hero-bike.webp')}" alt="Скутер Honda PCX 160 в аренду в Нячанге" width="958" height="876" fetchpriority="high"></div>
     <div class="hero__txt">
       <h1 class="hero__h1"><span>Аренда скутеров</span><span>и мотоциклов <em class="hero__stk">Нячанг</em></span></h1>
