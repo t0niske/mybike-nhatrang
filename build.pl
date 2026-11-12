@@ -821,15 +821,16 @@ ${\ hero_html(@all)}
 </section>
 
 <section class="section section--grey">
-  <div class="container why">
-    <div class="why__photo"><img src="${\ u('/assets/img/bikes/placeholder.png')}" alt="Парк байков MYBIKE в Нячанге" width="540" height="423" loading="lazy"></div>
-    <div class="why__text">
-      <h2 class="h2">Почему выбирают <span class="hl">MYBIKE</span></h2>
+  <div class="container about">
+    <div class="about__text">
+      <span class="kicker">О нас</span>
+      <h2 class="h2">Прокат, которым <span class="hl">пользуемся сами</span></h2>
       <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из $SITE{fleet_size} байков 2023–2025 годов, собственный сервис и команда, которая говорит по-русски и отвечает за 5 минут.</p>
       <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
-      <div class="stats"><div><b>$SITE{fleet_size}</b><span>байков в парке</span></div><div><b>$SITE{clients}</b><span>клиентов</span></div><div><b>5 мин</b><span>время ответа</span></div></div>
-      <a class="btn btn--orange" href="#catalog">Выбрать байк</a>
+      <div class="about__nums"><div><b>$SITE{fleet_size}</b><span>байков в парке</span></div><div><b>$SITE{clients}</b><span>клиентов</span></div><div><b>5 мин</b><span>время ответа</span></div></div>
+      <a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a>
     </div>
+    <div class="about__photo"><img src="${\ u('/assets/img/about.jpg')}" alt="Парк байков MYBIKE на набережной Нячанга" width="1400" height="933" loading="lazy" decoding="async"><div class="about__card"><b>С $SITE{founded} года в Нячанге</b><span>Свой парк, свой сервис и механики, договор на русском</span></div></div>
   </div>
 </section>
 
