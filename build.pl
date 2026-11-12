@@ -754,41 +754,42 @@ sub delivery_table {
   qq{<div class="table-wrap"><table class="table"><thead><tr><th>Куда</th><th>Стоимость</th><th>Время</th></tr></thead><tbody>$rows</tbody></table></div>};
 }
 
-sub trust_chips {
-  qq{<ul class="trust">}
-  . join('', map { qq{<li>${\ icon('check')} $_</li>} } 'Без залога паспорта', 'Бесплатная доставка', '2 шлема в комплекте', 'Оплата при получении')
-  . '</ul>';
+# первый экран главной: слева виды байков и хит, справа заголовок и вырезанный байк поверх надписи NHA TRANG
+sub hero_html {
+  my @all = @_;
+  my (undef, @cats) = cat_list();
+  my $chev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+  my $nav = join '', map { qq{<a href="$_->{url}">$_->{title} $chev</a>} } @cats[0 .. ($#cats < 7 ? $#cats : 7)];
+  my ($hit) = grep { $_->{popular} } @all; $hit ||= $all[0];
+  my $lic = $hit->{license} eq 'none' ? '<i>Без прав</i>' : '';
+  my $min = vnd(min_p(@BIKES)); my $c = scalar @BIKES;
+  my $n = "$c\x{a0}" . ($c % 10 == 1 && $c % 100 != 11 ? 'модели' : 'моделей');   # «из 19 моделей», «из 21 модели»
+  return <<"H";
+<section class="hero"><div class="hero__grid">
+  <aside class="hero__side">
+    <nav class="hero__cats" aria-label="Виды байков">$nav</nav>
+    <a class="hero__hit" href="${\ u("/arenda/$hit->{slug}/")}"><span class="hero__hit-im"><img src="${\ img_url($hit)}" alt="${\ esc($hit->{name})}" width="900" height="600" loading="lazy" decoding="async"><span class="hero__hit-bd">Хит</span></span><span class="hero__hit-tx"><span class="hero__hit-n">${\ esc($hit->{name})} $lic</span><span class="hero__hit-p">${\ vnd($hit->{p1})} <small>/ день</small></span></span></a>
+  </aside>
+  <div class="hero__main">
+    <span class="hero__word" aria-hidden="true">Nha Trang</span>
+    <div class="hero__bike"><span class="hero__beam" aria-hidden="true"></span><img src="${\ u('/assets/img/hero-bike.webp')}" alt="Скутер Kymco Candy 50 в аренду в Нячанге" width="964" height="932" fetchpriority="high"></div>
+    <div class="hero__txt">
+      <h1 class="hero__h1"><span>Аренда скутеров</span><span>и мотоциклов <em class="hero__stk">Нячанг</em></span></h1>
+      <p class="hero__sub">Бесплатно привезём байк к вашему отелю: выбирайте из $n от $min в день, в том числе без прав</p>
+      <a class="btn btn--orange btn--lg hero__btn" href="#catalog">Выбрать байк</a>
+    </div>
+  </div>
+</div></section>
+H
 }
 
 # ------------------------------------------------------------ pages
 sub build_home {
   my @all = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @BIKES;
   my ($popular, @pop) = popular_block(@all);
-  my $types = join '', map { qq{<option value="$_">$GROUP{$_}[0]</option>} } @GROUP_ORDER;
   my $reviews = join '', map { qq{<figure class="review"><div class="review__stars">${\ join '', map { icon('star') } 1..5}</div><blockquote>$_->[2]</blockquote><figcaption><b>$_->[0]</b><span>$_->[1]</span></figcaption></figure>} } @REVIEWS;
   my $body = <<"H";
-<section class="hero">
-  <div class="container hero__in">
-    <div class="hero__text">
-      <h1 class="hero__h1">Аренда скутеров<br>и мотоциклов в Нячанге</h1>
-      <p class="hero__sub">${\ scalar @BIKES} моделей от 100${\ "\x{a0}"}000${\ "\x{a0}"}₫ в день — от мопедов без прав до макси-скутеров. Привезём к отелю бесплатно — от 30 минут.</p>
-      ${\ trust_chips()}
-      <div class="hero__btns">
-        <a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a>
-        <a class="btn btn--light btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">Связаться</a>
-      </div>
-    </div>
-    <div class="hero__media"><img src="${\ u('/assets/img/bikes/placeholder.png')}" alt="Скутер в аренду в Нячанге" width="540" height="423" fetchpriority="high"></div>
-  </div>
-  <div class="container">
-    <form class="search" action="${\ u('/katalog/')}" method="get" data-search>
-      <label class="search__f"><span>Получение</span><span class="search__v">${\ icon('calendar')}<input type="date" name="from" data-from aria-label="Дата получения"></span></label>
-      <label class="search__f"><span>Возврат</span><span class="search__v">${\ icon('calendar')}<input type="date" name="to" data-to aria-label="Дата возврата"></span></label>
-      <label class="search__f search__f--wide"><span>Тип байка</span><span class="search__v"><select name="type" aria-label="Тип байка"><option value="all">Любой</option><option value="nolicense">Без прав (50cc и электро)</option>$types</select></span></label>
-      <button class="btn btn--dark btn--lg search__btn" type="submit">Найти байк ${\ icon('search')}</button>
-    </form>
-  </div>
-</section>
+${\ hero_html(@all)}
 
 <section class="section section--tight">
   <div class="container">
