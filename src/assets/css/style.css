@@ -97,7 +97,7 @@ h1,h2,h3{margin:0}
 .hero__word{position:absolute;left:-12px;bottom:-.16em;z-index:0;font-family:var(--head);font-weight:700;font-size:clamp(200px,21vw,300px);line-height:1;white-space:nowrap;text-transform:uppercase;color:rgba(255,255,255,.08);pointer-events:none;user-select:none}
 .hero__bike{position:absolute;right:3%;bottom:4%;z-index:2;width:min(52%,600px)}
 .hero__bike img{position:relative;z-index:1;display:block;width:100%;height:auto;filter:drop-shadow(0 30px 40px rgba(0,0,0,.45))}
-.hero__beam{position:absolute;right:68%;top:16%;width:80%;height:40%;transform:translateY(-50%);background:radial-gradient(ellipse at 100% 50%,rgba(255,255,255,.4) 0,rgba(255,255,255,.1) 35%,transparent 70%);clip-path:polygon(100% 44%,0 0,0 100%,100% 56%);filter:blur(12px);pointer-events:none}
+.hero__beam{position:absolute;right:66.5%;top:21.5%;width:80%;height:40%;transform:translateY(-50%);background:radial-gradient(ellipse at 100% 50%,rgba(255,255,255,.4) 0,rgba(255,255,255,.1) 35%,transparent 70%);clip-path:polygon(100% 42%,0 0,0 100%,100% 58%);filter:blur(10px);pointer-events:none}
 .hero__txt{position:relative;z-index:3;max-width:680px;padding:64px 0 0 64px}
 .hero__h1{margin:0;font-family:var(--head);font-weight:700;text-transform:uppercase;font-size:clamp(54px,5vw,78px);line-height:1;letter-spacing:-.005em}
 .hero__h1>span{display:flex;align-items:center;gap:18px;white-space:nowrap}
