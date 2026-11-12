@@ -212,6 +212,37 @@
     steps.forEach(function (s) { io.observe(s); });
   })();
 
+  // ---------- первый экран: слайдер популярных моделей (стрелки, свайп, автопрокрутка) ----------
+  (function () {
+    var box = $('[data-hits]'); if (!box) return;
+    var track = $('[data-hits-track]', box), row = track.firstElementChild, slides = [].slice.call(row.children), n = slides.length, i = 0;
+    if (n < 2) return;
+    function show() {
+      row.style.transform = 'translateX(' + (-i * 100) + '%)';
+      slides.forEach(function (s, k) { s.setAttribute('aria-hidden', k === i ? 'false' : 'true'); s.tabIndex = k === i ? 0 : -1; });
+    }
+    var go = function (d) { i = (i + d + n) % n; show(); };
+    show();
+    var x0 = null;
+    track.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', function (e) {
+      if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+    }, { passive: true });
+    $('[data-hits-prev]', box).addEventListener('click', function () { go(-1); restart(); });
+    $('[data-hits-next]', box).addEventListener('click', function () { go(1); restart(); });
+    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var timer = null, paused = false;
+    function restart() { clearInterval(timer); if (!reduce) timer = setInterval(function () { if (!paused && !document.hidden) go(1); }, 4500); }
+    box.addEventListener('mouseenter', function () { paused = true; });
+    box.addEventListener('mouseleave', function () { paused = false; });
+    box.addEventListener('focusin', function () { paused = true; });
+    box.addEventListener('focusout', function () { paused = false; });
+    track.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+    track.addEventListener('touchend', function () { paused = false; restart(); }, { passive: true });
+    restart();
+  })();
+
   // ---------- лента «Популярные модели»: стрелки листают на одну карточку ----------
   $$('[data-rail]').forEach(function (rail) {
     var track = $('[data-rail-track]', rail), prev = $('[data-rail-prev]', rail), next = $('[data-rail-next]', rail);
