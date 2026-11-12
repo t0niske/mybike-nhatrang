@@ -315,11 +315,6 @@ sub footer_html {
     <div class="footer__bottom"><span>© $SITE{founded}–$y MYBIKE. Аренда байков в Нячанге.</span><a href="${\ u('/politika-konfidencialnosti/')}">Политика конфиденциальности</a></div>
   </div>
 </footer>
-<div class="mcta" data-mcta>
-  <a class="btn btn--orange" href="${\ u('/katalog/')}">Выбрать байк</a>
-  <a class="round round--dark" href="https://t.me/$SITE{telegram}" rel="nofollow" aria-label="Telegram" data-goal="tg">${\ icon('telegram')}</a>
-  <a class="round round--dark" href="https://wa.me/$SITE{whatsapp}" rel="nofollow" aria-label="WhatsApp" data-goal="wa">${\ icon('whatsapp')}</a>
-</div>
 H
 }
 
@@ -622,7 +617,7 @@ sub popular_block {
   my $cards = join '', map { bike_card($_, h=>'h3') } @b;
   return (<<"H", @b);
 <div class="rail" data-rail>
-  <div class="head"><h2 class="h2">Популярные модели</h2><div class="rail__nav"><button class="rail__btn rail__btn--prev" type="button" data-rail-prev aria-label="Предыдущие модели">${\ icon('arrow')}</button><button class="rail__btn" type="button" data-rail-next aria-label="Следующие модели">${\ icon('arrow')}</button></div></div>
+  <div class="head"><h2 class="h2"><span class="hl">Популярные</span> модели</h2><div class="rail__nav"><button class="rail__btn rail__btn--prev" type="button" data-rail-prev aria-label="Предыдущие модели">${\ icon('arrow')}</button><button class="rail__btn" type="button" data-rail-next aria-label="Следующие модели">${\ icon('arrow')}</button></div></div>
   <div class="rail__track" data-rail-track>$cards</div>
   <div class="rail__more"><a class="btn btn--dark btn--lg" href="${\ u('/katalog/')}">Весь каталог — ${\ models(scalar @all)} ${\ icon('arrow')}</a></div>
 </div>
@@ -735,7 +730,7 @@ sub steps_html {
 
 sub cta_block {
   my ($title, $text) = @_;
-  $title //= 'Не знаете, какой байк выбрать?';
+  $title //= q{Не знаете, <span class="hl hl--w">какой байк</span> выбрать?};
   $text  //= 'Напишите нам — подберём байк под ваши права, маршруты и бюджет за 5 минут.';
   return <<"H";
 <section class="section"><div class="container"><div class="cta">
@@ -765,7 +760,7 @@ sub hero_html {
   my $arrow = sub { qq{<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="$_[0]"/></svg>} };
   my $slides = join '', map {
     my $lic = $_->{license} eq 'none' ? '<i>Без прав</i>' : '';
-    qq{<a class="hero__hit" href="${\ u("/arenda/$_->{slug}/")}"><span class="hero__hit-im"><img src="${\ img_url($_)}" alt="${\ esc($_->{name})}" width="900" height="600" loading="lazy" decoding="async"><span class="hero__hit-bd">Хит</span></span><span class="hero__hit-tx"><span class="hero__hit-n"><span class="hero__hit-t">${\ esc($_->{name})}</span>$lic</span><span class="hero__hit-p">${\ vnd($_->{p1})} <small>/ день</small></span></span></a>}
+    qq{<a class="hero__hit" href="${\ u("/arenda/$_->{slug}/")}"><span class="hero__hit-im"><img src="${\ img_url($_)}" alt="${\ esc($_->{name})}" width="900" height="600" decoding="async"><span class="hero__hit-bd">Хит</span></span><span class="hero__hit-tx"><span class="hero__hit-n"><span class="hero__hit-t">${\ esc($_->{name})}</span>$lic</span><span class="hero__hit-p">${\ vnd($_->{p1})} <small>/ день</small></span></span></a>}
   } @hits;
   my $hnav = @hits > 1 ? qq{<div class="hero__hits-nav"><button type="button" data-hits-prev aria-label="Предыдущая модель">${\ $arrow->('m15 6-6 6 6 6')}</button><button type="button" data-hits-next aria-label="Следующая модель">${\ $arrow->('m9 6 6 6-6 6')}</button></div>} : '';
   my $min = vnd(min_p(@BIKES)); my $c = scalar @BIKES;
@@ -780,7 +775,7 @@ sub hero_html {
     <span class="hero__word" aria-hidden="true">MYBIKE</span>
     <div class="hero__bike"><span class="hero__beam" aria-hidden="true"></span><img src="${\ u('/assets/img/hero-bike.webp')}" alt="Скутер Honda PCX 160 в аренду в Нячанге" width="958" height="876" fetchpriority="high"></div>
     <div class="hero__txt">
-      <h1 class="hero__h1"><span>Аренда скутеров</span><span>и мотоциклов <em class="hero__stk">Нячанг</em></span></h1>
+      <h1 class="hero__h1">Аренда скутеров<br>и мотоциклов<br><span class="hl">в Нячанге</span></h1>
       <p class="hero__sub">Бесплатно привезём байк к вашему отелю: выбирайте из $n от $min в день, в том числе без прав</p>
       <a class="btn btn--orange btn--lg hero__btn" href="#catalog">Выбрать байк</a>
     </div>
@@ -799,7 +794,7 @@ ${\ hero_html(@all)}
 
 <section class="section section--tight">
   <div class="container">
-    <div class="head"><h2 class="h2">Выберите свой<br>идеальный байк</h2><p class="head__p">Скутеры и мотоциклы для любых поездок по Нячангу — от лёгких городских моделей до мощных байков для путешествий.</p></div>
+    <div class="head"><h2 class="h2">Выберите свой<br><span class="hl">идеальный байк</span></h2><p class="head__p">Скутеры и мотоциклы для любых поездок по Нячангу — от лёгких городских моделей до мощных байков для путешествий.</p></div>
     ${\ cat_bento()}
   </div>
 </section>
@@ -812,13 +807,13 @@ ${\ hero_html(@all)}
 
 <section class="section">
   <div class="container">
-    ${\ included_html('Всё включено<br>Без доплат', 'Мы изучили все прокаты Нячанга и собрали лучшие условия рынка в одном месте')}
+    ${\ included_html('Всё включено<br><span class="hl">Без доплат</span>', 'Мы изучили все прокаты Нячанга и собрали лучшие условия рынка в одном месте')}
   </div>
 </section>
 
 <section class="section steps-sec">
   <div class="container">
-    <h2 class="h2">Арендуйте байк за несколько простых шагов</h2>
+    <h2 class="h2">Арендуйте байк за несколько <span class="hl">простых шагов</span></h2>
     <div class="steps-wrap">
       <div class="steps-wrap__media"><img src="${\ u('/assets/img/cats/pcx160.jpg')}" alt="Байк MYBIKE" width="800" height="800" loading="lazy" decoding="async"></div>
       ${\ steps_html()}
@@ -830,7 +825,7 @@ ${\ hero_html(@all)}
   <div class="container why">
     <div class="why__photo"><img src="${\ u('/assets/img/bikes/placeholder.png')}" alt="Парк байков MYBIKE в Нячанге" width="540" height="423" loading="lazy"></div>
     <div class="why__text">
-      <h2 class="h2">Почему выбирают <span class="accent">MYBIKE</span></h2>
+      <h2 class="h2">Почему выбирают <span class="hl">MYBIKE</span></h2>
       <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из $SITE{fleet_size} байков 2023–2025 годов, собственный сервис и команда, которая говорит по-русски и отвечает за 5 минут.</p>
       <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
       <div class="stats"><div><b>$SITE{fleet_size}</b><span>байков в парке</span></div><div><b>$SITE{clients}</b><span>клиентов</span></div><div><b>5 мин</b><span>время ответа</span></div></div>
@@ -841,14 +836,14 @@ ${\ hero_html(@all)}
 
 <section class="section section--dark">
   <div class="container">
-    <div class="head head--light"><h2 class="h2">Истории поездок<br>с MYBIKE</h2><p class="head__p">Отзывы наших клиентов из Telegram и Google Maps.</p></div>
+    <div class="head head--light"><h2 class="h2">Истории поездок<br><span class="hl">с MYBIKE</span></h2><p class="head__p">Отзывы наших клиентов из Telegram и Google Maps.</p></div>
     <div class="reviews">$reviews</div>
   </div>
 </section>
 
 <section class="section">
   <div class="container faq-wrap">
-    <div><h2 class="h2">Частые вопросы</h2><p class="lead">Не нашли ответ? Напишите в <a href="https://t.me/$SITE{telegram}" rel="nofollow">Telegram</a>, ответим за 5 минут.</p><a class="btn btn--dark" href="${\ u('/faq/')}">Все вопросы</a></div>
+    <div><h2 class="h2">Частые <span class="hl">вопросы</span></h2><p class="lead">Не нашли ответ? Напишите в <a href="https://t.me/$SITE{telegram}" rel="nofollow">Telegram</a>, ответим за 5 минут.</p><a class="btn btn--dark" href="${\ u('/faq/')}">Все вопросы</a></div>
     ${\ faq_html(@FAQ_MAIN)}
   </div>
 </section>
