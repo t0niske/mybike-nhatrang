@@ -212,25 +212,38 @@
     steps.forEach(function (s) { io.observe(s); });
   })();
 
-  // ---------- первый экран: слайдер популярных моделей (стрелки, свайп, автопрокрутка) ----------
+  // ---------- первый экран: слайдер популярных моделей (точки, свайп/перетаскивание, колесо, автопрокрутка) ----------
   (function () {
     var box = $('[data-hits]'); if (!box) return;
     var track = $('[data-hits-track]', box), row = track.firstElementChild, slides = [].slice.call(row.children), n = slides.length, i = 0;
     if (n < 2) return;
+    var dots = $$('[data-hits-dots] button', box);
     function show() {
       row.style.transform = 'translateX(' + (-i * 100) + '%)';
       slides.forEach(function (s, k) { s.setAttribute('aria-hidden', k === i ? 'false' : 'true'); s.tabIndex = k === i ? 0 : -1; });
+      dots.forEach(function (d, k) { d.classList.toggle('is-on', k === i); d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
     }
     var go = function (d) { i = (i + d + n) % n; show(); };
+    var to = function (k) { i = k; show(); };
     show();
-    var x0 = null;
-    track.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-    track.addEventListener('touchend', function (e) {
-      if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
-      if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
-    }, { passive: true });
-    $('[data-hits-prev]', box).addEventListener('click', function () { go(-1); restart(); });
-    $('[data-hits-next]', box).addEventListener('click', function () { go(1); restart(); });
+    dots.forEach(function (d, k) { d.addEventListener('click', function () { to(k); restart(); }); });
+    // свайп пальцем и перетаскивание мышью; после перетаскивания клик по карточке не открывает страницу
+    var x0 = null, moved = false;
+    track.addEventListener('pointerdown', function (e) { if (e.button !== 0) return; x0 = e.clientX; moved = false; track.classList.add('is-drag'); });
+    window.addEventListener('pointermove', function (e) { if (x0 !== null && Math.abs(e.clientX - x0) > 6) moved = true; });
+    window.addEventListener('pointerup', function (e) {
+      if (x0 === null) return; var dx = e.clientX - x0; x0 = null; track.classList.remove('is-drag');
+      if (Math.abs(dx) > 40) { go(dx < 0 ? 1 : -1); restart(); }
+    });
+    track.addEventListener('click', function (e) { if (moved) { e.preventDefault(); moved = false; } }, true);
+    track.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    // горизонтальная прокрутка тачпадом
+    var wheelLock = 0;
+    track.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 12) return;
+      e.preventDefault(); var now = Date.now(); if (now - wheelLock < 600) return; wheelLock = now;
+      go(e.deltaX > 0 ? 1 : -1); restart();
+    }, { passive: false });
     var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
     var timer = null, paused = false;
     function restart() { clearInterval(timer); if (!reduce) timer = setInterval(function () { if (!paused && !document.hidden) go(1); }, 4500); }

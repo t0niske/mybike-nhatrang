@@ -757,12 +757,11 @@ sub hero_html {
   # слайдер популярных моделей внизу колонки: только с настоящими фото, максимум 8
   my @hits = grep { $_->{popular} && (photos($_))[0] ne 'placeholder.png' } @all; @hits = ($all[0]) unless @hits;
   @hits = @hits[0 .. 7] if @hits > 8;
-  my $arrow = sub { qq{<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="$_[0]"/></svg>} };
   my $slides = join '', map {
     my $lic = $_->{license} eq 'none' ? '<i>Без прав</i>' : '';
     qq{<a class="hero__hit" href="${\ u("/arenda/$_->{slug}/")}"><span class="hero__hit-im"><img src="${\ img_url($_)}" alt="${\ esc($_->{name})}" width="900" height="600" decoding="async"><span class="hero__hit-bd">Хит</span></span><span class="hero__hit-tx"><span class="hero__hit-n"><span class="hero__hit-t">${\ esc($_->{name})}</span>$lic</span><span class="hero__hit-p">${\ vnd($_->{p1})} <small>/ день</small></span></span></a>}
   } @hits;
-  my $hnav = @hits > 1 ? qq{<div class="hero__hits-nav"><button type="button" data-hits-prev aria-label="Предыдущая модель">${\ $arrow->('m15 6-6 6 6 6')}</button><button type="button" data-hits-next aria-label="Следующая модель">${\ $arrow->('m9 6 6 6-6 6')}</button></div>} : '';
+  my $hnav = @hits > 1 ? qq{<div class="hero__dots" data-hits-dots>} . join("", map { qq{<button type="button" aria-label="Модель $_ из } . scalar(@hits) . qq{"></button>} } 1 .. @hits) . "</div>" : "";
   my $min = vnd(min_p(@BIKES)); my $c = scalar @BIKES;
   my $n = "$c\x{a0}" . ($c % 10 == 1 && $c % 100 != 11 ? 'модели' : 'моделей');   # «из 19 моделей», «из 21 модели»
   return <<"H";
