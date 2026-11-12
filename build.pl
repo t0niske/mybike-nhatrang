@@ -279,7 +279,6 @@ sub header_html {
     <div class="header__social">
       <a class="round" href="$tg" rel="nofollow" aria-label="Telegram" data-goal="tg">${\ icon('telegram')}</a>
       <a class="round" href="$wa" rel="nofollow" aria-label="WhatsApp" data-goal="wa">${\ icon('whatsapp')}</a>
-      <a class="round round--hide-sm" href="$SITE{vk}" rel="nofollow" aria-label="ВКонтакте">${\ icon('vk')}</a>
       <button class="burger" type="button" aria-label="Меню" aria-expanded="false" data-burger>${\ icon('menu')}</button>
     </div>
   </div>
@@ -772,7 +771,7 @@ sub hero_html {
   </aside>
   <div class="hero__main">
     <span class="hero__word" aria-hidden="true">Nha Trang</span>
-    <div class="hero__bike"><span class="hero__beam" aria-hidden="true"></span><img src="${\ u('/assets/img/hero-bike.webp')}" alt="Скутер Kymco Candy 50 в аренду в Нячанге" width="964" height="932" fetchpriority="high"></div>
+    <div class="hero__bike"><span class="hero__beam" aria-hidden="true"></span><img src="${\ u('/assets/img/hero-bike.webp')}" alt="Скутер Honda PCX 160 в аренду в Нячанге" width="958" height="876" fetchpriority="high"></div>
     <div class="hero__txt">
       <h1 class="hero__h1"><span>Аренда скутеров</span><span>и мотоциклов <em class="hero__stk">Нячанг</em></span></h1>
       <p class="hero__sub">Бесплатно привезём байк к вашему отелю: выбирайте из $n от $min в день, в том числе без прав</p>
