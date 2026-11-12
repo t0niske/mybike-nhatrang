@@ -76,7 +76,7 @@ h1,h2,h3{margin:0}
 
 /* ---------- hero ---------- */
 .hero{position:relative;overflow:hidden;margin-top:calc(-1 * var(--header-h));padding-top:var(--header-h);background:radial-gradient(55% 75% at 72% 60%,#FFFFFF 0%,#F7F5F3 55%,#EEEBE8 100%);color:var(--ink)}
-.hero__grid{position:relative;width:min(1240px,calc(100% - 80px));margin:0 auto;display:grid;grid-template-columns:320px minmax(0,1fr);height:clamp(600px,calc(100vh - var(--header-h)),760px)}
+.hero__grid{position:relative;width:min(1240px,calc(100% - 80px));margin:0 auto;display:grid;grid-template-columns:320px minmax(0,1fr);height:calc(100vh - var(--header-h));height:calc(100dvh - var(--header-h));min-height:480px}
 .hero__side{position:relative;z-index:4;display:flex;flex-direction:column;gap:20px;min-width:0;overflow:hidden;background:var(--ink)}
 .hero__cats{display:flex;flex-direction:column;gap:10px;padding:0 24px;margin:auto 0}
 .hero a{text-decoration:none}
@@ -704,9 +704,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 @media (max-width:1024px){
   .hero__grid{display:flex;flex-direction:column;height:auto;width:auto}
   .hero__cats{padding:14px 24px 20px}
-  .hero__main{order:1;display:flex;flex-direction:column}
+  .hero__main{order:1;display:flex;flex-direction:column;min-height:calc(100vh - var(--header-h));min-height:calc(100svh - var(--header-h))}
   .hero__txt{order:1;max-width:none;padding:48px 24px 0}
-  .hero__bike{order:2;position:relative;right:auto;bottom:auto;width:min(80%,620px);margin:8px -12% -8% auto}
+  .hero__bike{order:2;position:relative;right:auto;bottom:auto;width:min(80%,620px);margin:auto -12% -8% auto}
   .hero__word{font-size:170px;bottom:-.12em}
   .hero__side{order:2;gap:0;padding:0;margin:0;border-radius:0;overflow:visible;background:transparent}
   .hero__cats{margin:0}
@@ -724,10 +724,28 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .hero__sub{margin-top:36px!important}
   .hero__sub{margin:10px 0 22px;font-size:16px}
   .hero__btn.btn--lg{width:100%;min-width:0;min-height:60px;font-size:18px}
-  .hero__bike{width:124%;margin:10px -36% -10% auto}
+  .hero__bike{width:124%;margin:auto -36% -10% auto}
   .hero__word{font-size:120px}
   .hero__cats{padding:14px 16px 20px}
 }
 @media (max-width:380px){
   .hero__h1{font-size:clamp(34px,11vw,40px)}
+}
+
+/* первый экран: на ноутбуках меню прижато к краю, на широких — по сетке; высота всегда ровно в экран */
+@media (min-width:1025px) and (max-width:1600px){
+  .hero__grid{width:100%}
+  .hero__cats{padding:0 28px}
+}
+@media (min-width:1025px) and (max-height:780px){
+  .hero__h1{font-size:clamp(54px,5vw,78px)}
+  .hero__txt{padding-top:40px}
+  .hero__sub{margin:10px 0 24px}
+  .hero__btn.btn--lg{min-height:64px}
+  .hero__cats{gap:8px}
+  .hero__cats a{min-height:40px}
+  .hero__hit{min-height:96px}
+}
+@media (min-width:1601px){
+  .hero__bike{width:min(72%,900px)}
 }
