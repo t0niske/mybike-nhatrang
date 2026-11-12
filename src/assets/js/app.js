@@ -274,6 +274,17 @@
     track.addEventListener('scroll', upd, { passive: true });
     addEventListener('resize', upd);
     upd();
+    // доводка до ближайшей карточки после свайпа: на iPhone scroll-snap иногда останавливает ленту посередине карточки
+    var touching = false, settle = null;
+    function snap() {
+      var s = step(); if (!s) return;
+      var target = Math.round(track.scrollLeft / s) * s, end = track.scrollWidth - track.clientWidth;
+      if (track.scrollLeft >= end - 2) return;
+      if (Math.abs(track.scrollLeft - target) > 2) track.scrollTo({ left: Math.min(target, end), behavior: 'smooth' });
+    }
+    track.addEventListener('touchstart', function () { touching = true; clearTimeout(settle); }, { passive: true });
+    track.addEventListener('touchend', function () { touching = false; clearTimeout(settle); settle = setTimeout(snap, 160); }, { passive: true });
+    track.addEventListener('scroll', function () { if (touching) return; clearTimeout(settle); settle = setTimeout(snap, 160); }, { passive: true });
   });
 
   function diffDays(a, b) {
