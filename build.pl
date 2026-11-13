@@ -767,7 +767,7 @@ sub about_html {
     <div class="art__msg"><i>M</i><div><b>MYBIKE</b><span>Можем привезти байк прямо к отелю, а можете забрать его у нас сами</span></div><time>10:24</time></div>
     <img class="art__main" src="${\ $img->('about-couple.jpg')}" alt="Пара в шлемах со скутером на улице Нячанга" width="900" height="1125" decoding="async">
     <figure class="art__pol art__pol--b"><img src="${\ $img->('about-keys.jpg')}" alt="Передача ключей от арендованного байка" width="800" height="800" decoding="async"><figcaption>и катаетесь</figcaption></figure>
-    <span class="art__pin art__pin--b">${\ icon('scooter')}</span>
+    <span class="art__pin art__pin--b">${\ logo_mark()}</span>
   </div>
 </div></section>};
 }

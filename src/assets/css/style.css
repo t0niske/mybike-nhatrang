@@ -927,3 +927,24 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 #catalog{background:#F3F1EE}
 .cb:not(.cb--all){background:#F3F3F3}
 .cb:first-child{background:#F3F1EE}
+/* «О нас»: наш логотип вместо значка скутера, текст плотнее */
+.about__text>p{font-weight:500}
+.about__art .art__pin--b{padding:0;background:none;box-shadow:none;width:44px;height:53px;filter:drop-shadow(0 8px 14px rgba(255,107,44,.35))}
+.about__art .art__pin--b svg{width:100%;height:100%;color:inherit}
+@media (max-width:680px){
+  .about{gap:16px}
+  .about-sec.section{padding-bottom:28px}
+  .about__art{height:640px}
+  .about__art .art__pin--b{top:0;right:0;width:40px;height:48px}
+  .about__art .art__msg{top:40px;transform:rotate(-2deg)}
+  .art__main{top:104px;height:380px}
+  .about__art .art__pol--a{top:398px}
+  .about__art .art__pol--b{top:416px}
+  .about__art .art__pin--a{bottom:4px}
+}
+@media (max-width:380px){
+  .about__art{height:592px}
+  .art__main{height:350px}
+  .about__art .art__pol--a{top:368px}
+  .about__art .art__pol--b{top:384px}
+}
