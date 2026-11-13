@@ -796,7 +796,7 @@ sub about_html {
     $route
     <span class="art__pin art__pin--a">${\ icon('pin')} Вы здесь</span>
     <figure class="art__pol art__pol--a"><img src="${\ $img->('about.jpg')}" alt="Парк байков MYBIKE в Нячанге" width="1400" height="933" decoding="async"><figcaption>выбираете байк</figcaption></figure>
-    <div class="art__msg"><i>M</i><div><b>MYBIKE</b><span>Можем привезти байк прямо к вам, а можете забрать его у нас сами</span></div><time>10:24</time></div>
+    <div class="art__msg"><i>M</i><div><b>MYBIKE</b><span>Можем привезти байк прямо к вам, а можете забрать его самостоятельно</span></div><time>10:24</time></div>
     <img class="art__main" src="${\ $img->('about-couple.jpg')}" alt="Пара в шлемах со скутером на улице Нячанга" width="900" height="1125" decoding="async">
     <figure class="art__pol art__pol--b"><img src="${\ $img->('about-keys.jpg')}" alt="Передача ключей от арендованного байка" width="800" height="800" decoding="async"><figcaption>и катаетесь</figcaption></figure>
     <span class="art__pin art__pin--b">${\ logo_mark()}</span>
