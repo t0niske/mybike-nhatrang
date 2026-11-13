@@ -730,21 +730,33 @@ sub steps_html {
 
 sub cta_block {
   my ($title, $text) = @_;
-  $title //= q{Не знаете, <span class="hl hl--w">какой байк</span> выбрать?};
-  $text  //= 'Напишите нам — подберём байк под ваши права, маршруты и бюджет. Оставьте заявку, и мы напишем вам сами';
-  my $pts = join '', map { "<li>$_</li>" } 'Подберём модель под права и маршруты', 'Без предоплаты, оплата при получении', 'Привезём байк по вашему адресу';
-  # форма не шлёт данные на сервер: собирает сообщение и открывает выбранный мессенджер (см. app.js, data-lead)
+  $title //= q{Не знаете, <span class="hl">какой байк</span> выбрать?};
+  $text  //= 'Напишите нам — подберём байк под ваши права, маршруты и бюджет и привезём его по вашему адресу';
+  my $nb = "\x{a0}";
+  my $c50 = (grep { $_->{slug} eq 'kymco-candy-50' } @BIKES)[0];
+  my $p7 = $c50 ? vnd($c50->{p7}) : "120${nb}000${nb}₫";
+  my $img = $c50 ? img_url($c50) : '';
+  # справа телефон, свёрстанный в HTML: переписка с MYBIKE и плавающие карточки
   return <<"H";
 <section class="section"><div class="container"><div class="cta">
-  <div class="cta__text"><h2 class="cta__t">$title</h2><p>$text</p><ul class="cta__pts">$pts</ul><img class="cta__photo" src="${\ u('/assets/img/cta-ride.jpg')}" alt="Пара едет на скутере по набережной Нячанга" width="1000" height="750" loading="lazy" decoding="async"></div>
-  <form class="cta__form" data-lead novalidate>
-    <b>Заявка на подбор байка</b>
-    <label>Имя<input name="name" autocomplete="name" placeholder="Как к вам обращаться"></label>
-    <fieldset><legend>Где удобнее ответить</legend><div class="cta__seg"><label><input type="radio" name="via" value="tg" checked><span>Telegram</span></label><label><input type="radio" name="via" value="wa"><span>WhatsApp</span></label></div></fieldset>
-    <label>Ник или телефон<input name="contact" autocomplete="tel" placeholder="\@username или +7…"></label>
-    <button class="btn btn--orange" type="submit">Подобрать байк</button>
-    <small>Ответим в мессенджере, без звонков и спама</small>
-  </form>
+  <div class="cta__text"><h2 class="cta__t">$title</h2><p>$text</p>
+    <div class="cta__btns"><a class="btn btn--orange btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Написать в Telegram</a><a class="btn btn--light btn--lg" href="https://wa.me/$SITE{whatsapp}" rel="nofollow" data-goal="wa">${\ icon('whatsapp')} WhatsApp</a></div>
+  </div>
+  <div class="cta__art" aria-hidden="true">
+    <div class="phone"><div class="phone__scr">
+      <div class="phone__top"><span>10:24</span><i></i></div>
+      <div class="phone__hd"><span class="phone__ava">${\ logo_mark()}</span><div><b>MYBIKE</b><small>онлайн</small></div></div>
+      <div class="phone__chat">
+        <p class="pm pm--me">Привет! Нужен байк на неделю, прав нет</p>
+        <p class="pm">Подойдёт Kymco Candy 50: права не нужны, удобно вдвоём</p>
+        <div class="pm pm--card"><img src="$img" alt="Kymco Candy 50" width="900" height="600" loading="lazy" decoding="async"><b>Kymco Candy 50</b><span>$p7 / день от 7 дней</span></div>
+        <p class="pm">Привезём завтра к 10:00?</p>
+        <p class="pm pm--me">Да, давайте 👍</p>
+      </div>
+    </div></div>
+    <div class="cta__chip cta__chip--a"><span>${\ icon('check')}</span><div><small>Без предоплаты</small><b>Оплата при получении</b></div></div>
+    <div class="cta__chip cta__chip--b"><span>${\ icon('truck')}</span><div><small>Доставка</small><b>По вашему адресу</b></div></div>
+  </div>
 </div></div></section>
 H
 }
