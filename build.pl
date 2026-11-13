@@ -736,8 +736,7 @@ sub cta_block {
   # форма не шлёт данные на сервер: собирает сообщение и открывает выбранный мессенджер (см. app.js, data-lead)
   return <<"H";
 <section class="section"><div class="container"><div class="cta">
-  <div class="cta__text"><h2 class="cta__t">$title</h2><p>$text</p><ul class="cta__pts">$pts</ul></div>
-  <img class="cta__bike" src="${\ u('/assets/img/cta-bike.webp')}" alt="Скутер Kymco Candy 50" width="900" height="853" loading="lazy" decoding="async">
+  <div class="cta__text"><h2 class="cta__t">$title</h2><p>$text</p><ul class="cta__pts">$pts</ul><img class="cta__photo" src="${\ u('/assets/img/cta-ride.jpg')}" alt="Пара едет на скутере по набережной Нячанга" width="1000" height="750" loading="lazy" decoding="async"></div>
   <form class="cta__form" data-lead novalidate>
     <b>Заявка на подбор байка</b>
     <label>Имя<input name="name" autocomplete="name" placeholder="Как к вам обращаться"></label>
