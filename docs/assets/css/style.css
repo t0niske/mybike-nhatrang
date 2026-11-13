@@ -1103,3 +1103,4 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .fqb__main{position:static}
 .fqb__btns{margin-top:auto}
 @media (max-width:1024px){.fqb__btns{margin-top:8px}}
+.fqb__it summary{align-items:center;min-height:92px;padding-top:16px;padding-bottom:16px} @media (max-width:680px){.fqb__it summary{min-height:72px}}
