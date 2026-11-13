@@ -213,7 +213,7 @@ sub org_ld {
     '@type' => ['AutoRental', 'LocalBusiness'], '@id' => abs_url('/#org'),
     name => $SITE{name}, alternateName => $SITE{legal_name}, url => abs_url('/'),
     logo => abs_url('/assets/img/logo.svg'), image => abs_url('/assets/img/bikes/placeholder.png'),
-    description => 'Аренда скутеров, мотоциклов и электроскутеров в Нячанге без залога паспорта. Бесплатная доставка в отель с первого дня аренды.',
+    description => 'Аренда скутеров, мотоциклов и электроскутеров в Нячанге без залога паспорта. Бесплатная доставка по вашему адресу с первого дня аренды.',
     telephone => $SITE{phone_raw}, email => $SITE{email}, priceRange => '100000–1300000 VND',
     currenciesAccepted => 'VND, RUB, USD, USDT', paymentAccepted => 'Cash, Bank transfer, Cryptocurrency',
     address => { '@type'=>'PostalAddress', streetAddress=>$SITE{street}, addressLocality=>'Nha Trang', addressRegion=>'Khánh Hòa', addressCountry=>'VN' },
@@ -298,7 +298,7 @@ sub footer_html {
     <div class="footer__top">
       <div class="footer__brand">
         <a class="logo logo--light" href="${\ u('/')}"><span class="logo__mark">${\ logo_mark()}</span><span class="logo__text"><b>MY</b>BIKE</span></a>
-        <p>Аренда скутеров и мотоциклов в Нячанге без залога паспорта. Бесплатная доставка в отель с первого дня аренды.</p>
+        <p>Аренда скутеров и мотоциклов в Нячанге без залога паспорта. Бесплатная доставка по вашему адресу с первого дня аренды.</p>
         <div class="footer__contacts">
           <a href="https://t.me/$SITE{telegram}" rel="nofollow">${\ icon('telegram')} Telegram</a>
           <a href="https://wa.me/$SITE{whatsapp}" rel="nofollow">${\ icon('whatsapp')} WhatsApp</a>
@@ -661,14 +661,14 @@ sub inc_art {
 <g transform="rotate(6 204 50)"><rect x="160" y="16" width="88" height="66" rx="12" class="art-svg__bg"/><rect x="168" y="24" width="34" height="50" rx="6" fill="#FFF1EA"/><circle cx="185" cy="42" r="7" fill="#FF6B2C"/><path d="M174 66c2-6 6-9 11-9s9 3 11 9z" fill="#FF6B2C"/><rect x="208" y="32" width="32" height="5" rx="2.5" fill="#E6E6E6"/><rect x="208" y="43" width="24" height="5" rx="2.5" fill="#E6E6E6"/><rect x="208" y="54" width="28" height="5" rx="2.5" fill="#E6E6E6"/></g>
 <rect x="112" y="120" width="140" height="38" rx="19" class="art-svg__bg"/><circle cx="132" cy="139" r="10" fill="#1F9D55"/><path d="m127 139 3.5 3.5 6.5-7" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="149" y="143.5" font-size="12.5" font-weight="800" fill="#1E1E1E">Остаётся у вас</text>
 </svg>} },
-    # доставка: карта с маршрутом от байка до отеля
+    # доставка: карта с маршрутом от байка до клиента
     truck    => sub { q{<svg class="art-svg" viewBox="0 0 260 170">
 <rect x="4" y="4" width="252" height="162" rx="22" class="art-svg__bg"/><path d="M226 4h30v162h-40q16-40 6-78t4-84z" fill="#DCEBFA"/>
 <g stroke="#EFEFEF" stroke-linecap="round" fill="none"><path d="M12 60h200M12 128h200M78 12v146M188 12v146" stroke-width="12"/><path d="M118 158 214 50" stroke-width="8"/></g>
 <path d="M44 128h34V78q0-18 18-18h92V46" fill="none" stroke="#FF6B2C" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 9"/>
 <circle cx="44" cy="128" r="18" fill="#FF6B2C"/><svg x="32" y="116" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="M8 17.5h7.5l2.5-7h-3M14 5h2.5l1.5 5.5M5.5 15l2-4H13"/></svg>
 <path d="M188 46s-16-14-16-26a16 16 0 0 1 32 0c0 12-16 26-16 26z" fill="#1E1E1E"/><circle cx="188" cy="20" r="6" fill="#fff"/>
-<rect x="92" y="10" width="74" height="24" rx="12" fill="#1E1E1E"/><text x="129" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Ваш отель</text>
+<rect x="92" y="10" width="74" height="24" rx="12" fill="#1E1E1E"/><text x="129" y="26" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Вы здесь</text>
 <rect x="16" y="76" width="50" height="24" rx="12" fill="#FF6B2C"/><text x="41" y="92" text-anchor="middle" font-size="11.5" font-weight="800" fill="#fff">0 ₫</text>
 </svg>} },
     # шлемы: взрослые M и L и детский
@@ -748,7 +748,7 @@ sub delivery_table {
   qq{<div class="table-wrap"><table class="table"><thead><tr><th>Куда</th><th>Стоимость</th><th>Время</th></tr></thead><tbody>$rows</tbody></table></div>};
 }
 
-# главная, «О нас»: слева рассказ о сервисе, справа коллаж «маршрут»: отель → выбор байка → поездка
+# главная, «О нас»: слева рассказ о сервисе, справа коллаж «маршрут»: клиент → выбор байка → поездка
 sub about_html {
   my $tg = "https://t.me/$SITE{telegram}";
   my $img = sub { u("/assets/img/$_[0]") };
@@ -764,7 +764,7 @@ sub about_html {
     $route
     <span class="art__pin art__pin--a">${\ icon('pin')} Вы здесь</span>
     <figure class="art__pol art__pol--a"><img src="${\ $img->('about.jpg')}" alt="Парк байков MYBIKE в Нячанге" width="1400" height="933" decoding="async"><figcaption>выбираете байк</figcaption></figure>
-    <div class="art__msg"><i>M</i><div><b>MYBIKE</b><span>Можем привезти байк прямо к отелю, а можете забрать его у нас сами</span></div><time>10:24</time></div>
+    <div class="art__msg"><i>M</i><div><b>MYBIKE</b><span>Можем привезти байк прямо к вам, а можете забрать его у нас сами</span></div><time>10:24</time></div>
     <img class="art__main" src="${\ $img->('about-couple.jpg')}" alt="Пара в шлемах со скутером на улице Нячанга" width="900" height="1125" decoding="async">
     <figure class="art__pol art__pol--b"><img src="${\ $img->('about-keys.jpg')}" alt="Передача ключей от арендованного байка" width="800" height="800" decoding="async"><figcaption>и катаетесь</figcaption></figure>
     <span class="art__pin art__pin--b">${\ logo_mark()}</span>
@@ -799,7 +799,7 @@ sub hero_html {
     <div class="hero__bike"><span class="hero__beam" aria-hidden="true"></span><img src="${\ u('/assets/img/hero-bike.webp')}" alt="Скутер Honda PCX 160 в аренду в Нячанге" width="958" height="876" fetchpriority="high"></div>
     <div class="hero__txt">
       <h1 class="hero__h1">Аренда скутеров<br>и мотоциклов<br><span class="hl">в Нячанге</span></h1>
-      <p class="hero__sub">Бесплатно привезём байк к вашему отелю: выбирайте из $n от $min в день, в том числе без прав</p>
+      <p class="hero__sub">Бесплатно привезём байк по вашему адресу: выбирайте из $n от $min в день, в том числе без прав</p>
       <a class="btn btn--orange btn--lg hero__btn" href="#catalog">Выбрать байк</a>
     </div>
   </div>
@@ -859,7 +859,7 @@ H
   page(
     path=>'/', priority=>'1.0', bodyclass=>'home',
     title=>'Аренда байков в Нячанге — скутеры от 100 000 ₫, доставка бесплатно | MYBIKE',
-    desc=>'Аренда скутеров и мотоциклов в Нячанге: ' . scalar(@BIKES) . ' моделей, есть байки без прав (50cc). Без залога паспорта, бесплатная доставка в отель, 2 шлема в комплекте. Цены от 100 000 ₫.',
+    desc=>'Аренда скутеров и мотоциклов в Нячанге: ' . scalar(@BIKES) . ' моделей, есть байки без прав (50cc). Без залога паспорта, бесплатная доставка по вашему адресу, 2 шлема в комплекте. Цены от 100 000 ₫.',
     body=>$body, ld=>[ faq_ld(@FAQ_MAIN), itemlist_ld('Популярные байки в аренду в Нячанге', @pop) ],
   );
 }
@@ -986,7 +986,7 @@ sub build_bike {
             <a class="btn btn--light pcard__tg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Спросить в Telegram</a>
             <button class="btn btn--orange" type="button" data-book="$b->{slug}" data-goal="book_open">Забронировать</button>
           </div>
-          <p class="pcard__note">Без предоплаты · привезём к отелю бесплатно</p>
+          <p class="pcard__note">Без предоплаты · привезём к вам бесплатно</p>
         </div>
       </div>
     </div>
@@ -994,11 +994,11 @@ sub build_bike {
 </section>
 <section class="section"><div class="container faq-wrap"><div><h2 class="h2">Вопросы о $b->{name}</h2></div>${\ faq_html(@faq)}</div></section>
 <section class="section section--grey"><div class="container"><div class="head"><h2 class="h2">Похожие байки</h2><a class="btn btn--dark" href="${\ u($catlink->[1])}">Смотреть все</a></div><div class="grid">$sim</div></div></section>
-${\ cta_block("Забронируйте $b->{name} сейчас", 'Без предоплаты. Привезём к отелю бесплатно в удобное время.')}
+${\ cta_block("Забронируйте $b->{name} сейчас", 'Без предоплаты. Привезём к вам бесплатно в удобное время.')}
 H
   page(path=>"/arenda/$b->{slug}/", priority=>'0.8', bodyclass=>'bike-page',
     title=>"Аренда $b->{name} в Нячанге — от " . vnd($b->{p7}) . "/день, с доставкой",
-    desc=>"Аренда $b->{name} в Нячанге: " . vnd($b->{p1}) . " в день, " . vnd($b->{pm}) . " в месяц. " . lic_label($b->{license}) . ". Бесплатная доставка в отель, без залога паспорта, 2 шлема в комплекте.",
+    desc=>"Аренда $b->{name} в Нячанге: " . vnd($b->{p1}) . " в день, " . vnd($b->{pm}) . " в месяц. " . lic_label($b->{license}) . ". Бесплатная доставка по вашему адресу, без залога паспорта, 2 шлема в комплекте.",
     crumbs=>[['Главная','/'], $catlink, [$b->{name}, "/arenda/$b->{slug}/"]], body=>$body,
     ld=>[ product_ld($b), faq_ld(@faq) ]);
 }
@@ -1077,7 +1077,7 @@ sub build_static {
   write_file('/llms.txt', <<"T");
 # MYBIKE — аренда байков в Нячанге (Вьетнам)
 
-> Сервис аренды скутеров, мотоциклов и электроскутеров в Нячанге для русскоязычных туристов. Без залога паспорта, бесплатная доставка в отель, 2 шлема в комплекте. Есть байки без прав (50 см³ и электро). Цены от 100 000 ₫ в день.
+> Сервис аренды скутеров, мотоциклов и электроскутеров в Нячанге для русскоязычных жителей и гостей города. Без залога паспорта, бесплатная доставка по вашему адресу, 2 шлема в комплекте. Есть байки без прав (50 см³ и электро). Цены от 100 000 ₫ в день.
 
 Контакты: Telegram https://t.me/$SITE{telegram}, WhatsApp https://wa.me/$SITE{whatsapp}, телефон $SITE{phone}, $SITE{address}. Режим работы: $SITE{hours}.
 
