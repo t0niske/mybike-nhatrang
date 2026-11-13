@@ -1058,3 +1058,17 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .cta__art{clip-path:none}
 .phone{box-shadow:0 30px 60px rgba(110,35,0,.35),inset 0 0 0 2px #3a3a3a}
 @media (max-width:680px){.cta{clip-path:inset(0 round 24px)}}
+/* блок заявки на планшете: текст и телефон в две колонки, без пустоты */
+@media (min-width:681px) and (max-width:1024px){
+  .cta{grid-template-columns:minmax(0,1fr) 250px;gap:24px;padding:40px 36px 0;align-items:stretch}
+  .cta__text{padding-bottom:40px;align-self:center}
+  .cta__btns{flex-direction:column;align-items:stretch;max-width:340px}
+  .cta__btns .btn--lg{min-height:58px;font-size:17px}
+  .cta__art{min-height:380px;margin:0}
+  .phone{width:220px;height:410px;bottom:-60px}
+  .cta__chip--a{left:-30%;top:14%}
+  .cta__chip--b{right:-4%;bottom:14%}
+}
+@media (min-width:681px) and (max-width:1024px){.cta__chip--a{display:none}.cta__chip--b{right:auto;left:-26%;bottom:10%}.cta__text{max-width:380px}.phone{bottom:-30px}}
+@media (min-width:681px) and (max-width:1024px){.cta__chip--b{left:-12%}} @media (min-width:900px) and (max-width:1024px){.cta{grid-template-columns:minmax(0,1fr) 340px}.cta__text{max-width:480px}.cta__btns{flex-direction:row}.cta__btns .btn--lg{flex:1}.cta__chip--a{display:flex;left:-6%;top:18%}}
+@media (min-width:900px) and (max-width:1024px){.cta__btns{max-width:none}}
