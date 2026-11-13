@@ -811,6 +811,7 @@ H
 sub build_home {
   my @all = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @BIKES;
   my ($popular, @pop) = popular_block(@all);
+  # блок отзывов на главной скрыт, пока нет настоящих отзывов
   my $reviews = join '', map { qq{<figure class="review"><div class="review__stars">${\ join '', map { icon('star') } 1..5}</div><blockquote>$_->[2]</blockquote><figcaption><b>$_->[0]</b><span>$_->[1]</span></figcaption></figure>} } @REVIEWS;
   my $body = <<"H";
 ${\ hero_html(@all)}
@@ -846,12 +847,6 @@ ${\ hero_html(@all)}
 
 ${\ about_html()}
 
-<section class="section section--dark">
-  <div class="container">
-    <div class="head head--light"><h2 class="h2">Истории поездок<br><span class="hl">с MYBIKE</span></h2><p class="head__p">Отзывы наших клиентов из Telegram и Google Maps.</p></div>
-    <div class="reviews">$reviews</div>
-  </div>
-</section>
 
 <section class="section">
   <div class="container faq-wrap">
