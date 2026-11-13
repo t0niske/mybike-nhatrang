@@ -256,6 +256,25 @@
     restart();
   })();
 
+  // ---------- блок заявки «Не знаете, какой байк выбрать?»: собираем сообщение и открываем мессенджер ----------
+  $$('[data-lead]').forEach(function (lf) {
+    lf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var el = lf.elements, via = (lf.querySelector('input[name=via]:checked') || {}).value || 'tg';
+      var name = el.name.value.trim(), contact = el.contact.value.trim();
+      var msg = 'Здравствуйте! Помогите подобрать байк.\n' +
+        (name ? '👤 ' + name + '\n' : '') +
+        (contact ? '📱 ' + contact + '\n' : '') +
+        'Заявка с сайта ' + location.host;
+      var url = via === 'wa' ? 'https://wa.me/' + CFG.wa + '?text=' + encodeURIComponent(msg)
+                             : 'https://t.me/' + CFG.tg + '?text=' + encodeURIComponent(msg);
+      if (via === 'tg') { try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).then(function () { showToast('Текст заявки скопирован — если он не подставился, вставьте его в чат'); }, function () {}); } catch (err) {} }
+      goal('lead_form');
+      T.ev('lead_form', { data: { via: via } });
+      window.open(url, '_blank', 'noopener');
+    });
+  });
+
   // ---------- лента «Популярные модели»: стрелки листают на одну карточку ----------
   $$('[data-rail]').forEach(function (rail) {
     var track = $('[data-rail-track]', rail), prev = $('[data-rail-prev]', rail), next = $('[data-rail-next]', rail);

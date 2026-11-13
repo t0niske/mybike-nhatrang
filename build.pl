@@ -731,14 +731,21 @@ sub steps_html {
 sub cta_block {
   my ($title, $text) = @_;
   $title //= q{Не знаете, <span class="hl hl--w">какой байк</span> выбрать?};
-  $text  //= 'Напишите нам — подберём байк под ваши права, маршруты и бюджет за 5 минут.';
+  $text  //= 'Напишите нам — подберём байк под ваши права, маршруты и бюджет. Оставьте заявку, и мы напишем вам сами';
+  my $pts = join '', map { "<li>$_</li>" } 'Подберём модель под права и маршруты', 'Без предоплаты, оплата при получении', 'Привезём байк по вашему адресу';
+  # форма не шлёт данные на сервер: собирает сообщение и открывает выбранный мессенджер (см. app.js, data-lead)
   return <<"H";
 <section class="section"><div class="container"><div class="cta">
-  <div><h2 class="cta__t">$title</h2><p>$text</p></div>
-  <div class="cta__btns">
-    <a class="btn btn--light" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Telegram</a>
-    <a class="btn btn--dark" href="https://wa.me/$SITE{whatsapp}" rel="nofollow" data-goal="wa">${\ icon('whatsapp')} WhatsApp</a>
-  </div>
+  <div class="cta__text"><h2 class="cta__t">$title</h2><p>$text</p><ul class="cta__pts">$pts</ul></div>
+  <img class="cta__bike" src="${\ u('/assets/img/cta-bike.webp')}" alt="Скутер Kymco Candy 50" width="900" height="853" loading="lazy" decoding="async">
+  <form class="cta__form" data-lead novalidate>
+    <b>Заявка на подбор байка</b>
+    <label>Имя<input name="name" autocomplete="name" placeholder="Как к вам обращаться"></label>
+    <fieldset><legend>Где удобнее ответить</legend><div class="cta__seg"><label><input type="radio" name="via" value="tg" checked><span>Telegram</span></label><label><input type="radio" name="via" value="wa"><span>WhatsApp</span></label></div></fieldset>
+    <label>Ник или телефон<input name="contact" autocomplete="tel" placeholder="\@username или +7…"></label>
+    <button class="btn btn--orange" type="submit">Подобрать байк</button>
+    <small>Ответим в мессенджере, без звонков и спама</small>
+  </form>
 </div></div></section>
 H
 }
