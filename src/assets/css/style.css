@@ -921,3 +921,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .about__art .art__pin--a{right:auto;left:0;top:auto;bottom:calc(6% - 17px)}
 }
 @media (max-width:680px){.about__art{height:700px}} @media (max-width:380px){.about__art{height:650px}}
+
+/* фоны: первый экран, «Популярные модели», карточка «Без прав» — #F3F1EE; остальные карточки подборок — #F3F3F3 */
+.hero,.hero__main{background:#F3F1EE}
+#catalog{background:#F3F1EE}
+.cb:not(.cb--all){background:#F3F3F3}
+.cb:first-child{background:#F3F1EE}
