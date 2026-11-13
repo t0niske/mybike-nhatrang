@@ -948,3 +948,21 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
   .about__art .art__pol--a{top:368px}
   .about__art .art__pol--b{top:384px}
 }
+/* «О нас»: плашки без теней, карточки и сообщение чуть дальше от фото */
+.about__art .art__pin--a{box-shadow:none}
+.about__art .art__pin--b{filter:none}
+.about__art .art__pol--a{left:-4%}
+.about__art .art__pol--b{right:-4%}
+.about__art .art__msg{left:-5%}
+@media (max-width:680px){
+  .about__art{height:680px}
+  .art__main{top:110px}
+  .about__art .art__msg{left:0}
+  .about__art .art__pol--a{left:auto;top:434px}
+  .about__art .art__pol--b{right:0;top:452px}
+}
+@media (max-width:380px){
+  .about__art{height:626px}
+  .about__art .art__pol--a{top:404px}
+  .about__art .art__pol--b{top:420px}
+}
