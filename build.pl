@@ -823,10 +823,9 @@ ${\ hero_html(@all)}
 <section class="section section--grey">
   <div class="container about">
     <div class="about__text">
-      <h2 class="h2">Прокат, которым <span class="hl">пользуемся сами</span></h2>
+      <h2 class="h2">Аренда байка <span class="hl">без лишних хлопот</span></h2>
       <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из ${\ models(scalar @BIKES)}, собственный сервис и команда, которая говорит по-русски.</p>
       <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
-      <div class="about__nums"><div><b>${\ scalar @BIKES}</b><span>${\ (models(scalar @BIKES) =~ / (.+)/)[0]} в парке</span></div><div><b>0 ₫</b><span>за доставку к отелю</span></div><div><b>2</b><span>шлема в комплекте</span></div></div>
       <a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a>
     </div>
     <div class="about__photo"><img src="${\ u('/assets/img/about.jpg')}" alt="Парк байков MYBIKE на набережной Нячанга" width="1400" height="933" loading="lazy" decoding="async"><div class="about__card"><b>Сами привезём и заберём</b><span>Байк к отелю в удобное время, договор на русском, оплата при получении</span></div></div>
