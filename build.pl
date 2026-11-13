@@ -748,6 +748,30 @@ sub delivery_table {
   qq{<div class="table-wrap"><table class="table"><thead><tr><th>Куда</th><th>Стоимость</th><th>Время</th></tr></thead><tbody>$rows</tbody></table></div>};
 }
 
+# главная, «О нас»: слева рассказ о сервисе, справа коллаж «маршрут»: отель → выбор байка → поездка
+sub about_html {
+  my $tg = "https://t.me/$SITE{telegram}";
+  my $img = sub { u("/assets/img/$_[0]") };
+  my $route = '<svg class="art__route" viewBox="0 0 100 100" preserveAspectRatio="none"><path class="r-d" d="M91 8C86 18 99 26 92 33S99 46 92 53 99 66 92 73 97 88 90 95S60 98 40 98 16 97 12 94" fill="none" stroke="#FF6B2C" stroke-width="3" stroke-dasharray="1 9" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path class="r-m" d="M93 6C99 11 99 17 97 23L97 82C97 92 90 95 80 94S66 99 56 97 44 92 34 95 22 99 13 95" fill="none" stroke="#FF6B2C" stroke-width="3" stroke-dasharray="1 9" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
+  return qq{<section class="section section--grey about-sec"><div class="container about">
+  <div class="about__text">
+    <h2 class="h2">Аренда байка <span class="hl">без лишних хлопот</span></h2>
+    <p>MYBIKE — новый прокат скутеров и мотоциклов в Нячанге. Мы открылись, чтобы взять байк было так же просто, как вызвать такси: выбрали модель на сайте, договорились о времени, и байк уже у вас</p>
+    <p>Собираем парк из свежих моделей и готовим каждый байк перед выдачей сами: проверяем тормоза, свет и шины, моем и заправляем. Сейчас в парке ${\ models(scalar @BIKES)}, от мопедов без прав до мотоциклов</p>
+    <div class="about__btns"><a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a><a class="btn btn--dark btn--lg" href="$tg" rel="nofollow" data-goal="tg">${\ icon('telegram')} Написать нам</a></div>
+  </div>
+  <div class="about__art" aria-hidden="true">
+    $route
+    <span class="art__pin art__pin--a">${\ icon('pin')} Вы здесь</span>
+    <figure class="art__pol art__pol--a"><img src="${\ $img->('about.jpg')}" alt="Парк байков MYBIKE в Нячанге" width="1400" height="933" decoding="async"><figcaption>выбираете байк</figcaption></figure>
+    <div class="art__msg"><i>M</i><div><b>MYBIKE</b><span>Можем привезти байк прямо к отелю, а можете забрать его у нас сами</span></div><time>10:24</time></div>
+    <img class="art__main" src="${\ $img->('about-couple.jpg')}" alt="Пара в шлемах со скутером на улице Нячанга" width="900" height="1125" decoding="async">
+    <figure class="art__pol art__pol--b"><img src="${\ $img->('about-keys.jpg')}" alt="Передача ключей от арендованного байка" width="800" height="800" decoding="async"><figcaption>и катаетесь</figcaption></figure>
+    <span class="art__pin art__pin--b">${\ icon('scooter')}</span>
+  </div>
+</div></section>};
+}
+
 # первый экран главной: слева виды байков и хит, справа заголовок и вырезанный байк поверх надписи NHA TRANG
 sub hero_html {
   my @all = @_;
@@ -820,17 +844,7 @@ ${\ hero_html(@all)}
   </div>
 </section>
 
-<section class="section section--grey">
-  <div class="container about">
-    <div class="about__text">
-      <h2 class="h2">Аренда байка <span class="hl">без лишних хлопот</span></h2>
-      <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из ${\ models(scalar @BIKES)}, собственный сервис и команда, которая говорит по-русски.</p>
-      <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
-      <div class="about__btns"><a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a><a class="btn btn--dark btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Написать нам</a></div>
-    </div>
-    <div class="about__photo"><img src="${\ u('/assets/img/about.jpg')}" alt="Парк байков MYBIKE на набережной Нячанга" width="1400" height="933" loading="lazy" decoding="async"><div class="about__card"><b>Замена при поломке</b><span>Пробили колесо или сел аккумулятор — привезём другой байк бесплатно</span></div></div>
-  </div>
-</section>
+${\ about_html()}
 
 <section class="section section--dark">
   <div class="container">
