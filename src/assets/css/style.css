@@ -1098,3 +1098,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;bac
 .fqb__a a{color:var(--orange);font-weight:700}
 @media (max-width:1024px){.fqb{grid-template-columns:minmax(0,1fr)}.fqb__main{position:static}.fqb__btns{flex-direction:row}.fqb__btns .btn{flex:1}}
 @media (max-width:680px){.fqb__list{grid-template-columns:1fr}.fqb__main{padding:24px;border-radius:24px}.fqb__btns{flex-direction:column}.fqb__it summary{padding:18px}.fqb__a{padding:0 18px 18px}}
+/* вопросы: тёмная карточка по высоте сетки вопросов */
+.fqb{align-items:stretch}
+.fqb__main{position:static}
+.fqb__btns{margin-top:auto}
+@media (max-width:1024px){.fqb__btns{margin-top:8px}}

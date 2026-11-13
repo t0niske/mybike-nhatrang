@@ -657,7 +657,7 @@ sub faq_bento {
 <section class="section"><div class="container fqb">
   <div class="fqb__main"><h2 class="h2">Частые <span class="hl">вопросы</span></h2><p>Права, оплата, доставка и что делать, если в дороге что-то случилось</p>
     <div class="fqb__btns"><a class="btn btn--orange btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Задать вопрос</a><a class="btn btn--light btn--lg" href="https://wa.me/$SITE{whatsapp}" rel="nofollow" data-goal="wa">${\ icon('whatsapp')} WhatsApp</a></div>
-    <a class="fqb__all" href="${\ u('/faq/')}">Все вопросы и ответы</a></div>
+  </div>
   <div class="fqb__list">$items</div>
 </div></section>
 H
@@ -842,6 +842,9 @@ H
 # ------------------------------------------------------------ pages
 sub build_home {
   my @all = sort { $a->{rank} <=> $b->{rank} || $a->{p1} <=> $b->{p1} } @BIKES;
+  # к основным вопросам добавляем два про бронь со страницы FAQ — сетка вопросов ровная, 5 рядов по 2
+  my %seen = map { $_->[0] => 1 } @FAQ_MAIN;
+  my @home_faq = (@FAQ_MAIN, grep { !$seen{$_->[0]} && $_->[0] =~ /^(?:Нужна ли предоплата для брони|Можно ли отменить бронь)\?$/ } map { @{ $_->{faq} } } grep { $_->{faq} } @PAGES);
   my ($popular, @pop) = popular_block(@all);
   # блок отзывов на главной скрыт, пока нет настоящих отзывов
   my $reviews = join '', map { qq{<figure class="review"><div class="review__stars">${\ join '', map { icon('star') } 1..5}</div><blockquote>$_->[2]</blockquote><figcaption><b>$_->[0]</b><span>$_->[1]</span></figcaption></figure>} } @REVIEWS;
@@ -880,14 +883,14 @@ ${\ hero_html(@all)}
 ${\ about_html()}
 
 
-${\ faq_bento(@FAQ_MAIN)}
+${\ faq_bento(@home_faq)}
 ${\ cta_block()}
 H
   page(
     path=>'/', priority=>'1.0', bodyclass=>'home',
     title=>'Аренда байков в Нячанге — скутеры от 100 000 ₫, доставка бесплатно | MYBIKE',
     desc=>'Аренда скутеров и мотоциклов в Нячанге: ' . scalar(@BIKES) . ' моделей, есть байки без прав (50cc). Без залога паспорта, бесплатная доставка по вашему адресу, 2 шлема в комплекте. Цены от 100 000 ₫.',
-    body=>$body, ld=>[ faq_ld(@FAQ_MAIN), itemlist_ld('Популярные байки в аренду в Нячанге', @pop) ],
+    body=>$body, ld=>[ faq_ld(@home_faq), itemlist_ld('Популярные байки в аренду в Нячанге', @pop) ],
   );
 }
 
