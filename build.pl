@@ -649,6 +649,20 @@ sub faq_html {
   qq{<div class="faq">$items</div>};
 }
 
+# главная, «Частые вопросы»: слева тёмная карточка с заголовком и кнопками, справа вопросы-карточки в две колонки
+sub faq_bento {
+  my @f = @_;
+  my $items = join '', map { qq{<details class="fqb__it"><summary><b>${\ esc($_->[0])}</b><i class="fqb__pl" aria-hidden="true"></i></summary><div class="fqb__a">${\ fill($_->[1])}</div></details>} } @f;
+  return <<"H";
+<section class="section"><div class="container fqb">
+  <div class="fqb__main"><h2 class="h2">Частые <span class="hl">вопросы</span></h2><p>Права, оплата, доставка и что делать, если в дороге что-то случилось</p>
+    <div class="fqb__btns"><a class="btn btn--orange btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Задать вопрос</a><a class="btn btn--light btn--lg" href="https://wa.me/$SITE{whatsapp}" rel="nofollow" data-goal="wa">${\ icon('whatsapp')} WhatsApp</a></div>
+    <a class="fqb__all" href="${\ u('/faq/')}">Все вопросы и ответы</a></div>
+  <div class="fqb__list">$items</div>
+</div></section>
+H
+}
+
 # иллюстрация под текстом карточки преимущества (по ключу иконки): элементы интерфейса или SVG-рисунок
 sub inc_art {
   my $k = shift;
@@ -866,12 +880,7 @@ ${\ hero_html(@all)}
 ${\ about_html()}
 
 
-<section class="section">
-  <div class="container faq-wrap">
-    <div><h2 class="h2">Частые <span class="hl">вопросы</span></h2><p class="lead">Не нашли ответ? Напишите в <a href="https://t.me/$SITE{telegram}" rel="nofollow">Telegram</a>, ответим за 5 минут.</p><a class="btn btn--dark" href="${\ u('/faq/')}">Все вопросы</a></div>
-    ${\ faq_html(@FAQ_MAIN)}
-  </div>
-</section>
+${\ faq_bento(@FAQ_MAIN)}
 ${\ cta_block()}
 H
   page(
