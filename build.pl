@@ -907,7 +907,6 @@ sub build_catalog {
   <div class="container">
     <h1 class="h1">Каталог байков в аренду в Нячанге</h1>
     <p class="lead">${\ scalar @BIKES} моделей: мопеды без прав, скутеры 110–160 см³, макси-скутеры, мотоциклы и электроскутеры. Фильтруйте по правам и мощности — цена за ваш срок считается сразу.</p>
-    ${\ cat_tiles('katalog')}
   </div>
 </section>
 <section class="section section--grey section--tight" id="models"><div class="container">${\ catalog_block(bikes=>\@all, full=>1, h=>'h2')}</div></section>
