@@ -312,7 +312,7 @@ sub footer_html {
       <div><p class="footer__h">Модели</p><ul class="footer__cols">$bikes</ul></div>
       <div><p class="footer__h">Информация</p><ul>$info<li><a href="${\ u('/faq/')}">Вопросы и ответы</a></li></ul></div>
     </div>
-    <div class="footer__bottom"><span>© $SITE{founded}–$y MYBIKE. Аренда байков в Нячанге.</span><a href="${\ u('/politika-konfidencialnosti/')}">Политика конфиденциальности</a></div>
+    <div class="footer__bottom"><span>© $y MYBIKE. Аренда байков в Нячанге.</span><a href="${\ u('/politika-konfidencialnosti/')}">Политика конфиденциальности</a></div>
   </div>
 </footer>
 H
@@ -823,14 +823,13 @@ ${\ hero_html(@all)}
 <section class="section section--grey">
   <div class="container about">
     <div class="about__text">
-      <span class="kicker">О нас</span>
-      <h2 class="h2">Прокат, которым <span class="hl">пользуемся сами</span></h2>
+            <h2 class="h2">Прокат, которым <span class="hl">пользуемся сами</span></h2>
       <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из $SITE{fleet_size} байков 2023–2025 годов, собственный сервис и команда, которая говорит по-русски и отвечает за 5 минут.</p>
       <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
       <div class="about__nums"><div><b>$SITE{fleet_size}</b><span>байков в парке</span></div><div><b>$SITE{clients}</b><span>клиентов</span></div><div><b>5 мин</b><span>время ответа</span></div></div>
       <a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a>
     </div>
-    <div class="about__photo"><img src="${\ u('/assets/img/about.jpg')}" alt="Парк байков MYBIKE на набережной Нячанга" width="1400" height="933" loading="lazy" decoding="async"><div class="about__card"><b>С $SITE{founded} года в Нячанге</b><span>Свой парк, свой сервис и механики, договор на русском</span></div></div>
+    <div class="about__photo"><img src="${\ u('/assets/img/about.jpg')}" alt="Парк байков MYBIKE на набережной Нячанга" width="1400" height="933" loading="lazy" decoding="async"><div class="about__card"><b>Свой парк в Нячанге</b><span>Свой сервис и механики, договор на русском</span></div></div>
   </div>
 </section>
 
