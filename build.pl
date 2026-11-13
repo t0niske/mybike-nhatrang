@@ -730,7 +730,7 @@ sub steps_html {
 
 sub cta_block {
   my ($title, $text) = @_;
-  $title //= q{Не знаете, <span class="hl">какой байк</span> выбрать?};
+  $title //= q{Не знаете, <span class="hl hl--w">какой байк</span> выбрать?};
   $text  //= 'Напишите нам — подберём байк под ваши права, маршруты и бюджет и привезём его по вашему адресу';
   my $nb = "\x{a0}";
   my $c50 = (grep { $_->{slug} eq 'kymco-candy-50' } @BIKES)[0];
@@ -740,7 +740,7 @@ sub cta_block {
   return <<"H";
 <section class="section"><div class="container"><div class="cta">
   <div class="cta__text"><h2 class="cta__t">$title</h2><p>$text</p>
-    <div class="cta__btns"><a class="btn btn--orange btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Написать в Telegram</a><a class="btn btn--light btn--lg" href="https://wa.me/$SITE{whatsapp}" rel="nofollow" data-goal="wa">${\ icon('whatsapp')} WhatsApp</a></div>
+    <div class="cta__btns"><a class="btn btn--dark btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Написать в Telegram</a><a class="btn btn--light btn--lg" href="https://wa.me/$SITE{whatsapp}" rel="nofollow" data-goal="wa">${\ icon('whatsapp')} WhatsApp</a></div>
   </div>
   <div class="cta__art" aria-hidden="true">
     <div class="phone"><div class="phone__scr">
