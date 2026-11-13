@@ -826,9 +826,9 @@ ${\ hero_html(@all)}
       <h2 class="h2">Аренда байка <span class="hl">без лишних хлопот</span></h2>
       <p>Мы делаем аренду байка такой же простой, как заказ такси. Свой парк из ${\ models(scalar @BIKES)}, собственный сервис и команда, которая говорит по-русски.</p>
       <p>Мы не выдаём байки от 110 см³ без прав: это ваша безопасность и рабочая страховка. Зато для тех, у кого прав нет, держим отдельный парк мопедов 50 см³ и электроскутеров.</p>
-      <a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a>
+      <div class="about__btns"><a class="btn btn--orange btn--lg" href="#catalog">Выбрать байк</a><a class="btn btn--dark btn--lg" href="https://t.me/$SITE{telegram}" rel="nofollow" data-goal="tg">${\ icon('telegram')} Написать нам</a></div>
     </div>
-    <div class="about__photo"><img src="${\ u('/assets/img/about.jpg')}" alt="Парк байков MYBIKE на набережной Нячанга" width="1400" height="933" loading="lazy" decoding="async"><div class="about__card"><b>Сами привезём и заберём</b><span>Байк к отелю в удобное время, договор на русском, оплата при получении</span></div></div>
+    <div class="about__photo"><img src="${\ u('/assets/img/about.jpg')}" alt="Парк байков MYBIKE на набережной Нячанга" width="1400" height="933" loading="lazy" decoding="async"><div class="about__card"><b>Замена при поломке</b><span>Пробили колесо или сел аккумулятор — привезём другой байк бесплатно</span></div></div>
   </div>
 </section>
 
